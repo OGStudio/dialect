@@ -9,7 +9,8 @@ let package = Package(
     targets: [
         .executableTarget(
             name: "HelloWorld",
-            path: "src"
+            path: "src",
+            exclude: ["Info.plist"]
         )
     ]
 )
