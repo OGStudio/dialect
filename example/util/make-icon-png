@@ -1,11 +1,24 @@
 #!/usr/bin/env bash
 # Generates the app icon master PNG using ImageMagick.
-# Usage: ./make-icon-png [output.png]   (default /tmp/opencode/AppIcon-1024.png)
+# Usage: ./make-icon-png [-t|--text TEXT] [output.png]
+#   TEXT defaults to "HW"; output defaults to /tmp/opencode/AppIcon-1024.png
 # Env: ICON_SIZE=1024
 
 set -euo pipefail
 
-OUT="${1:-/tmp/opencode/AppIcon-1024.png}"
+TEXT="HW"
+OUT="/tmp/opencode/AppIcon-1024.png"
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -t|--text)
+            [ $# -ge 2 ] || { echo "error: $1 needs a value" >&2; exit 1; }
+            TEXT="$2"; shift 2 ;;
+        --text=*)
+            TEXT="${1#*=}"; shift ;;
+        *)
+            OUT="$1"; shift ;;
+    esac
+done
 S="${ICON_SIZE:-1024}"
 
 IM="$(command -v magick || command -v convert || true)"
@@ -42,7 +55,7 @@ fi
        \( -size "${S}x${HALF}" gradient:'rgba(255,255,255,0)'-'rgba(255,255,255,0.28)' \) \
        -gravity northwest -geometry '+0+0' -composite \
        -gravity center ${FONT_ARGS[@]+"${FONT_ARGS[@]}"} ${KERN_ARGS[@]+"${KERN_ARGS[@]}"} \
-       -fill white -pointsize "$PS" -annotate "-${TEXT_X}+0" 'HW' \) \
+       -fill white -pointsize "$PS" -annotate "-${TEXT_X}+0" "$TEXT" \) \
     \( -size "${S}x${S}" xc:none -fill white \
        -draw "roundrectangle $INSET,$INSET $(( S - INSET - 1 )),$(( S - INSET - 1 )) $RADIUS,$RADIUS" \) \
     -compose DstIn -composite \
