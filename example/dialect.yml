@@ -34,7 +34,7 @@ Example:
     type: component
     context:
         count:
-            type: Bool
+            type: Int
             count:
                 Upon hitting 10 the first time:
                     if:
