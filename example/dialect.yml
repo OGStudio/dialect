@@ -1,0 +1,34 @@
+
+ExampleContext:
+    type: context
+    fields:
+        didClickCount: Bool
+        didLaunch: Bool
+        didSetup: Bool
+        count: Int
+
+Example:
+    type: proto
+    shouldLaunch:
+        recentField: didLaunch
+        Only once during the first setup:
+            if:
+                c.recentField == F.didSetup &&
+                c.didLaunch == false
+            then:
+                c.didLaunch = true
+    shouldResetCount:
+        recentField: count
+        Upon hitting 10 the first time:
+            if:
+                c.recentField == F.didClickCount &&
+                c.count == 9 /* we're hitting 10 right now */
+            then:
+                c.count += 10
+        Upon each button click:
+            if:
+                c.recentField == F.didClickCount
+            then:
+                c.count += 1
+
+
