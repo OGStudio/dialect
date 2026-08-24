@@ -11,12 +11,13 @@ public class DialectController {
 
     func executeFunctions() {
         let c = queue.removeFirst()
+        // Keep SSOT: only assign the field that has changed
         context.recentField = c.recentField
         context.setField(c.recentField, c.fieldAny(c.recentField))
       
         for f in functions {
-            let ctx = f(context)
-            if ctx.recentField != "none" {
+            var ctx = context
+            if f(ctx) {
                 queue.append(ctx)
             }
         }
@@ -54,7 +55,7 @@ public class DialectController {
         })
     }
 
-    public func registerFunction(_ f: @escaping (DialectContext) -> DialectContext) {
+    public func registerFunction(_ f: @escaping (inout DialectContext) -> Bool) {
         functions.append(f)
     }
 
