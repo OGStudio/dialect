@@ -1,5 +1,6 @@
+version: 4
 
-ExampleContext:
+HelloWorldContext:
     type: context
     fields:
         didClickCount: Bool
@@ -7,21 +8,14 @@ ExampleContext:
         didSetup: Bool
         count: Int
 
-Example:
+HelloWorld:
     type: should
     shoulds:
-        didLaunch:
-            1. Only once during the first setup:
-                if:
-                    c.recentField == F.didSetup &&
-                    c.didLaunch == false
-                then:
-                    c.didLaunch = true
         count:
             1. Upon hitting 10 the first time:
                 if:
                     c.recentField == F.didClickCount &&
-                    c.count == 9 # we're hitting 10 right now
+                    c.count == 9 # We're hitting 10 right now
                 then:
                     c.count += 10
             2. Upon each button click:
@@ -29,33 +23,10 @@ Example:
                     c.recentField == F.didClickCount
                 then:
                     c.count += 1
-
-Example:
-    type: component
-    context:
-        count:
-            type: Int
-            count:
-                Upon hitting 10 the first time:
-                    if:
-                        c.recentField == F.didClickCount &&
-                        c.count == 9 # we're hitting 10 right now
-                    then:
-                        c.count += 10
-                Upon each button click:
-                    if:
-                        c.recentField == F.didClickCount
-                    then:
-                        c.count += 1
-        didClickCount:
-            type: Bool
         didLaunch:
-            type: Bool
-            Only once during the first setup:
+            1. Only once during the first setup:
                 if:
                     c.recentField == F.didSetup &&
                     c.didLaunch == false
                 then:
                     c.didLaunch = true
-        didSetup:
-            type: Bool
