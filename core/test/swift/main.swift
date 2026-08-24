@@ -1,4 +1,4 @@
-print("Testing... ", terminator: "")
+print("Testing... ")
 
 let tests = [
     t01_ExampleContext_field,
@@ -19,4 +19,4 @@ for test in tests {
     }
 }
 let totalCount = tests.count
-print("\(okCount)/\(totalCount)")
+print("Done. OK/total: \(okCount)/\(totalCount)")
