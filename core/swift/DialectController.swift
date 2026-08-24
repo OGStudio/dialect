@@ -1,7 +1,7 @@
 public class DialectController {
     var callbacks = [(DialectContext) -> Void]()
     var context: DialectContext
-    var functions = [(DialectContext) -> DialectContext]()
+    var functions = [(inout DialectContext) -> Bool]()
     var isProcessingQueue = false
     var queue = [DialectContext]()
 
@@ -17,7 +17,7 @@ public class DialectController {
       
         for f in functions {
             var ctx = context
-            if f(ctx) {
+            if f(&ctx) {
                 queue.append(ctx)
             }
         }
