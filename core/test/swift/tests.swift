@@ -34,14 +34,17 @@ struct ExampleContext: DialectContext {
 }
 
 /// Sample function for processing context change
-func hostToDidLaunch(_ c: inout ExampleContext) -> Bool {
+func hostToDidLaunch(_ c: ExampleContext) -> ExampleContext {
+    var c = c
+
     if c.recentField == "host" {
         c.didLaunch = true
         c.recentField = "didLaunch"
-        return true
+        return c
     }
 
-    return false
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
 }
 
 /// Validate field access by name
@@ -96,17 +99,15 @@ func t05_DialectController_executeFunctions_set() -> Bool {
         hostToDidLaunch(c as! ExampleContext)
     }
 
-    // Apply `host` value.
+    // Apply `host` value
     ctrl.executeFunctions()
-    // Apply `didLaunch` value.
+    // Apply `didLaunch` value
     ctrl.executeFunctions()
 
     let c = ctrl.context as! ExampleContext
     return c.host == "123" &&
         c.didLaunch == true
 }
-
-/*
 
 /// Validate `processQueue()`
 func t06_DialectController_processQueue() -> Bool {
@@ -153,5 +154,3 @@ func t08_DialectController_registerFieldCallback_mismatch() -> Bool {
 
     return callbackHost == ""
 }
-
-*/
