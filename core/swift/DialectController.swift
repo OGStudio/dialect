@@ -1,7 +1,7 @@
 public class DialectController {
     var callbacks = [(DialectContext) -> Void]()
     var context: DialectContext
-    var functions = [(inout DialectContext) -> Bool]()
+    var functions = [(DialectContext) -> DialectContext]()
     var isProcessingQueue = false
     var queue = [DialectContext]()
 
@@ -11,13 +11,13 @@ public class DialectController {
 
     func executeFunctions() {
         let c = queue.removeFirst()
-        // Keep SSOT: only assign the field that has changed
+        // Keep SSOT: Only allow single field change per should-function
         context.recentField = c.recentField
         context.setField(c.recentField, c.fieldAny(c.recentField))
       
         for f in functions {
-            var ctx = context
-            if f(&ctx) {
+            let ctx = f(context)
+            if ctx.recentField != DIALECT_CONTEXT_RECENT_FIELD_NONE {
                 queue.append(ctx)
             }
         }
@@ -55,7 +55,7 @@ public class DialectController {
         })
     }
 
-    public func registerFunction(_ f: @escaping (inout DialectContext) -> Bool) {
+    public func registerFunction(_ f: @escaping (DialectContext) -> DialectContext) {
         functions.append(f)
     }
 

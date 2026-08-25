@@ -1,3 +1,5 @@
+public DIALECT_CONTEXT_RECENT_FIELD_NONE = "none"
+
 public protocol DialectContext {
     var recentField: String { get set }
 
