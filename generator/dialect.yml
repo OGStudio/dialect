@@ -1,0 +1,15 @@
+version: 4
+
+DialectContext:
+    type: context
+    fields:
+      input: String
+
+RootContext:
+    type: context
+    fields:
+        arguments: [String]
+        didLaunch: Bool
+        inputFileName: String
+        stdin: String
+

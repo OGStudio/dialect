@@ -7,6 +7,8 @@ guard CommandLine.arguments.count > 1 else {
     exit(1)
 }
 
+print("ИГР args: '\(CommandLine.arguments)'")
+
 let arg = CommandLine.arguments[1]
 let input: String
 
