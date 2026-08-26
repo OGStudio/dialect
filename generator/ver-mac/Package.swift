@@ -11,7 +11,7 @@ let package = Package(
         .executableTarget(
             name: "yamlparser",
             dependencies: ["Yams"],
-            path: "Sources/YamlParser"
+            path: "src"
         )
     ]
 )
