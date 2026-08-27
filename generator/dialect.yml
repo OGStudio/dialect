@@ -5,9 +5,47 @@ CLIContext:
     fields:
         arguments: [String]
         didLaunch: Bool
+        didSetup: Bool
         input: String
         inputFileName: String
+        inputFileNameContents: String
+        readFile: Bool
         stdin: String
+
+CLIShould:
+    type: should
+    shoulds:
+        didLaunch:
+            1. Only once during the first setup:
+                if:
+                    c.recentField == F.didSetup &&
+                    c.didLaunch == false
+                then:
+                    c.didLaunch = true
+        input:
+            1. File name contents arrived:
+                if:
+                    c.recentField == F.inputFileNameContents
+                then:
+                    c.input = c.inputFileNameContents
+            2. Stdin contents arrived:
+                if:
+                    c.recentField == F.stdin
+                then:
+                    c.input = c.stdin
+        inputFileName:
+            1. Get file name by parsing aguments
+              if:
+                  c.recentField == F.arguments &&
+                  !cliArgument(c.arguments, CLI_ARG_FILENAME).isEmpty()
+              then:
+                  c.inputFileName = cliArgument(c.arguments, CLI_ARG_FILENAME)
+        readFile:
+            1. File name has been specified:
+                if:
+                    c.recentField == F.inputFileName
+                then:
+                    c.readFile = true
 
 DialectContext:
     type: context

@@ -9,7 +9,7 @@ let package = Package(
     ],
     targets: [
         .executableTarget(
-            name: "yamlparser",
+            name: "generator",
             dependencies: ["Yams"],
             path: "src"
         )
