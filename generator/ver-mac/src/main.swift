@@ -1,7 +1,7 @@
 import Foundation
 import Yams
 
-let cli = CLI()
+let cli = CLIComponent()
 
 
 
