@@ -1,5 +1,14 @@
 version: 4
 
+CLIContext:
+    type: context
+    fields:
+        arguments: [String]
+        didLaunch: Bool
+        input: String
+        inputFileName: String
+        stdin: String
+
 DialectContext:
     type: context
     fields:
@@ -8,8 +17,4 @@ DialectContext:
 RootContext:
     type: context
     fields:
-        arguments: [String]
         didLaunch: Bool
-        inputFileName: String
-        stdin: String
-
