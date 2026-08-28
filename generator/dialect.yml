@@ -37,9 +37,9 @@ CLIShould:
             1. Get file name by parsing aguments
               if:
                   c.recentField == F.arguments &&
-                  !cliArgument(c.arguments, CLI_ARG_FILENAME).isEmpty()
+                  cliArgumentValue(c.arguments, CLI_ARG_FILE) != ""
               then:
-                  c.inputFileName = cliArgument(c.arguments, CLI_ARG_FILENAME)
+                  c.inputFileName = cliArgumentValue(c.arguments, CLI_ARG_FILE)
         readFile:
             1. File name has been specified:
                 if:

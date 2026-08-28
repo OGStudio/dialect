@@ -125,9 +125,9 @@ func cliShouldResetInputFileName(_ c: CLIContext) -> CLIContext {
     /* 1. Get file name by parsing arguments */
     if
         c.recentField == F.arguments &&
-        !cliArgument(c.arguments, CLI_ARG_FILENAME).isEmpty()
+        cliArgumentValue(c.arguments, CLI_ARG_FILE) != ""
     {
-        c.inputFileName = cliArgument(c.arguments, CLI_ARG_FILENAME)
+        c.inputFileName = cliArgumentValue(c.arguments, CLI_ARG_FILE)
         c.recentField = F.inputFileName
         return c
     }
