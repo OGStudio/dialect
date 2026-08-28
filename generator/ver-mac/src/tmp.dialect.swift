@@ -76,3 +76,78 @@ struct F {
     static let readFile = "readFile"
     static let stdin = "stdin"
 }
+
+func cliShouldResetDidLaunch(_ c: CLIContext) -> CLIContext {
+    var c = c
+
+    /* 1. Only once during the first setup */
+    if
+        c.recentField == F.didSetup &&
+        c.didLaunch == false
+    {
+        c.didLaunch = true
+        c.recentField = F.didLaunch
+        return c
+    }
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func cliShouldResetInput(_ c: CLIContext) -> CLIContext {
+    var c = c
+
+    /* 1. File name contents arrived */
+    if
+        c.recentField == F.inputFileNameContents
+    {
+        c.input = c.inputFileNameContents
+        c.recentField = F.input
+        return c
+    }
+
+    /* 2. Stdin contents arrived */
+    if
+        c.recentField == F.stdin
+    {
+        c.input = c.stdin
+        c.recentField = F.input
+        return c
+    }
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func cliShouldResetInputFileName(_ c: CLIContext) -> CLIContext {
+    var c = c
+
+    /* 1. Get file name by parsing arguments */
+    if
+        c.recentField == F.arguments &&
+        !cliArgument(c.arguments, CLI_ARG_FILENAME).isEmpty()
+    {
+        c.inputFileName = cliArgument(c.arguments, CLI_ARG_FILENAME)
+        c.recentField = F.inputFileName
+        return c
+    }
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func cliShouldResetReadFile(_ c: CLIContext) -> CLIContext {
+    var c = c
+
+    /* 1. File name has been specified */
+    if
+        c.recentField == F.inputFileName
+    {
+        c.readFile = true
+        c.recentField = F.readFile
+        return c
+    }
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
