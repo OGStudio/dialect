@@ -19,6 +19,8 @@ CLIComponent:
         - input
         - inputFileName
         - readFile
+    oneliners:
+        - consoleOutput: print(c.consoleOutput)
     shoulds:
         consoleOutput:
             1. File argument was not found

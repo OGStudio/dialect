@@ -1,0 +1,1 @@
+../../../core/swift/registerOneliners.swift
