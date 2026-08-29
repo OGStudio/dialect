@@ -14,11 +14,19 @@ CLIContext:
 
 CLIComponent:
     activeShoulds:
+        - consoleOutput
         - didLaunch
         - input
         - inputFileName
         - readFile
     shoulds:
+        consoleOutput:
+            1. File argument was not found
+                if:
+                    c.recentField == F.didLaunch &&
+                    cliArgumentValue(c.arguments, CLI_ARG_FILE).isEmpty
+                then:
+                    c.consoleOutput = CLI_CONSOLE_USAGE
         didLaunch:
             1. Only once during the first setup:
                 if:

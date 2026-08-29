@@ -10,6 +10,8 @@ class CLIComponent {
     }
 
     func setup() {
+        cliSet(F.arguments, CommandLine.arguments)
+
         cliSet(F.didSetup, true)
     }
 }

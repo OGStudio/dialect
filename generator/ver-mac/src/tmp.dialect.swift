@@ -3,6 +3,7 @@
 
 struct F {
     static let arguments = "arguments"
+    static let consoleOutput = "consoleOutput"
     static let didLaunch = "didLaunch"
     static let didSetup = "didSetup"
     static let input = "input"
@@ -16,6 +17,7 @@ struct F {
 
 struct CLIContext: DialectContext {
     var arguments = [String]()
+    var consoleOutput = ""
     var didLaunch = false
     var didSetup = false
     var input = ""
@@ -29,6 +31,8 @@ struct CLIContext: DialectContext {
     func field<T>(_ name: String) -> T {
         if (name == "arguments") {
             return arguments as! T
+        } else if (name == "consoleOutput") {
+            return consoleOutput as! T
         } else if (name == "didLaunch") {
             return didLaunch as! T
         } else if (name == "didSetup") {
@@ -54,6 +58,8 @@ struct CLIContext: DialectContext {
     ) {
         if (name == "arguments") {
             arguments = value as! [String]
+        } else if (name == "consoleOutput") {
+            consoleOutput = value as! String
         } else if (name == "didLaunch") {
             didLaunch = value as! Bool
         } else if (name == "didSetup") {
@@ -73,6 +79,23 @@ struct CLIContext: DialectContext {
 }
 
 // CLI shoulds
+
+func cliShouldResetConsoleOutput(_ c: CLIContext) -> CLIContext {
+    var c = c
+
+    /* 1. File argument was not found */
+    if
+        c.recentField == F.didLaunch &&
+        cliArgumentValue(c.arguments, CLI_ARG_FILE).isEmpty
+    {
+        c.consoleOutput = CLI_CONSOLE_USAGE
+        c.recentField = F.consoleOutput
+        return c
+    }
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
 
 func cliShouldResetDidLaunch(_ c: CLIContext) -> CLIContext {
     var c = c
@@ -153,6 +176,7 @@ func cliShouldResetReadFile(_ c: CLIContext) -> CLIContext {
 
 func cliRegisterShoulds(_ ctrl: DialectController) {
     [
+        cliShouldResetConsoleOutput,
         cliShouldResetDidLaunch,
         cliShouldResetInput,
         cliShouldResetInputFileName,
