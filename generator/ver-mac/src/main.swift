@@ -9,6 +9,7 @@ cli.setup()
 
 
 
+/*
 guard CommandLine.arguments.count > 1 else {
     print("Usage: yamlparser <file.yaml>")
     print("       cat file.yaml | yamlparser -")
@@ -69,3 +70,4 @@ func printValue(_ value: Any, indent: Int = 0) {
 
 print("--- Parsed YAML ---")
 printValue(node)
+*/
