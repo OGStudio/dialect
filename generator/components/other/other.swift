@@ -1,8 +1,8 @@
 
 /// Print each key/value processed by a controller into console
-func otherSetupDebugging(
-    ctrl: DialectController,
-    prefix: String
+func otherSetupConsoleLogging(
+    _ ctrl: DialectController,
+    _ prefix: String
 ) {
     ctrl.registerCallback { c -> Void in
         let value: String = c.field(c.recentField)

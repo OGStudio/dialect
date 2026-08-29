@@ -5,10 +5,12 @@ class CLIComponent {
     init() {
         Self.singleton = self
         cliRegisterShoulds(ctrl)
+        otherSetupConsoleLogging(ctrl, "CLI")
         // TODO oneliners
     }
 
     func setup() {
+        print("before didSetup")
         cliSet(F.didSetup, true)
     }
 }
