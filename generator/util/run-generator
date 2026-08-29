@@ -3,4 +3,4 @@ SDIR=$(cd "$(dirname "$0")" ; pwd -P)
 
 swift build --package-path "$SDIR/../ver-mac" -c release 2>/dev/null
 
-$SDIR/../ver-mac/.build/release/yamlparser "$@"
+$SDIR/../ver-mac/.build/release/generator "$@"

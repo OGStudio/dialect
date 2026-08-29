@@ -5,7 +5,7 @@ func otherSetupConsoleLogging(
     _ prefix: String
 ) {
     ctrl.registerCallback { c -> Void in
-        let value: String = c.field(c.recentField)
+        let value = c.fieldAny(c.recentField)
         let line = "ИГР \(prefix) k/v: '\(c.recentField)'/'\(value)'"
         print(line)
     }
