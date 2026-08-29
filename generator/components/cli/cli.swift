@@ -10,7 +10,6 @@ class CLIComponent {
     }
 
     func setup() {
-        print("before didSetup")
         cliSet(F.didSetup, true)
     }
 }
