@@ -196,9 +196,7 @@ func cliSet(
 // Oneliners
 
 func cliRegisterEffects(_ ctrl: DialectController) {
-    //var r: CC?
-    let effects: [Any] = [
+    let _: CLIContext? = registerOneliners(ctrl, [
         F.consoleOutput, { (c: CLIContext) in print(c.consoleOutput) },
-    ]
-    /*r =*/ registerOneliners(ctrl, effects)
+    ])
 }
