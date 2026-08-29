@@ -12,8 +12,12 @@ CLIContext:
         readFile: Bool
         stdin: String
 
-CLIShould:
-    type: should
+CLIComponent:
+    activeShoulds:
+        - didLaunch
+        - input
+        - inputFileName
+        - readFile
     shoulds:
         didLaunch:
             1. Only once during the first setup:

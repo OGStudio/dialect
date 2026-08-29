@@ -4,6 +4,7 @@ class CLIComponent {
 
     init() {
         Self.singleton = self
+        cliRegisterShoulds(ctrl)
         // TODO oneliners
     }
 

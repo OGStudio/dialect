@@ -1,12 +1,18 @@
 // Temporarily manually written
 // Will be generated someday
 
-func cliSet(
-    _ key: String,
-    _ value: Any
-) {
-    CLIComponent.singleton!.ctrl.set(key, value)
+struct F {
+    static let arguments = "arguments"
+    static let didLaunch = "didLaunch"
+    static let didSetup = "didSetup"
+    static let input = "input"
+    static let inputFileName = "inputFileName"
+    static let inputFileNameContents = "inputFileNameContents"
+    static let readFile = "readFile"
+    static let stdin = "stdin"
 }
+
+// CLIContext
 
 struct CLIContext: DialectContext {
     var arguments = [String]()
@@ -66,16 +72,7 @@ struct CLIContext: DialectContext {
     }
 }
 
-struct F {
-    static let arguments = "arguments"
-    static let didLaunch = "didLaunch"
-    static let didSetup = "didSetup"
-    static let input = "input"
-    static let inputFileName = "inputFileName"
-    static let inputFileNameContents = "inputFileNameContents"
-    static let readFile = "readFile"
-    static let stdin = "stdin"
-}
+// CLI shoulds
 
 func cliShouldResetDidLaunch(_ c: CLIContext) -> CLIContext {
     var c = c
@@ -150,4 +147,24 @@ func cliShouldResetReadFile(_ c: CLIContext) -> CLIContext {
 
     c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
     return c
+}
+
+// CLI related functions
+
+func cliRegisterShoulds(_ ctrl: DialectController) {
+    [
+        cliShouldResetDidLaunch,
+        cliShouldResetInput,
+        cliShouldResetInputFileName,
+        cliShouldResetReadFile,
+    ].forEach { f in
+        ctrl.registerFunction { c in f(c as! CLIContext) }
+    }
+}
+
+func cliSet(
+    _ key: String,
+    _ value: Any
+) {
+    CLIComponent.singleton!.ctrl.set(key, value)
 }
