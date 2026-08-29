@@ -4,9 +4,9 @@ class CLIComponent {
 
     init() {
         Self.singleton = self
+        cliRegisterEffects(ctrl);
         cliRegisterShoulds(ctrl)
         otherSetupConsoleLogging(ctrl, "CLI")
-        // TODO oneliners
     }
 
     func setup() {

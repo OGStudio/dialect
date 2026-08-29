@@ -192,3 +192,13 @@ func cliSet(
 ) {
     CLIComponent.singleton!.ctrl.set(key, value)
 }
+
+// Oneliners
+
+func cliRegisterEffects(_ ctrl: DialectController) {
+    //var r: CC?
+    let effects: [Any] = [
+        F.consoleOutput, { (c: CLIContext) in print(c.consoleOutput) },
+    ]
+    /*r =*/ registerOneliners(ctrl, effects)
+}
