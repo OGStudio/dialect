@@ -6,8 +6,8 @@ struct F {
     static let consoleOutput = "consoleOutput"
     static let didLaunch = "didLaunch"
     static let didSetup = "didSetup"
+    static let inputContents = "inputContents"
     static let inputFileName = "inputFileName"
-    static let inputFileNameContents = "inputFileNameContents"
     static let readFile = "readFile"
 }
 
@@ -18,8 +18,8 @@ struct CLIContext: DialectContext {
     var consoleOutput = ""
     var didLaunch = false
     var didSetup = false
+    var inputContents = ""
     var inputFileName = ""
-    var inputFileNameContents = ""
     var readFile = false
 
     var recentField = ""
@@ -33,10 +33,10 @@ struct CLIContext: DialectContext {
             return didLaunch as! T
         } else if (name == "didSetup") {
             return didSetup as! T
+        } else if (name == "inputContents") {
+            return inputContents as! T
         } else if (name == "inputFileName") {
             return inputFileName as! T
-        } else if (name == "inputFileNameContents") {
-            return inputFileNameContents as! T
         } else if (name == "readFile") {
             return readFile as! T
         }
@@ -56,10 +56,10 @@ struct CLIContext: DialectContext {
             didLaunch = value as! Bool
         } else if (name == "didSetup") {
             didSetup = value as! Bool
+        } else if (name == "inputContents") {
+            inputContents = value as! String
         } else if (name == "inputFileName") {
             inputFileName = value as! String
-        } else if (name == "inputFileNameContents") {
-            inputFileNameContents = value as! String
         } else if (name == "readFile") {
             readFile = value as! Bool
         }

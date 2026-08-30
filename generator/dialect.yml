@@ -6,8 +6,8 @@ CLIContext:
         arguments: [String]
         didLaunch: Bool
         didSetup: Bool
+        inputContents: String
         inputFileName: String
-        inputFileNameContents: String
         readFile: Bool
 
 CLIComponent:
@@ -50,7 +50,7 @@ CLIComponent:
 DialectContext:
     type: context
     fields:
-      input: String
+      inputContents: String
 
 RootContext:
     type: context
