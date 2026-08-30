@@ -10,21 +10,10 @@ cli.setup()
 
 
 /*
-guard CommandLine.arguments.count > 1 else {
-    print("Usage: yamlparser <file.yaml>")
-    print("       cat file.yaml | yamlparser -")
-    exit(1)
-}
-
-print("ИГР args: '\(CommandLine.arguments)'")
 
 let arg = CommandLine.arguments[1]
 let input: String
 
-if arg == "-" {
-    let data = FileHandle.standardInput.readDataToEndOfFile()
-    input = String(data: data, encoding: .utf8) ?? ""
-} else {
     let url = URL(fileURLWithPath: arg)
     guard let data = try? Data(contentsOf: url),
           let str = String(data: data, encoding: .utf8) else {
@@ -32,7 +21,6 @@ if arg == "-" {
         exit(1)
     }
     input = str
-}
 
 guard let node = try? Yams.load(yaml: input) else {
     print("Error: failed to parse YAML")
