@@ -1,4 +1,4 @@
 
 enum CLIError: Error {
-    case invalidString(String)
+    case invalidString
 }

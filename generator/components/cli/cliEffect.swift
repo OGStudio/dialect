@@ -6,7 +6,7 @@ func cliReadInputFile(_ fileName: String) {
     do {
         let data = try Data(contentsOf: url)
         guard let str = String(data: data, encoding: .utf8) else {
-            throw CLIError.invalidString(fileName)
+            throw CLIError.invalidString
         }
         cliSet(F.inputContents, str)
     } catch {
