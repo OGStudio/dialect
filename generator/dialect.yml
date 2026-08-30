@@ -7,6 +7,7 @@ CLIContext:
         didLaunch: Bool
         didSetup: Bool
         inputContents: String
+        inputError: String
         inputFileName: String
         readFile: Bool
 
@@ -18,6 +19,7 @@ CLIComponent:
         - readFile
     oneliners:
         - consoleOutput: print(c.consoleOutput)
+        - readFile: cliReadInputFile(c.inputFileName)
     shoulds:
         consoleOutput:
             1. File argument was not found

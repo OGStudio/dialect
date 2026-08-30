@@ -7,6 +7,7 @@ struct F {
     static let didLaunch = "didLaunch"
     static let didSetup = "didSetup"
     static let inputContents = "inputContents"
+    static let inputError = "inputError"
     static let inputFileName = "inputFileName"
     static let readFile = "readFile"
 }
@@ -19,6 +20,7 @@ struct CLIContext: DialectContext {
     var didLaunch = false
     var didSetup = false
     var inputContents = ""
+    var inputError = ""
     var inputFileName = ""
     var readFile = false
 
@@ -35,6 +37,8 @@ struct CLIContext: DialectContext {
             return didSetup as! T
         } else if (name == "inputContents") {
             return inputContents as! T
+        } else if (name == "inputError") {
+            return inputError as! T
         } else if (name == "inputFileName") {
             return inputFileName as! T
         } else if (name == "readFile") {
@@ -58,6 +62,8 @@ struct CLIContext: DialectContext {
             didSetup = value as! Bool
         } else if (name == "inputContents") {
             inputContents = value as! String
+        } else if (name == "inputError") {
+            inputError = value as! String
         } else if (name == "inputFileName") {
             inputFileName = value as! String
         } else if (name == "readFile") {
@@ -160,5 +166,6 @@ func cliSet(
 func cliRegisterEffects(_ ctrl: DialectController) {
     let _: CLIContext? = registerOneliners(ctrl, [
         F.consoleOutput, { (c: CLIContext) in print(c.consoleOutput) },
+        F.readFile, { (c: CLIContext) in cliReadInputFile(c.inputFileName) },
     ])
 }
