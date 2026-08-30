@@ -6,17 +6,14 @@ CLIContext:
         arguments: [String]
         didLaunch: Bool
         didSetup: Bool
-        input: String
         inputFileName: String
         inputFileNameContents: String
         readFile: Bool
-        stdin: String
 
 CLIComponent:
     activeShoulds:
         - consoleOutput
         - didLaunch
-        - input
         - inputFileName
         - readFile
     oneliners:
@@ -36,17 +33,6 @@ CLIComponent:
                     c.didLaunch == false
                 then:
                     c.didLaunch = true
-        input:
-            1. File name contents arrived:
-                if:
-                    c.recentField == F.inputFileNameContents
-                then:
-                    c.input = c.inputFileNameContents
-            2. Stdin contents arrived:
-                if:
-                    c.recentField == F.stdin
-                then:
-                    c.input = c.stdin
         inputFileName:
             1. Get file name by parsing aguments
               if:
