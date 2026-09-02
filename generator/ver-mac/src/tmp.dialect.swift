@@ -72,6 +72,41 @@ struct CLIContext: DialectContext {
     }
 }
 
+// YMLContext
+
+struct YMLContext: DialectContext {
+    var didLaunch = false
+    var didSetup = false
+    var inputContents = ""
+
+    var recentField = ""
+
+    func field<T>(_ name: String) -> T {
+        if (name == "didLaunch") {
+            return didLaunch as! T
+        } else if (name == "didSetup") {
+            return didSetup as! T
+        } else if (name == "inputContents") {
+            return inputContents as! T
+        }
+
+        return "unknown-field-name" as! T
+    }
+
+    mutating func setField(
+        _ name: String,
+        _ value: Any
+    ) {
+        if (name == "didLaunch") {
+            didLaunch = value as! Bool
+        } else if (name == "didSetup") {
+            didSetup = value as! Bool
+        } else if (name == "inputContents") {
+            inputContents = value as! String
+        }
+    }
+}
+
 // CLI shoulds
 
 func cliShouldResetConsoleOutput(_ c: CLIContext) -> CLIContext {
@@ -171,11 +206,48 @@ func cliSet(
     CLIComponent.singleton!.ctrl.set(key, value)
 }
 
+// YML shoulds
+
+func ymlShouldResetDidLaunch(_ c: YMLContext) -> YMLContext {
+    var c = c
+
+    /* 1. Only once during the first setup */
+    if
+        c.recentField == F.didSetup &&
+        c.didLaunch == false
+    {
+        c.didLaunch = true
+        c.recentField = F.didLaunch
+        return c
+    }
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+// YML related functions
+
+func ymlRegisterShoulds(_ ctrl: DialectController) {
+    [
+        ymlShouldResetDidLaunch,
+    ].forEach { f in
+        ctrl.registerFunction { c in f(c as! YMLContext) }
+    }
+}
+
+func ymlSet(
+    _ key: String,
+    _ value: Any
+) {
+    YMLComponent.singleton!.ctrl.set(key, value)
+}
+
 // Oneliners
 
 func cliRegisterEffects(_ ctrl: DialectController) {
     let _: CLIContext? = registerOneliners(ctrl, [
         F.consoleOutput, { (c: CLIContext) in print(c.consoleOutput) },
+        F.inputContents, { (c: CLIContext) in ymlSet(F.inputContents, c.inputContents) },
         F.readFile, { (c: CLIContext) in cliReadInputFile(c.inputFileName) },
     ])
 }

@@ -2,8 +2,10 @@ import Foundation
 import Yams
 
 let cli = CLIComponent()
+let yml = YMLComponent()
 
 cli.setup()
+yml.setup()
 
 
 

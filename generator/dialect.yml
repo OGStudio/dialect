@@ -12,6 +12,7 @@ CLIContext:
         readFile: Bool
 
 CLIComponent:
+    type: component
     activeShoulds:
         - consoleOutput
         - didLaunch
@@ -19,6 +20,7 @@ CLIComponent:
         - readFile
     oneliners:
         - consoleOutput: print(c.consoleOutput)
+        - inputContents: ymlSet(F.inputContents, c.inputContents)
         - readFile: cliReadInputFile(c.inputFileName)
     shoulds:
         consoleOutput:
@@ -55,10 +57,25 @@ CLIComponent:
                 then:
                     c.readFile = true
 
-DialectContext:
+YMLContext:
     type: context
     fields:
-      inputContents: String
+        didLaunch: Bool
+        didSetup: Bool
+        inputContents: String
+
+YMLComponent:
+    type: component
+    activeShoulds:
+        - didLaunch
+    shoulds:
+        didLaunch:
+            1. Only once during the first setup:
+                if:
+                    c.recentField == F.didSetup &&
+                    c.didLaunch == false
+                then:
+                    c.didLaunch = true
 
 RootContext:
     type: context
