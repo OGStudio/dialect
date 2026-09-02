@@ -11,15 +11,18 @@ core/              Core Swift runtime library
   util/run-swift-test   Compile & run core tests (raw swiftc)
 generator/         The Swift port of the Klin code generator (tool)
   ver-mac/         SPM package (macOS 13+, depends on Yams 5.4.0)
-    src/           Source (collapsed from Sources/YamlParser -> src)
+    src/           Source; many files are SYMLINKS -> ../../components/...
+    components/    Source-of-truth for generated-style Swift files (cli/, other/)
+      cli/         cli.swift, cliConst, cliFun, cliEffect, cliAux (symlinked into src)
     tmp.dialect.swift   Hand-written CLIContext + should funcs (temp, will be generated)
-  dialect.yml       v4 dialect: CLIContext, CLIShould, DialectContext, RootContext
-  util/run-generator    Build & run yamlparser binary ($@, ver-mac/.build/release)
+  dialect.yml       v4 dialect: CLIContext, CLIComponent (shoulds/oneliners)
+  util/run-generator    Build & run generator binary ($@, ver-mac/.build/release/generator)
 example/           Sample macOS SwiftUI app + dialect.yml
   ver-mac/         SPM-based SwiftUI app (macOS 11+)
   dialect.yml      Example dialect definition
   util/run-mac     Build & launch the example app
 ref/               Reference to original Kotlin Dialect (symlink -> ../../kotlin-dialect)
+  kom/             Newer Kotlin Multiplatform reference (symlink -> ../../kom)
 ```
 
 ## Build & Test
@@ -39,7 +42,8 @@ example/util/run-mac
 
 - **DialectContext**: Protocol for typed field access by string name
 - **DialectController**: Reactive engine — queue field mutations, process cascade
-- **dialect.yml**: Declarative rules with `should` blocks, `if`/`then` conditions
+- **dialect.yml**: Declarative rules with `should` blocks, `if`/`then` conditions, plus `oneliners` mapping field-changes to effect/UI callbacks (e.g. `readFile: cliReadInputFile(c.inputFileName)`)
+- **Oneliner effects**: registered via generic `registerOneliners<T>(ctrl, items:[Any]) -> T?` (from ref/kom) where items are `[fieldName, (T)->Void, ...]`; caller pins T via `let _: CLIContext? = registerOneliners(...)`. Effect funcs call `cliSet(field, value)` to push results back into the context, expanding the cascade.
 
 ## KD (Kotlin Dialect) reference — see ref/kotlin-dialect
 
@@ -48,7 +52,8 @@ We're porting this to Swift as dialect v4
 - **Redux-like architecture**: Controller/Context (Store), Shoulds (Reducers), Effects
 - **KDContext** protocol: `recentField: String`, `field<T>(name)`, `fieldAny(name)`, `selfCopy()`, `setField(name, value)` — selfCopy lets the controller treat derived contexts uniformly
 - **KDController**: accumulates a `queue` of context snapshots, each with `recentField` set. `set()` copies context, applies mutation, queues it, runs `processQueue()`. `executeFunctions()` applies queued mutation then runs every should-function; a function re-queues only if it changed a field (`recentField != KD_FIELD_NONE ("none")`). Recursion blocked via `isProcessingQueue`.
-- **Should-functions (reducers)**: receive a context copy, return a new context. SSOT rule: **only one should-function may write a given field** (name them `shouldReset<FieldName>` style; combine branches that write the same field into one function).
+- **Should-functions (reducers)**: receive a context copy, return a new context. SSOT rule: **only one should-function may write a given field** (name them `shouldReset<FieldName>` style; combine branches that write the same field into one function, e.g. `cliShouldResetConsoleOutput` holds both "no file arg" and "input error" branches).
+- **CLIError**: enum in `components/cli/cliAux.swift` (conforming to Error) for should/effect error signaling; effect funcs `throw` rather than doing multiple `cliSet` writes, so each field has exactly one write site.
 - **Entity types** in kd.yml: `context`, `struct`, `should`; fields typed; `output:` section declares codegen targets (`type: kotlin|swift|c++hdr|c++sdk|c++src|jsexport`); `prefix-kotlin`/`raw*` for code insertion; `F` struct holds field-name string constants used in conditions like `c.recentField == F.didSetup`.
 - **Klin**: Original KD codegen is a Node.js app built from Kotlin. Dialect v4 is reimplementing this in Swift.
 
