@@ -87,6 +87,15 @@ func cliShouldResetConsoleOutput(_ c: CLIContext) -> CLIContext {
         return c
     }
 
+    /* 2. Could not open input file */
+    if
+        c.recentField == F.inputError
+    {
+        c.consoleOutput = CLI_CONSOLE_INPUT_FILE_ERROR
+        c.recentField = F.consoleOutput
+        return c
+    }
+
     c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
     return c
 }

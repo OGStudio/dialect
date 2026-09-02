@@ -28,6 +28,11 @@ CLIComponent:
                     cliArgumentValue(c.arguments, CLI_ARG_FILE).isEmpty
                 then:
                     c.consoleOutput = CLI_CONSOLE_USAGE
+            2. Could not open input file
+                if:
+                    c.recentField == F.inputError
+                then:
+                    c.consoleOutput = CLI_CONSOLE_INPUT_FILE_ERROR
         didLaunch:
             1. Only once during the first setup:
                 if:
