@@ -139,7 +139,8 @@ func cliShouldResetReadFile(_ c: CLIContext) -> CLIContext {
 
     /* 1. File name has been specified */
     if
-        c.recentField == F.inputFileName
+        c.recentField == F.didLaunch &&
+        !c.inputFileName.isEmpty
     {
         c.readFile = true
         c.recentField = F.readFile

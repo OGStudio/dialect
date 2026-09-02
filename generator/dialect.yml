@@ -50,7 +50,8 @@ CLIComponent:
         readFile:
             1. File name has been specified:
                 if:
-                    c.recentField == F.inputFileName
+                    c.recentField == F.didLaunch &&
+                    !c.inputFileName.isEmpty
                 then:
                     c.readFile = true
 
