@@ -6,12 +6,17 @@ struct F {
     static let consoleOutput = "consoleOutput"
     static let didLaunch = "didLaunch"
     static let didSetup = "didSetup"
+    static let entities = "entities"
+    static let entityFieldTypes = "entityFieldTypes"
+    static let entityFields = "entityFields"
+    static let entityTypes = "entityTypes"
     static let inputContents = "inputContents"
     static let inputError = "inputError"
     static let inputFileName = "inputFileName"
-    static let parseError = "parseError"
+    static let inputLines = "inputLines"
     static let parseInput = "parseInput"
     static let readFile = "readFile"
+    static let version = "version"
 }
 
 // CLIContext
@@ -79,9 +84,14 @@ struct CLIContext: DialectContext {
 struct YMLContext: DialectContext {
     var didLaunch = false
     var didSetup = false
+    var entities = [String]()
+    var entityFieldTypes = [Int: [Int: String]]()
+    var entityFields = [Int: [String]]()
+    var entityTypes = [Int: String]()
     var inputContents = ""
-    var parseError = ""
+    var inputLines = [String]()
     var parseInput = false
+    var version = 0
 
     var recentField = ""
 
@@ -90,12 +100,22 @@ struct YMLContext: DialectContext {
             return didLaunch as! T
         } else if (name == "didSetup") {
             return didSetup as! T
+        } else if (name == "entities") {
+            return entities as! T
+        } else if (name == "entityFieldTypes") {
+            return entityFieldTypes as! T
+        } else if (name == "entityFields") {
+            return entityFields as! T
+        } else if (name == "entityTypes") {
+            return entityTypes as! T
         } else if (name == "inputContents") {
             return inputContents as! T
-        } else if (name == "parseError") {
-            return parseError as! T
+        } else if (name == "inputLines") {
+            return inputLines as! T
         } else if (name == "parseInput") {
             return parseInput as! T
+        } else if (name == "version") {
+            return version as! T
         }
 
         return "unknown-field-name" as! T
@@ -109,12 +129,22 @@ struct YMLContext: DialectContext {
             didLaunch = value as! Bool
         } else if (name == "didSetup") {
             didSetup = value as! Bool
+        } else if (name == "entities") {
+            entities = value as! [String]
+        } else if (name == "entityFieldTypes") {
+            entityFieldTypes = value as! [Int: [Int: String]]
+        } else if (name == "entityFields") {
+            entityFields = value as! [Int: [String]]
+        } else if (name == "entityTypes") {
+            entityTypes = value as! [Int: String]
         } else if (name == "inputContents") {
             inputContents = value as! String
-        } else if (name == "parseError") {
-            parseError = value as! String
+        } else if (name == "inputLines") {
+            inputLines = value as! [String]
         } else if (name == "parseInput") {
             parseInput = value as! Bool
+        } else if (name == "version") {
+            version = value as! Int
         }
     }
 }
@@ -276,7 +306,7 @@ func ymlSet(
 
 func ymlRegisterEffects(_ ctrl: DialectController) {
     let _: YMLContext? = registerOneliners(ctrl, [
-        F.parseInput, { (c: YMLContext) in ymlParse(c.inputContents) },
+        F.parseInput, { (c: YMLContext) in ymlParseLines(c.inputContents) },
     ])
 }
 

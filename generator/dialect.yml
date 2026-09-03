@@ -67,6 +67,7 @@ YMLContext:
         entityFieldTypes: [Int: [Int: String]]
         entityTypes: [Int: String]
         inputContents: String
+        inputLines: [String]
         parseInput: Bool
         version: Int
 
@@ -76,7 +77,7 @@ YMLComponent:
         - didLaunch
         - parseInput
     oneliners:
-        - parseInput: ymlParse(c.inputContents)
+        - parseInput: ymlParseLines(c.inputContents)
     shoulds:
         didLaunch:
             1. Only once during the first setup:
