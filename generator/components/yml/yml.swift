@@ -4,6 +4,7 @@ class YMLComponent {
 
     init() {
         Self.singleton = self
+        ymlRegisterEffects(ctrl)
         ymlRegisterShoulds(ctrl)
         otherSetupConsoleLogging(ctrl, "YML")
     }

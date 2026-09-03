@@ -9,6 +9,8 @@ struct F {
     static let inputContents = "inputContents"
     static let inputError = "inputError"
     static let inputFileName = "inputFileName"
+    static let parseError = "parseError"
+    static let parseInput = "parseInput"
     static let readFile = "readFile"
 }
 
@@ -78,6 +80,8 @@ struct YMLContext: DialectContext {
     var didLaunch = false
     var didSetup = false
     var inputContents = ""
+    var parseError = ""
+    var parseInput = false
 
     var recentField = ""
 
@@ -88,6 +92,10 @@ struct YMLContext: DialectContext {
             return didSetup as! T
         } else if (name == "inputContents") {
             return inputContents as! T
+        } else if (name == "parseError") {
+            return parseError as! T
+        } else if (name == "parseInput") {
+            return parseInput as! T
         }
 
         return "unknown-field-name" as! T
@@ -103,6 +111,10 @@ struct YMLContext: DialectContext {
             didSetup = value as! Bool
         } else if (name == "inputContents") {
             inputContents = value as! String
+        } else if (name == "parseError") {
+            parseError = value as! String
+        } else if (name == "parseInput") {
+            parseInput = value as! Bool
         }
     }
 }
@@ -225,11 +237,29 @@ func ymlShouldResetDidLaunch(_ c: YMLContext) -> YMLContext {
     return c
 }
 
+func ymlShouldResetParseInput(_ c: YMLContext) -> YMLContext {
+    var c = c
+
+    /* 1. Upon launching */
+    if
+        c.recentField == F.didLaunch &&
+        !c.inputContents.isEmpty
+    {
+        c.parseInput = true
+        c.recentField = F.parseInput
+        return c
+    }
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
 // YML related functions
 
 func ymlRegisterShoulds(_ ctrl: DialectController) {
     [
         ymlShouldResetDidLaunch,
+        ymlShouldResetParseInput,
     ].forEach { f in
         ctrl.registerFunction { c in f(c as! YMLContext) }
     }
@@ -240,6 +270,14 @@ func ymlSet(
     _ value: Any
 ) {
     YMLComponent.singleton!.ctrl.set(key, value)
+}
+
+// YML oneliners
+
+func ymlRegisterEffects(_ ctrl: DialectController) {
+    let _: YMLContext? = registerOneliners(ctrl, [
+        F.parseInput, { (c: YMLContext) in ymlParse(c.inputContents) },
+    ])
 }
 
 // Oneliners

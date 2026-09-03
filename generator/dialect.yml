@@ -63,11 +63,16 @@ YMLContext:
         didLaunch: Bool
         didSetup: Bool
         inputContents: String
+        parseError: String
+        parseInput: Bool
 
 YMLComponent:
     type: component
     activeShoulds:
         - didLaunch
+        - parseInput
+    oneliners:
+        - parseInput: ymlParse(c.inputContents)
     shoulds:
         didLaunch:
             1. Only once during the first setup:
@@ -76,6 +81,13 @@ YMLComponent:
                     c.didLaunch == false
                 then:
                     c.didLaunch = true
+        parseInput:
+            1. Upon launching
+                if:
+                    c.recentField == F.didLaunch &&
+                    !c.inputContents.isEmpty
+                then:
+                    c.parseInput = true
 
 RootContext:
     type: context
