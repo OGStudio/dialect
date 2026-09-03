@@ -15,6 +15,7 @@ struct F {
     static let inputFileName = "inputFileName"
     static let inputLines = "inputLines"
     static let parseInput = "parseInput"
+    static let parseVersion = "parseVersion"
     static let readFile = "readFile"
     static let version = "version"
 }
@@ -91,6 +92,7 @@ struct YMLContext: DialectContext {
     var inputContents = ""
     var inputLines = [String]()
     var parseInput = false
+    var parseVersion = false
     var version = 0
 
     var recentField = ""
@@ -114,6 +116,8 @@ struct YMLContext: DialectContext {
             return inputLines as! T
         } else if (name == "parseInput") {
             return parseInput as! T
+        } else if (name == "parseVersion") {
+            return parseVersion as! T
         } else if (name == "version") {
             return version as! T
         }
@@ -143,6 +147,8 @@ struct YMLContext: DialectContext {
             inputLines = value as! [String]
         } else if (name == "parseInput") {
             parseInput = value as! Bool
+        } else if (name == "parseVersion") {
+            parseVersion = value as! Bool
         } else if (name == "version") {
             version = value as! Int
         }
@@ -284,12 +290,29 @@ func ymlShouldResetParseInput(_ c: YMLContext) -> YMLContext {
     return c
 }
 
+func ymlShouldResetParseVersion(_ c: YMLContext) -> YMLContext {
+    var c = c
+
+    /* 1. When input lines are ready */
+    if
+        c.recentField == F.inputLines
+    {
+        c.version = ymlParseVersion(c.inputLines)
+        c.recentField = F.version
+        return c
+    }
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
 // YML related functions
 
 func ymlRegisterShoulds(_ ctrl: DialectController) {
     [
         ymlShouldResetDidLaunch,
         ymlShouldResetParseInput,
+        ymlShouldResetParseVersion,
     ].forEach { f in
         ctrl.registerFunction { c in f(c as! YMLContext) }
     }
@@ -306,7 +329,7 @@ func ymlSet(
 
 func ymlRegisterEffects(_ ctrl: DialectController) {
     let _: YMLContext? = registerOneliners(ctrl, [
-        F.parseInput, { (c: YMLContext) in ymlParseLines(c.inputContents) },
+        F.parseInput, { (c: YMLContext) in ymlReadLines(c.inputContents) },
     ])
 }
 
