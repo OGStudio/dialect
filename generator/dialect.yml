@@ -24,13 +24,13 @@ CLIComponent:
         - readFile: cliReadInputFile(c.inputFileName)
     shoulds:
         consoleOutput:
-            1. File argument was not found
+            1. File argument was not found:
                 if:
                     c.recentField == F.didLaunch &&
                     cliArgumentValue(c.arguments, CLI_ARG_FILE).isEmpty
                 then:
                     c.consoleOutput = CLI_CONSOLE_USAGE
-            2. Could not open input file
+            2. Could not open input file:
                 if:
                     c.recentField == F.inputError
                 then:
@@ -43,7 +43,7 @@ CLIComponent:
                 then:
                     c.didLaunch = true
         inputFileName:
-            1. Get file name by parsing aguments
+            1. Get file name by parsing aguments:
               if:
                   c.recentField == F.arguments &&
                   cliArgumentValue(c.arguments, CLI_ARG_FILE) != ""
@@ -82,7 +82,7 @@ YMLComponent:
                 then:
                     c.didLaunch = true
         parseInput:
-            1. Upon launching
+            1. Upon launching:
                 if:
                     c.recentField == F.didLaunch &&
                     !c.inputContents.isEmpty
