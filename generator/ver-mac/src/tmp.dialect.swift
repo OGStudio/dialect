@@ -273,6 +273,22 @@ func ymlShouldResetDidLaunch(_ c: YMLContext) -> YMLContext {
     return c
 }
 
+func ymlShouldResetParseEntities(_ c: YMLContext) -> YMLContext {
+    var c = c
+
+    /* 1. When input lines are ready */
+    if
+        c.recentField == F.inputLines
+    {
+        c.entities = ymlParseEntities(c.inputLines)
+        c.recentField = F.entities
+        return c
+    }
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
 func ymlShouldResetParseInput(_ c: YMLContext) -> YMLContext {
     var c = c
 
@@ -311,6 +327,7 @@ func ymlShouldResetParseVersion(_ c: YMLContext) -> YMLContext {
 func ymlRegisterShoulds(_ ctrl: DialectController) {
     [
         ymlShouldResetDidLaunch,
+        ymlShouldResetParseEntities,
         ymlShouldResetParseInput,
         ymlShouldResetParseVersion,
     ].forEach { f in
