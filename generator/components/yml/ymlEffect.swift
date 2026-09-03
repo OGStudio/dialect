@@ -1,6 +1,5 @@
-import Yams
-
 func ymlParse(_ input: String) {
+    /*
     do {
         if let node = try Yams.load(yaml: input) {
             ymlPrintValue(node)
@@ -9,4 +8,5 @@ func ymlParse(_ input: String) {
     } catch {
         ymlSet(F.parseError, "\(error)")
     }
+    */
 }

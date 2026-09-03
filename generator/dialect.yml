@@ -62,9 +62,13 @@ YMLContext:
     fields:
         didLaunch: Bool
         didSetup: Bool
+        entities: [String]
+        entityFields: [Int: [String]]
+        entityFieldTypes: [Int: [Int: String]]
+        entityTypes: [Int: String]
         inputContents: String
-        parseError: String
         parseInput: Bool
+        version: Int
 
 YMLComponent:
     type: component
