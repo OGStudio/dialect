@@ -69,16 +69,16 @@ YMLContext:
         inputContents: String
         inputLines: [String]
         parseInput: Bool
-        parseVersion: Bool
         version: Int
 
 YMLComponent:
     type: component
     activeShoulds:
         - didLaunch
-        - parseEntities
+        - entities
+        - entityTypes
         - parseInput
-        - parseVersion
+        - version
     oneliners:
         - parseInput: ymlReadLines(c.inputContents)
     shoulds:
@@ -89,12 +89,18 @@ YMLComponent:
                     c.didLaunch == false
                 then:
                     c.didLaunch = true
-        parseEntities:
+        entities:
             1. When input lines are ready:
                 if:
                     c.recentField == F.inputLines
                 then:
                     c.entities = ymlParseEntities(c.inputLines)
+        entityTypes:
+            1. Upon entities:
+                if:
+                    c.recentField == F.entities
+                then:
+                    c.entityTypes = ymlParseEntityTypes(c.inputLines, c.entities)
         parseInput:
             1. Upon launching:
                 if:
@@ -102,7 +108,7 @@ YMLComponent:
                     !c.inputContents.isEmpty
                 then:
                     c.parseInput = true
-        parseVersion:
+        version:
             1. When input lines are ready:
                 if:
                     c.recentField == F.inputLines
