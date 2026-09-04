@@ -76,7 +76,9 @@ YMLComponent:
     type: component
     activeShoulds:
         - didLaunch
+        - parseEntities
         - parseInput
+        - parseVersion
     oneliners:
         - parseInput: ymlReadLines(c.inputContents)
     shoulds:
@@ -87,6 +89,12 @@ YMLComponent:
                     c.didLaunch == false
                 then:
                     c.didLaunch = true
+        parseEntities:
+            1. When input lines are ready:
+                if:
+                    c.recentField == F.inputLines
+                then:
+                    c.entities = ymlParseEntities(c.inputLines)
         parseInput:
             1. Upon launching:
                 if:
