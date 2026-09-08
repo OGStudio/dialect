@@ -25,12 +25,12 @@ func ymlParseChunks(_ lines: [String]) -> [String: [String]] {
 
         // Collect chunk lines
         if isChunk {
-            currentChunkLines += ln
+            currentChunkLines.append(ln)
         }
 
         // Create chunk while parsing
-        if 
-            !isChunk &&
+        if
+            !isChunk,
             let firstLine = currentChunkLines.first
         {
             chunks[firstLine] = currentChunkLines

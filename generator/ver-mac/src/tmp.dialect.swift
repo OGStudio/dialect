@@ -3,6 +3,7 @@
 
 struct F {
     static let arguments = "arguments"
+    static let chunks = "chunks"
     static let consoleOutput = "consoleOutput"
     static let didLaunch = "didLaunch"
     static let didSetup = "didSetup"
@@ -82,6 +83,7 @@ struct CLIContext: DialectContext {
 // YMLContext
 
 struct YMLContext: DialectContext {
+    var chunks = [String: [String]]()
     var didLaunch = false
     var didSetup = false
     var entities = [String]()
@@ -96,7 +98,9 @@ struct YMLContext: DialectContext {
     var recentField = ""
 
     func field<T>(_ name: String) -> T {
-        if (name == "didLaunch") {
+        if (name == "chunks") {
+            return chunks as! T
+        } else if (name == "didLaunch") {
             return didLaunch as! T
         } else if (name == "didSetup") {
             return didSetup as! T
@@ -125,7 +129,9 @@ struct YMLContext: DialectContext {
         _ name: String,
         _ value: Any
     ) {
-        if (name == "didLaunch") {
+        if (name == "chunks") {
+            chunks = value as! [String: [String]]
+        } else if (name == "didLaunch") {
             didLaunch = value as! Bool
         } else if (name == "didSetup") {
             didSetup = value as! Bool
@@ -250,6 +256,22 @@ func cliSet(
 
 // YML shoulds
 
+func ymlShouldResetChunks(_ c: YMLContext) -> YMLContext {
+    var c = c
+
+    /* 1. Split input lines into chunks */
+    if
+        c.recentField == F.inputLines
+    {
+        c.chunks = ymlParseChunks(c.inputLines)
+        c.recentField = F.chunks
+        return c
+    }
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
 func ymlShouldResetDidLaunch(_ c: YMLContext) -> YMLContext {
     var c = c
 
@@ -336,6 +358,7 @@ func ymlShouldResetVersion(_ c: YMLContext) -> YMLContext {
 
 func ymlRegisterShoulds(_ ctrl: DialectController) {
     [
+        ymlShouldResetChunks,
         ymlShouldResetDidLaunch,
         ymlShouldResetEntities,
         ymlShouldResetEntityTypes,
