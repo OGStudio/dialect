@@ -103,10 +103,10 @@ func ymlParseEntityTypes(_ lines: [String], _ entities: [String]) -> [Int: Strin
     return result
 }
 
-func ymlParseVersion(_ lines: [String]) -> Int {
-    for ln in lines {
-        if ln.hasPrefix(YML_PREFIX_VERSION) {
-            let versionStr = ln.dropFirst(YML_PREFIX_VERSION.count)
+func ymlParseVersion(_ chunks: [String: [String]]) -> Int {
+    for key in chunks.keys {
+        if key.hasPrefix(YML_PREFIX_VERSION) {
+            let versionStr = key.dropFirst(YML_PREFIX_VERSION.count)
             if let version = Int(versionStr) {
                 return version
             }

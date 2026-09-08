@@ -341,11 +341,11 @@ func ymlShouldResetParseInput(_ c: YMLContext) -> YMLContext {
 func ymlShouldResetVersion(_ c: YMLContext) -> YMLContext {
     var c = c
 
-    /* 1. When input lines are ready */
+    /* 1. When chunks are ready */
     if
-        c.recentField == F.inputLines
+        c.recentField == F.chunks
     {
-        c.version = ymlParseVersion(c.inputLines)
+        c.version = ymlParseVersion(c.chunks)
         c.recentField = F.version
         return c
     }
