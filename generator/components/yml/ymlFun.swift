@@ -1,3 +1,55 @@
+func ymlIsLineChunkEnd(_ ln: String) -> Bool {
+    return ln.isEmpty
+}
+
+func ymlIsLineChunkStart(_ ln: String) -> Bool {
+    // A line is the start of a chunk if:
+    // 1. it has no indentation
+    // 2. it is not empty
+    return !ln.hasPrefix(" ") && !ln.isEmpty
+}
+
+func ymlParseChunks(_ lines: [String]) -> [String: [String]] {
+    var chunks = [String: [String]]()
+    var currentChunkLines = [String]()
+    var isChunk = false
+
+    for ln in lines {
+        // Detect chunk start/end
+        if ymlIsLineChunkEnd(ln) {
+            isChunk = false
+        }
+        if ymlIsLineChunkStart(ln) {
+            isChunk = true
+        }
+
+        // Collect chunk lines
+        if isChunk {
+            currentChunkLines += ln
+        }
+
+        // Create chunk while parsing
+        if 
+            !isChunk &&
+            let firstLine = currentChunkLines.first
+        {
+            chunks[firstLine] = currentChunkLines
+        }
+
+        // Flush collected chunk lines for the next chunk
+        if !isChunk {
+            currentChunkLines = []
+        }
+    }
+
+    // Create chunk for the ending chunk
+    if let firstLine = currentChunkLines.first {
+        chunks[firstLine] = currentChunkLines
+    }
+
+    return chunks
+}
+
 func ymlParseEntities(_ lines: [String]) -> [String] {
     var entities = [String]()
 
@@ -6,7 +58,7 @@ func ymlParseEntities(_ lines: [String]) -> [String] {
             ln.hasPrefix(" ") || // Ignore non-top level keys
             ln.hasPrefix("\t") || // Ignore non-top level keys
             ln.isEmpty || // Ignore empty lines
-            !ln.hasSuffix(":") // Ignore non-keys
+            !ln.hasSuffix(":") // Ignore non-top level keys
         {
             continue
         }
