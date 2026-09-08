@@ -18,6 +18,39 @@ func ymlParseEntities(_ lines: [String]) -> [String] {
     return entities
 }
 
+func ymlParseEntityTypes(_ lines: [String], _ entities: [String]) -> [Int: String] {
+    var result = [Int: String]()
+    var i = 0
+
+    for entity in entities {
+        var type = ""
+        var inEntity = false
+
+        for ln in lines {
+            if ln == "\(entity):" {
+                inEntity = true
+                continue
+            }
+            if !inEntity {
+                continue
+            }
+            if !(ln.hasPrefix(" ") || ln.hasPrefix("\t")) {
+                break
+            }
+
+            if ln.hasPrefix(YML_PREFIX_TYPE) {
+                type = String(ln.dropFirst(YML_PREFIX_TYPE.count))
+                break
+            }
+        }
+
+        result[i] = type
+        i += 1
+    }
+
+    return result
+}
+
 func ymlParseVersion(_ lines: [String]) -> Int {
     for ln in lines {
         if ln.hasPrefix(YML_PREFIX_VERSION) {

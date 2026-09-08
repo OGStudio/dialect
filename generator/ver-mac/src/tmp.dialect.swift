@@ -15,7 +15,6 @@ struct F {
     static let inputFileName = "inputFileName"
     static let inputLines = "inputLines"
     static let parseInput = "parseInput"
-    static let parseVersion = "parseVersion"
     static let readFile = "readFile"
     static let version = "version"
 }
@@ -92,7 +91,6 @@ struct YMLContext: DialectContext {
     var inputContents = ""
     var inputLines = [String]()
     var parseInput = false
-    var parseVersion = false
     var version = 0
 
     var recentField = ""
@@ -116,8 +114,6 @@ struct YMLContext: DialectContext {
             return inputLines as! T
         } else if (name == "parseInput") {
             return parseInput as! T
-        } else if (name == "parseVersion") {
-            return parseVersion as! T
         } else if (name == "version") {
             return version as! T
         }
@@ -147,8 +143,6 @@ struct YMLContext: DialectContext {
             inputLines = value as! [String]
         } else if (name == "parseInput") {
             parseInput = value as! Bool
-        } else if (name == "parseVersion") {
-            parseVersion = value as! Bool
         } else if (name == "version") {
             version = value as! Int
         }
@@ -273,7 +267,7 @@ func ymlShouldResetDidLaunch(_ c: YMLContext) -> YMLContext {
     return c
 }
 
-func ymlShouldResetParseEntities(_ c: YMLContext) -> YMLContext {
+func ymlShouldResetEntities(_ c: YMLContext) -> YMLContext {
     var c = c
 
     /* 1. When input lines are ready */
@@ -282,6 +276,22 @@ func ymlShouldResetParseEntities(_ c: YMLContext) -> YMLContext {
     {
         c.entities = ymlParseEntities(c.inputLines)
         c.recentField = F.entities
+        return c
+    }
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func ymlShouldResetEntityTypes(_ c: YMLContext) -> YMLContext {
+    var c = c
+
+    /* 1. Upon entities */
+    if
+        c.recentField == F.entities
+    {
+        c.entityTypes = ymlParseEntityTypes(c.inputLines, c.entities)
+        c.recentField = F.entityTypes
         return c
     }
 
@@ -306,7 +316,7 @@ func ymlShouldResetParseInput(_ c: YMLContext) -> YMLContext {
     return c
 }
 
-func ymlShouldResetParseVersion(_ c: YMLContext) -> YMLContext {
+func ymlShouldResetVersion(_ c: YMLContext) -> YMLContext {
     var c = c
 
     /* 1. When input lines are ready */
@@ -327,9 +337,10 @@ func ymlShouldResetParseVersion(_ c: YMLContext) -> YMLContext {
 func ymlRegisterShoulds(_ ctrl: DialectController) {
     [
         ymlShouldResetDidLaunch,
-        ymlShouldResetParseEntities,
+        ymlShouldResetEntities,
+        ymlShouldResetEntityTypes,
         ymlShouldResetParseInput,
-        ymlShouldResetParseVersion,
+        ymlShouldResetVersion,
     ].forEach { f in
         ctrl.registerFunction { c in f(c as! YMLContext) }
     }
