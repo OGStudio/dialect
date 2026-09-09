@@ -72,21 +72,24 @@ func ymlParseEntityFields(
     for entity in entities {
         var fields = [String]()
 
-        if let lines = chunks["\(entity):"] {
-            var inFields = false
+        guard let lines = chunks["\(entity):"] else {
+            i += 1
+            continue
+        }
 
-            for ln in lines {
-                if ln.hasPrefix(YML_PREFIX_FIELDS) {
-                    inFields = true
-                    continue
-                }
-                if inFields {
-                    if !ln.hasPrefix(YML_PREFIX_FIELD) {
-                        break
-                    }
-                    let name = String(ln.dropFirst(YML_PREFIX_FIELD.count).split(separator: ":")[0])
-                    fields.append(name)
-                }
+        var inFields = false
+
+        for ln in lines {
+            if ln.hasPrefix(YML_PREFIX_FIELDS) {
+                inFields = true
+                continue
+            }
+            if inFields && !ln.hasPrefix(YML_PREFIX_FIELD) {
+                break
+            }
+            if inFields {
+                let name = String(ln.dropFirst(YML_PREFIX_FIELD.count).split(separator: ":")[0])
+                fields.append(name)
             }
         }
 
@@ -107,12 +110,15 @@ func ymlParseEntityTypes(
     for entity in entities {
         var type = ""
 
-        if let lines = chunks["\(entity):"] {
-            for ln in lines {
-                if ln.hasPrefix(YML_PREFIX_TYPE) {
-                    type = String(ln.dropFirst(YML_PREFIX_TYPE.count))
-                    break
-                }
+        guard let lines = chunks["\(entity):"] else {
+            i += 1
+            continue
+        }
+
+        for ln in lines {
+            if ln.hasPrefix(YML_PREFIX_TYPE) {
+                type = String(ln.dropFirst(YML_PREFIX_TYPE.count))
+                break
             }
         }
 
