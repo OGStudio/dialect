@@ -78,6 +78,7 @@ YMLComponent:
         - chunks
         - didLaunch
         - entities
+        - entityFields
         - entityTypes
         - parseInput
         - version
