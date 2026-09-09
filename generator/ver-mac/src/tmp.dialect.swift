@@ -305,6 +305,22 @@ func ymlShouldResetEntities(_ c: YMLContext) -> YMLContext {
     return c
 }
 
+func ymlShouldResetEntityFields(_ c: YMLContext) -> YMLContext {
+    var c = c
+
+    /* 1. Upon entities */
+    if
+        c.recentField == F.entities
+    {
+        c.entityFields = ymlParseEntityFields(c.chunks, c.entities)
+        c.recentField = F.entityFields
+        return c
+    }
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
 func ymlShouldResetEntityTypes(_ c: YMLContext) -> YMLContext {
     var c = c
 
@@ -361,6 +377,7 @@ func ymlRegisterShoulds(_ ctrl: DialectController) {
         ymlShouldResetChunks,
         ymlShouldResetDidLaunch,
         ymlShouldResetEntities,
+        ymlShouldResetEntityFields,
         ymlShouldResetEntityTypes,
         ymlShouldResetParseInput,
         ymlShouldResetVersion,

@@ -103,6 +103,12 @@ YMLComponent:
                     c.recentField == F.chunks
                 then:
                     c.entities = ymlParseEntities(c.chunks)
+        entityFields:
+            1. Upon entities:
+                if:
+                    c.recentField == F.entities
+                then:
+                    c.entityFields = ymlParseEntityFields(c.chunks, c.entities)
         entityTypes:
             1. Upon entities:
                 if:
