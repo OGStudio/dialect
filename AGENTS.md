@@ -50,15 +50,25 @@ example/util/run-mac
 - **Oneliner effects**: registered via generic `registerOneliners<T>(ctrl, items:[Any]) -> T?` (from ref/kom) where items are `[fieldName, (T)->Void, ...]`; caller pins T via `let _: CLIContext? = registerOneliners(...)`. Effect funcs call `cliSet(field, value)` to push results back into the context, expanding the cascade.
 - **Multiple components**: each component (CLIComponent, YMLComponent) owns its own context + controller and registers its own oneliners/shoulds. **Cross-component bridging** is done via oneliners in the source component, e.g. CLI's `inputContents` oneliner calls `ymlSet(F.inputContents, c.inputContents)` to push a value into the YML controller (`F` field-name constants are shared/global). Each component's init must call `xxxRegisterEffects(ctrl)` (oneliners) and `xxxRegisterShoulds(ctrl)`.
 - **Per-component helper files** (components/yml/): `ymlConst.swift` (global constants like `YML_PREFIX_VERSION`), `ymlFun.swift` (pure helpers/parsers like `ymlParseVersion`), `ymlEffect.swift` (effects that `ymlSet` results back), `ymlAux.swift` (aux/print helpers). Matching `cliConst/cliFun/cliEffect/cliAux`.
+- **YML schema parsing** (chunks): input is split into **chunks** = `[String: [String]]` keyed by the chunk's first (non-indented) line. Blank lines (`""`) delimit chunks — detected by `ymlIsLineChunkStart`/`ymlIsLineChunkEnd`. Downstream parsers consume structures: `ymlParseEntities` (top-level `Key:` lines, `hasSuffix(":")`), `ymlParseEntityTypes` (indented `type:` under each entity, `YML_PREFIX_TYPE` bakes in the 4-space indent), `ymlParseVersion` (from the chunk key prefix `YML_PREFIX_VERSION`). Should-chains cascade: `inputLines` → `chunks`/`entities`, then `chunks` → `version`, `entities` → `entityTypes`.
 
 ## Swift gotchas (learned the hard way)
 
 - `!x.isEmpty()` parses as force-unwrap — use `!x.isEmpty` or `x != ""`.
 - `String.startsWith(prefix)` is not Swift — use `hasPrefix`.
 - `String.substring(from:)` is not Swift — use `dropFirst(n)`/`dropFirst(prefix.count)`.
-- `str.split("\n")` is wrong — use `str.split(separator: "\n")` (returns `[Substring]`; `.map(String.init)` to get `[String]`).
+- `String.trim()`, `find`, `indexOf`, `trimming` do NOT exist here — use `hasPrefix`/`hasSuffix`/`isEmpty`/`contains`. To strip indentation, either bake it into the `YML_PREFIX_*` constant (e.g. `"    type: "`) or loop `while s.hasPrefix(" ") { s = String(s.dropFirst(1)) }`.
+- `String.split(separator:)` DEFAULTS to `omittingEmptySubsequences: true` — blank lines get silently dropped. Pass `omittingEmptySubsequences: false` when blank lines matter (chunk boundaries depend on them!).
+- `Substring` is NOT implicitly convertible to `String` — `s.dropFirst(1)`/`dropLast(1)` return `Substring`; you must write `String(...)` explicitly (at assignment, `.append`, and argument boundaries).
+- `[String] += someString` fails (String is treated as a character Sequence) — use `.append(someString)`.
+- Kotlin-style `if cond && let x = ...` is invalid Swift — use a comma: `if cond, let x = ...`.
+- `str.split("\n")` is wrong — use `str.split(separator: "\n")`. But for chunking you need the empty-subsequences variant above.
 - `Yams.load(yaml:)` returns `Any?` — unwrap in a `if let` to avoid an `Any? -> Any` coercion warning.
 - Optionals at the boundary: `value as! Bool`/`as! String` force-casts in setField; a String field wrote from an effect must match its declared type exactly.
+
+## Code layout
+
+- **Alphabetical ordering is enforced**: F constants, struct fields, `field<T>`/`setField` branches, should-functions, and register lists are all sorted alphabetically (ASCII collation, so `entityFieldTypes` < `entityFields` since `T` < `s`). Same for functions in `ymlFun.swift`/`ymlConst.swift`.
 
 ## KD (Kotlin Dialect) reference — see ref/kotlin-dialect
 
