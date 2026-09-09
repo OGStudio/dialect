@@ -292,11 +292,11 @@ func ymlShouldResetDidLaunch(_ c: YMLContext) -> YMLContext {
 func ymlShouldResetEntities(_ c: YMLContext) -> YMLContext {
     var c = c
 
-    /* 1. When input lines are ready */
+    /* 1. When chunks are ready */
     if
-        c.recentField == F.inputLines
+        c.recentField == F.chunks
     {
-        c.entities = ymlParseEntities(c.inputLines)
+        c.entities = ymlParseEntities(c.chunks)
         c.recentField = F.entities
         return c
     }
@@ -312,7 +312,7 @@ func ymlShouldResetEntityTypes(_ c: YMLContext) -> YMLContext {
     if
         c.recentField == F.entities
     {
-        c.entityTypes = ymlParseEntityTypes(c.inputLines, c.entities)
+        c.entityTypes = ymlParseEntityTypes(c.chunks, c.entities)
         c.recentField = F.entityTypes
         return c
     }

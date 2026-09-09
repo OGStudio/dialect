@@ -50,49 +50,34 @@ func ymlParseChunks(_ lines: [String]) -> [String: [String]] {
     return chunks
 }
 
-func ymlParseEntities(_ lines: [String]) -> [String] {
+func ymlParseEntities(_ chunks: [String: [String]]) -> [String] {
     var entities = [String]()
 
-    for ln in lines {
-        if
-            ln.hasPrefix(" ") || // Ignore non-top level keys
-            ln.hasPrefix("\t") || // Ignore non-top level keys
-            ln.isEmpty || // Ignore empty lines
-            !ln.hasSuffix(":") // Ignore non-top level keys
-        {
-            continue
+    for key in chunks.keys {
+        if key.hasSuffix(":") {
+            entities.append(String(key.dropLast(1)))
         }
-
-        let key = String(ln.dropLast(1))
-        entities.append(key)
     }
 
     return entities
 }
 
-func ymlParseEntityTypes(_ lines: [String], _ entities: [String]) -> [Int: String] {
+func ymlParseEntityTypes(
+    _ chunks: [String: [String]],
+    _ entities: [String]
+) -> [Int: String] {
     var result = [Int: String]()
     var i = 0
 
     for entity in entities {
         var type = ""
-        var inEntity = false
 
-        for ln in lines {
-            if ln == "\(entity):" {
-                inEntity = true
-                continue
-            }
-            if !inEntity {
-                continue
-            }
-            if !(ln.hasPrefix(" ") || ln.hasPrefix("\t")) {
-                break
-            }
-
-            if ln.hasPrefix(YML_PREFIX_TYPE) {
-                type = String(ln.dropFirst(YML_PREFIX_TYPE.count))
-                break
+        if let lines = chunks["\(entity):"] {
+            for ln in lines {
+                if ln.hasPrefix(YML_PREFIX_TYPE) {
+                    type = String(ln.dropFirst(YML_PREFIX_TYPE.count))
+                    break
+                }
             }
         }
 

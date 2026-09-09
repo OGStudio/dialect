@@ -98,17 +98,17 @@ YMLComponent:
                 then:
                     c.didLaunch = true
         entities:
-            1. When input lines are ready:
+            1. When chunks are ready:
                 if:
-                    c.recentField == F.inputLines
+                    c.recentField == F.chunks
                 then:
-                    c.entities = ymlParseEntities(c.inputLines)
+                    c.entities = ymlParseEntities(c.chunks)
         entityTypes:
             1. Upon entities:
                 if:
                     c.recentField == F.entities
                 then:
-                    c.entityTypes = ymlParseEntityTypes(c.inputLines, c.entities)
+                    c.entityTypes = ymlParseEntityTypes(c.chunks, c.entities)
         parseInput:
             1. Upon launching:
                 if:
