@@ -15,6 +15,7 @@ struct F {
     static let inputError = "inputError"
     static let inputFileName = "inputFileName"
     static let inputLines = "inputLines"
+    static let outputPaths = "outputPaths"
     static let parseInput = "parseInput"
     static let readFile = "readFile"
     static let version = "version"
@@ -80,6 +81,13 @@ struct CLIContext: DialectContext {
     }
 }
 
+// OutputPath
+
+struct OutputPath {
+    var path = ""
+    var type = ""
+}
+
 // YMLContext
 
 struct YMLContext: DialectContext {
@@ -92,6 +100,7 @@ struct YMLContext: DialectContext {
     var entityTypes = [Int: String]()
     var inputContents = ""
     var inputLines = [String]()
+    var outputPaths = [OutputPath]()
     var parseInput = false
     var version = 0
 
@@ -116,6 +125,8 @@ struct YMLContext: DialectContext {
             return inputContents as! T
         } else if (name == "inputLines") {
             return inputLines as! T
+        } else if (name == "outputPaths") {
+            return outputPaths as! T
         } else if (name == "parseInput") {
             return parseInput as! T
         } else if (name == "version") {
@@ -147,6 +158,8 @@ struct YMLContext: DialectContext {
             inputContents = value as! String
         } else if (name == "inputLines") {
             inputLines = value as! [String]
+        } else if (name == "outputPaths") {
+            outputPaths = value as! [OutputPath]
         } else if (name == "parseInput") {
             parseInput = value as! Bool
         } else if (name == "version") {
@@ -337,6 +350,22 @@ func ymlShouldResetEntityTypes(_ c: YMLContext) -> YMLContext {
     return c
 }
 
+func ymlShouldResetOutputPaths(_ c: YMLContext) -> YMLContext {
+    var c = c
+
+    /* 1. When chunks are ready */
+    if
+        c.recentField == F.chunks
+    {
+        c.outputPaths = ymlParseOutputPaths(c.chunks)
+        c.recentField = F.outputPaths
+        return c
+    }
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
 func ymlShouldResetParseInput(_ c: YMLContext) -> YMLContext {
     var c = c
 
@@ -379,6 +408,7 @@ func ymlRegisterShoulds(_ ctrl: DialectController) {
         ymlShouldResetEntities,
         ymlShouldResetEntityFields,
         ymlShouldResetEntityTypes,
+        ymlShouldResetOutputPaths,
         ymlShouldResetParseInput,
         ymlShouldResetVersion,
     ].forEach { f in

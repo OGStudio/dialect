@@ -54,6 +54,10 @@ func ymlParseEntities(_ chunks: [String: [String]]) -> [String] {
     var entities = [String]()
 
     for key in chunks.keys {
+        // Ignore known non-entity chunks.
+        if key == YML_PREFIX_OUTPUT {
+            continue
+        }
         if key.hasSuffix(":") {
             entities.append(String(key.dropLast(1)))
         }
@@ -127,6 +131,32 @@ func ymlParseEntityTypes(
     }
 
     return result
+}
+
+func ymlParseOutputPaths(_ chunks: [String: [String]]) -> [OutputPath] {
+    var paths = [OutputPath]()
+
+    guard let lines = chunks[YML_PREFIX_OUTPUT] else {
+        return paths
+    }
+
+    var currentPath = ""
+
+    for ln in lines {
+        // Type
+        if ln.hasPrefix(YML_PREFIX_OUTPUT_TYPE) {
+            var p = OutputPath()
+            p.path = currentPath
+            p.type = String(ln.dropFirst(YML_PREFIX_OUTPUT_TYPE.count))
+            paths.append(p)
+        }
+        // Path
+        else if ln.hasPrefix(YML_PREFIX_OUTPUT_PATH) {
+            currentPath = String(ln.dropFirst(YML_PREFIX_OUTPUT_PATH.count).dropLast(1))
+        }
+    }
+
+    return paths
 }
 
 func ymlParseVersion(_ chunks: [String: [String]]) -> Int {

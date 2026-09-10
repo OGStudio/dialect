@@ -56,6 +56,12 @@ CLIComponent:
                 then:
                     c.readFile = true
 
+OutputPath:
+    type: struct
+    fields:
+        path: String
+        type: String
+
 YMLContext:
     type: context
     fields:
@@ -68,6 +74,7 @@ YMLContext:
         entityTypes: [Int: String]
         inputContents: String
         inputLines: [String]
+        outputPaths: [OutputPath]
         parseInput: Bool
         version: Int
 
@@ -107,6 +114,12 @@ YMLComponent:
                     c.recentField == F.entities
                 then:
                     c.entityTypes = ymlParseEntityTypes(c.chunks, c.entities)
+        outputPaths:
+            1. When chunks are ready:
+                if:
+                    c.recentField == F.chunks
+                then:
+                    c.outputPaths = ymlParseOutputPaths(c.chunks)
         parseInput:
             1. Upon launching:
                 if:
