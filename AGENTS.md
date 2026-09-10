@@ -18,7 +18,7 @@ generator/         The Swift port of the Klin code generator (tool)
       other/       other.swift (otherSetupConsoleLogging)
     tmp.dialect.swift   Hand-written contexts, shoulds, register/set funcs, oneliners (temp, will be generated)
   dialect.yml       v4 dialect: CLIContext, CLIComponent, YMLContext, YMLComponent, RootContext
-  util/run-generator    Build & run generator binary ($@, ver-mac/.build/release/generator)
+  util/run-generator    Build & run generator binary (utility scripts live at the repo root)
 example/           Sample macOS SwiftUI app + dialect.yml
   ver-mac/         SPM-based SwiftUI app (macOS 11+)
   dialect.yml      Example dialect definition
@@ -36,7 +36,7 @@ ref/               Reference to original Kotlin Dialect (symlink -> ../../kotlin
 core/util/run-swift-test
 
 # Generator tool (parses a YAML file & prints it)
-generator/util/run-generator <file.yaml>
+util/run-generator <file.yaml>
 
 # Example app
 example/util/run-mac
