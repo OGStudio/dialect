@@ -27,7 +27,7 @@ ref/               Reference to original Kotlin Dialect (symlink -> ../../kotlin
   kom/             Newer Kotlin Multiplatform reference (symlink -> ../../kom)
 ```
 
-**SYMLINK PARITY RULE**: Whenever a new `components/<group>/<file>.swift` is added, create a matching symlink `ver-mac/src/<file>.swift -> ../../components/<group>/<file>.swift`, or the build won't see it. New yml files (`ymlConst.swift`, `ymlFun.swift`) must be symlinked just like the cli ones.
+**SYMLINK PARITY RULE**: Whenever a new `components/<group>/<file>.swift` is added, create a matching symlink `ver-mac/src/<file>.swift -> ../../components/<group>/<file>.swift`, or the build won't see it. YML files are nested further: `ver-mac/src/yml/<file>.swift -> ../../../components/yml/<file>.swift`. New yml files (`ymlConst.swift`, `ymlFun.swift`) must be symlinked just like the cli ones.
 
 ## Build & Test
 

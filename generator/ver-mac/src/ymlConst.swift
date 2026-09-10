@@ -1,1 +1,0 @@
-../../components/yml/ymlConst.swift

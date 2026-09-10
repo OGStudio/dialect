@@ -1,1 +1,0 @@
-../../components/yml/ymlEffect.swift
