@@ -2,8 +2,9 @@
 
 STEP=$((STEP+1))
 echo -e "\n> > > > Step №$STEP. Embed core/swift files"
-TMP=/tmp/core-swift.tmp
-TMP64=/tmp/core-swift.tmp64
+TMP=$(mktemp)
+TMP64=$(mktemp)
+trap 'rm -f "$TMP" "$TMP64"' EXIT
 EMB64=$GENERATOR_COMPONENTS/other/emb64.swift
 
 # Combine core/swift files

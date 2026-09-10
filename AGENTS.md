@@ -11,11 +11,11 @@ core/              Core Swift runtime library
   util/run-swift-test   Compile & run core tests (raw swiftc)
 generator/         The Swift port of the Klin code generator (tool)
   ver-mac/         SPM package (macOS 13+, no external dependencies)
-    src/           Source; many files are SYMLINKS -> ../../components/...
+    src/           Source; many files are SYMLINKS per group dir -> ../../../components/...
     components/    Source-of-truth for generated-style Swift files
       cli/         cli.swift, cliConst, cliFun, cliEffect, cliAux (symlinked into src)
       yml/         yml.swift, ymlConst, ymlEffect, ymlFun, ymlAux (symlinked into src)
-      other/       other.swift (otherSetupConsoleLogging)
+      other/       other.swift (otherSetupConsoleLogging), emb64.swift (GENERATED base64 payload of core/swift, built by util/step/embedCoreSwift)
     tmp.dialect.swift   Hand-written contexts, shoulds, register/set funcs, oneliners (temp, will be generated)
   dialect.yml       v4 dialect: CLIContext, CLIComponent, YMLContext, YMLComponent, RootContext
   util/run-generator    Build & run generator binary (utility scripts live at the repo root)
@@ -35,12 +35,17 @@ ref/               Reference to original Kotlin Dialect (symlink -> ../../kotlin
 # Core tests (raw swiftc, no SPM)
 core/util/run-swift-test
 
-# Generator tool (parses a YAML file & prints it)
+# Build generator (step-based; util/paths + util/step/* sourced by both scripts)
+util/build-generator
+
+# Generator tool (embeds core, builds, parses a YAML file & prints it)
 util/run-generator <file.yaml>
 
 # Example app
 example/util/run-mac
 ```
+
+**Steps**: `util/run-generator` and `util/build-generator` source `util/paths` (CORE_SWIFT, GENERATOR_COMPONENTS) and run `util/step/*` scripts in order: `embedCoreSwift` (Step 1: regenerates `components/other/emb64.swift` = base64 of core/swift + DialectController + registerOneliners), `buildGenerator` (Step 2: `swift build -c release`), `runGenerator` (Step 3, run-generator only). `build-generator` also sets `STEP=0` first.
 
 ## Key Concepts
 
