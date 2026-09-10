@@ -1,0 +1,20 @@
+#!/bin/bash
+
+STEP=$((STEP+1))
+echo -e "\n> > > > Step №$STEP. Embed core/swift files"
+TMP=/tmp/core-swift.tmp
+TMP64=/tmp/core-swift.tmp64
+EMB64=$GENERATOR_COMPONENTS/other/emb64.swift
+
+# Combine core/swift files
+cat $CORE_SWIFT/DialectContext.swift > $TMP
+cat $CORE_SWIFT/DialectController.swift >> $TMP
+cat $CORE_SWIFT/registerOneliners.swift >> $KOTLIN_TMP
+
+# Convert to Base64
+base64 -i $TMP -o $TMP64
+
+# Generate source code file
+echo -n "let embCoreSwift64=\"" > $EMB64
+cat $TMP64 | tr -d '\n' >> $EMB64
+echo "\"" >> $EMB64
