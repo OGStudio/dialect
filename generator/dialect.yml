@@ -13,11 +13,6 @@ CLIContext:
 
 CLIComponent:
     type: component
-    activeShoulds:
-        - consoleOutput
-        - didLaunch
-        - inputFileName
-        - readFile
     oneliners:
         - consoleOutput: print(c.consoleOutput)
         - inputContents: ymlSet(F.inputContents, c.inputContents)
@@ -74,14 +69,6 @@ YMLContext:
 
 YMLComponent:
     type: component
-    activeShoulds:
-        - chunks
-        - didLaunch
-        - entities
-        - entityFields
-        - entityTypes
-        - parseInput
-        - version
     oneliners:
         - parseInput: ymlReadLines(c.inputContents)
     shoulds:
