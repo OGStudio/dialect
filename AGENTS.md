@@ -10,7 +10,7 @@ core/              Core Swift runtime library
   test/swift/      8 unit tests (custom runner, no XCTest)
   util/run-swift-test   Compile & run core tests (raw swiftc)
 generator/         The Swift port of the Klin code generator (tool)
-  ver-mac/         SPM package (macOS 13+, depends on Yams 5.4.0)
+  ver-mac/         SPM package (macOS 13+, no external dependencies)
     src/           Source; many files are SYMLINKS -> ../../components/...
     components/    Source-of-truth for generated-style Swift files
       cli/         cli.swift, cliConst, cliFun, cliEffect, cliAux (symlinked into src)
@@ -27,7 +27,7 @@ ref/               Reference to original Kotlin Dialect (symlink -> ../../kotlin
   kom/             Newer Kotlin Multiplatform reference (symlink -> ../../kom)
 ```
 
-**SYMLINK PARITY RULE**: Whenever a new `components/<group>/<file>.swift` is added, create a matching symlink `ver-mac/src/<file>.swift -> ../../components/<group>/<file>.swift`, or the build won't see it. YML files are nested further: `ver-mac/src/yml/<file>.swift -> ../../../components/yml/<file>.swift`. New yml files (`ymlConst.swift`, `ymlFun.swift`) must be symlinked just like the cli ones.
+**SYMLINK PARITY RULE**: Whenever a new `components/<group>/<file>.swift` is added, create a matching symlink `ver-mac/src/<group>/<file>.swift -> ../../../components/<group>/<file>.swift`, or the build won't see it. Component groups live under their own dirs under `src/`: `cli/`, `yml/`, `other/` (e.g. `ver-mac/src/yml/ymlConst.swift -> ../../../components/yml/ymlConst.swift`). New yml files (`ymlConst.swift`, `ymlFun.swift`) must be symlinked just like the cli ones.
 
 ## Build & Test
 
@@ -63,7 +63,6 @@ example/util/run-mac
 - `[String] += someString` fails (String is treated as a character Sequence) — use `.append(someString)`.
 - Kotlin-style `if cond && let x = ...` is invalid Swift — use a comma: `if cond, let x = ...`.
 - `str.split("\n")` is wrong — use `str.split(separator: "\n")`. But for chunking you need the empty-subsequences variant above.
-- `Yams.load(yaml:)` returns `Any?` — unwrap in a `if let` to avoid an `Any? -> Any` coercion warning.
 - Optionals at the boundary: `value as! Bool`/`as! String` force-casts in setField; a String field wrote from an effect must match its declared type exactly.
 
 ## Code layout
