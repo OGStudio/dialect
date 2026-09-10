@@ -9,7 +9,7 @@ EMB64=$GENERATOR_COMPONENTS/other/emb64.swift
 # Combine core/swift files
 cat $CORE_SWIFT/DialectContext.swift > $TMP
 cat $CORE_SWIFT/DialectController.swift >> $TMP
-cat $CORE_SWIFT/registerOneliners.swift >> $KOTLIN_TMP
+cat $CORE_SWIFT/registerOneliners.swift >> $TMP
 
 # Convert to Base64
 base64 -i $TMP -o $TMP64

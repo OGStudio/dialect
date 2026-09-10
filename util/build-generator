@@ -6,5 +6,5 @@ source $SDIR/paths
 
 STEP=0
 #source $T/generateKlinKD
-source $T/embedSrcFiles
+source $T/embedCoreSwift
 #source $T/buildKlin
