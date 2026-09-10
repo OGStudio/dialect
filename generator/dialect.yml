@@ -1,5 +1,9 @@
 version: 4
 
+output:
+    ver-mac/src/ignore.dialect.swift:
+        type: swift
+
 CLIContext:
     type: context
     fields:
