@@ -1,6 +1,9 @@
 #!/bin/bash -e
 SDIR=$(cd "$(dirname "$0")" ; pwd -P)
 
-swift build --package-path "$SDIR/../generator/ver-mac" -c release 2>/dev/null
+T=$SDIR/step
+source $SDIR/paths
 
-$SDIR/../generator/ver-mac/.build/release/generator "$@"
+source $T/embedCoreSwift
+source $T/buildGenerator
+source $T/runGenerator "$@"

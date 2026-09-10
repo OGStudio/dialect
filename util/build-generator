@@ -5,6 +5,5 @@ T=$SDIR/step
 source $SDIR/paths
 
 STEP=0
-#source $T/generateKlinKD
 source $T/embedCoreSwift
-#source $T/buildKlin
+source $T/buildGenerator

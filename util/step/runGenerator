@@ -1,0 +1,6 @@
+#!/bin/bash
+
+STEP=$((STEP+1))
+echo -e "\n> > > > Step №$STEP. Run generator"
+
+$SDIR/../generator/ver-mac/.build/release/generator "$@"
