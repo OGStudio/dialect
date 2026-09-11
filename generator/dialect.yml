@@ -56,6 +56,25 @@ CLIContext:
         inputFileName: String
         readFile: Bool
 
+GenComponent:
+    type: component
+    shoulds:
+        didLaunch:
+            1. Only once during the first setup:
+                if:
+                    c.recentField == F.didSetup &&
+                    c.didLaunch == false
+                then:
+                    c.didLaunch = true
+
+GenContext:
+    type: context
+    fields:
+        didLaunch: Bool
+        didSetup: Bool
+        entities: [String]
+        outEmb: String
+
 OutputPath:
     type: struct
     fields:
@@ -70,6 +89,7 @@ RootContext:
 YMLComponent:
     type: component
     oneliners:
+        - entities: genSet(F.entities, c.entities)
         - parseInput: ymlReadLines(c.inputContents)
     shoulds:
         chunks:

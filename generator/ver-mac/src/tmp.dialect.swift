@@ -15,6 +15,7 @@ struct F {
     static let inputError = "inputError"
     static let inputFileName = "inputFileName"
     static let inputLines = "inputLines"
+    static let outEmb = "outEmb"
     static let outputPaths = "outputPaths"
     static let parseInput = "parseInput"
     static let readFile = "readFile"
@@ -86,6 +87,46 @@ struct CLIContext: DialectContext {
 struct OutputPath {
     var path = ""
     var type = ""
+}
+
+// GenContext
+
+struct GenContext: DialectContext {
+    var didLaunch = false
+    var didSetup = false
+    var entities = [String]()
+    var outEmb = ""
+
+    var recentField = ""
+
+    func field<T>(_ name: String) -> T {
+        if (name == "didLaunch") {
+            return didLaunch as! T
+        } else if (name == "didSetup") {
+            return didSetup as! T
+        } else if (name == "entities") {
+            return entities as! T
+        } else if (name == "outEmb") {
+            return outEmb as! T
+        }
+
+        return "unknown-field-name" as! T
+    }
+
+    mutating func setField(
+        _ name: String,
+        _ value: Any
+    ) {
+        if (name == "didLaunch") {
+            didLaunch = value as! Bool
+        } else if (name == "didSetup") {
+            didSetup = value as! Bool
+        } else if (name == "entities") {
+            entities = value as! [String]
+        } else if (name == "outEmb") {
+            outEmb = value as! String
+        }
+    }
 }
 
 // YMLContext
@@ -267,6 +308,48 @@ func cliSet(
     CLIComponent.singleton!.ctrl.set(key, value)
 }
 
+// GEN shoulds
+
+func genShouldResetDidLaunch(_ c: GenContext) -> GenContext {
+    var c = c
+
+    /* 1. Only once during the first setup */
+    if
+        c.recentField == F.didSetup &&
+        c.didLaunch == false
+    {
+        c.didLaunch = true
+        c.recentField = F.didLaunch
+        return c
+    }
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+// GEN related functions
+
+func genRegisterShoulds(_ ctrl: DialectController) {
+    [
+        genShouldResetDidLaunch,
+    ].forEach { f in
+        ctrl.registerFunction { c in f(c as! GenContext) }
+    }
+}
+
+func genSet(
+    _ key: String,
+    _ value: Any
+) {
+    GenComponent.singleton!.ctrl.set(key, value)
+}
+
+// GEN oneliners
+
+func genRegisterEffects(_ ctrl: DialectController) {
+    let _: GenContext? = registerOneliners(ctrl, [])
+}
+
 // YML shoulds
 
 func ymlShouldResetChunks(_ c: YMLContext) -> YMLContext {
@@ -427,6 +510,7 @@ func ymlSet(
 
 func ymlRegisterEffects(_ ctrl: DialectController) {
     let _: YMLContext? = registerOneliners(ctrl, [
+        F.entities, { (c: YMLContext) in genSet(F.entities, c.entities) },
         F.parseInput, { (c: YMLContext) in ymlReadLines(c.inputContents) },
     ])
 }
