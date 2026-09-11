@@ -4,17 +4,6 @@ output:
     ver-mac/src/dialect.swift:
         type: swift
 
-CLIContext:
-    type: context
-    fields:
-        arguments: [String]
-        didLaunch: Bool
-        didSetup: Bool
-        inputContents: String
-        inputError: String
-        inputFileName: String
-        readFile: Bool
-
 CLIComponent:
     type: component
     oneliners:
@@ -56,27 +45,27 @@ CLIComponent:
                 then:
                     c.readFile = true
 
+CLIContext:
+    type: context
+    fields:
+        arguments: [String]
+        didLaunch: Bool
+        didSetup: Bool
+        inputContents: String
+        inputError: String
+        inputFileName: String
+        readFile: Bool
+
 OutputPath:
     type: struct
     fields:
         path: String
         type: String
 
-YMLContext:
+RootContext:
     type: context
     fields:
-        chunks: [String: [String]]
         didLaunch: Bool
-        didSetup: Bool
-        entities: [String]
-        entityFields: [Int: [String]]
-        entityFieldTypes: [Int: [Int: String]]
-        entityTypes: [Int: String]
-        inputContents: String
-        inputLines: [String]
-        outputPaths: [OutputPath]
-        parseInput: Bool
-        version: Int
 
 YMLComponent:
     type: component
@@ -134,7 +123,18 @@ YMLComponent:
                 then:
                     c.version = ymlParseVersion(c.chunks)
 
-RootContext:
+YMLContext:
     type: context
     fields:
+        chunks: [String: [String]]
         didLaunch: Bool
+        didSetup: Bool
+        entities: [String]
+        entityFields: [Int: [String]]
+        entityFieldTypes: [Int: [Int: String]]
+        entityTypes: [Int: String]
+        inputContents: String
+        inputLines: [String]
+        outputPaths: [OutputPath]
+        parseInput: Bool
+        version: Int
