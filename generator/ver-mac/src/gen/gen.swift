@@ -1,1 +1,0 @@
-../../../components/gen/gen.swift

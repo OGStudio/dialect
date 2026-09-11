@@ -1,7 +1,7 @@
 let cli = CLIComponent()
-let gen = GenComponent()
+let swift = SwiftComponent()
 let yml = YMLComponent()
 
 cli.setup()
-gen.setup()
 yml.setup()
+swift.setup()

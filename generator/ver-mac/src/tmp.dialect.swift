@@ -15,7 +15,7 @@ struct F {
     static let inputError = "inputError"
     static let inputFileName = "inputFileName"
     static let inputLines = "inputLines"
-    static let outEmb = "outEmb"
+    static let out = "out"
     static let outputPaths = "outputPaths"
     static let parseInput = "parseInput"
     static let readFile = "readFile"
@@ -89,13 +89,14 @@ struct OutputPath {
     var type = ""
 }
 
-// GenContext
+// SwiftContext
 
-struct GenContext: DialectContext {
+struct SwiftContext: DialectContext {
     var didLaunch = false
     var didSetup = false
     var entities = [String]()
-    var outEmb = ""
+    var out = ""
+    var path = ""
 
     var recentField = ""
 
@@ -106,8 +107,10 @@ struct GenContext: DialectContext {
             return didSetup as! T
         } else if (name == "entities") {
             return entities as! T
-        } else if (name == "outEmb") {
-            return outEmb as! T
+        } else if (name == "out") {
+            return out as! T
+        } else if (name == "path") {
+            return path as! T
         }
 
         return "unknown-field-name" as! T
@@ -123,8 +126,10 @@ struct GenContext: DialectContext {
             didSetup = value as! Bool
         } else if (name == "entities") {
             entities = value as! [String]
-        } else if (name == "outEmb") {
-            outEmb = value as! String
+        } else if (name == "out") {
+            out = value as! String
+        } else if (name == "path") {
+            path = value as! String
         }
     }
 }
@@ -308,9 +313,9 @@ func cliSet(
     CLIComponent.singleton!.ctrl.set(key, value)
 }
 
-// GEN shoulds
+// SWIFT shoulds
 
-func genShouldResetDidLaunch(_ c: GenContext) -> GenContext {
+func swiftShouldResetDidLaunch(_ c: SwiftContext) -> SwiftContext {
     var c = c
 
     /* 1. Only once during the first setup */
@@ -327,27 +332,46 @@ func genShouldResetDidLaunch(_ c: GenContext) -> GenContext {
     return c
 }
 
-// GEN related functions
+func swiftShouldResetOut(_ c: SwiftContext) -> SwiftContext {
+    var c = c
 
-func genRegisterShoulds(_ ctrl: DialectController) {
+    /* 1. At first just provide ctrl/ctx/reg */
+    if
+        c.recentField == F.didLaunch
+    {
+        c.out = SWIFT_EMB64_CORE
+        c.recentField = F.out
+        return c
+    }
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+// SWIFT related functions
+
+func swiftRegisterShoulds(_ ctrl: DialectController) {
     [
-        genShouldResetDidLaunch,
+        swiftShouldResetDidLaunch,
+        swiftShouldResetOut,
     ].forEach { f in
-        ctrl.registerFunction { c in f(c as! GenContext) }
+        ctrl.registerFunction { c in f(c as! SwiftContext) }
     }
 }
 
-func genSet(
+func swiftSet(
     _ key: String,
     _ value: Any
 ) {
-    GenComponent.singleton!.ctrl.set(key, value)
+    SwiftComponent.singleton!.ctrl.set(key, value)
 }
 
-// GEN oneliners
+// SWIFT oneliners
 
-func genRegisterEffects(_ ctrl: DialectController) {
-    let _: GenContext? = registerOneliners(ctrl, [])
+func swiftRegisterEffects(_ ctrl: DialectController) {
+    let _: SwiftContext? = registerOneliners(ctrl, [
+        F.out, { (c: SwiftContext) in otherWriteFile(c.path, c.out) },
+    ])
 }
 
 // YML shoulds
@@ -510,7 +534,7 @@ func ymlSet(
 
 func ymlRegisterEffects(_ ctrl: DialectController) {
     let _: YMLContext? = registerOneliners(ctrl, [
-        F.entities, { (c: YMLContext) in genSet(F.entities, c.entities) },
+        F.entities, { (c: YMLContext) in swiftSet(F.entities, c.entities) },
         F.parseInput, { (c: YMLContext) in ymlReadLines(c.inputContents) },
     ])
 }

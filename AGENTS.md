@@ -15,10 +15,11 @@ generator/         The Swift port of the Klin code generator (tool)
     components/    Source-of-truth for generated-style Swift files
       cli/         cli.swift, cliConst, cliFun, cliEffect, cliAux (symlinked into src)
       yml/         yml.swift, ymlConst, ymlEffect, ymlFun, ymlAux (symlinked into src)
-      gen/         gen.swift (GenComponent; shoulds/register/set funcs live in tmp.dialect.swift)
-      other/       other.swift (otherSetupConsoleLogging), emb64.swift (GENERATED base64 payload of core/swift, built by util/step/embedCoreSwift)
+      gen/         DEPRECATED (renamed to swift/) — removed
+      swift/       swift.swift (SwiftComponent), swiftConstEmb64.swift (GENERATED `SWIFT_EMB64_CORE` = base64 of core/swift, built by util/step/embedCoreSwift); shoulds/register/set funcs live in tmp.dialect.swift
+      other/       other.swift (otherSetupConsoleLogging, otherWriteFile)
     tmp.dialect.swift   Hand-written contexts, shoulds, register/set funcs, oneliners (temp, will be generated)
-  dialect.yml       v4 dialect: CLIComponent, CLIContext, GenComponent, GenContext, OutputPath, RootContext, YMLComponent, YMLContext
+  dialect.yml       v4 dialect: CLIComponent, CLIContext, SwiftComponent, SwiftContext, OutputPath, RootContext, YMLComponent, YMLContext
   util/run-generator    Build & run generator binary (utility scripts live at the repo root)
 example/           Sample macOS SwiftUI app + dialect.yml
   ver-mac/         SPM-based SwiftUI app (macOS 11+)
@@ -46,7 +47,7 @@ util/run-generator <file.yaml>
 example/util/run-mac
 ```
 
-**Steps**: `util/run-generator` and `util/build-generator` source `util/paths` (CORE_SWIFT, GENERATOR_COMPONENTS) and run `util/step/*` scripts in order: `embedCoreSwift` (Step 1: regenerates `components/other/emb64.swift` = base64 of core/swift + DialectController + registerOneliners), `buildGenerator` (Step 2: `swift build -c release`), `runGenerator` (Step 3, run-generator only). `build-generator` also sets `STEP=0` first.
+**Steps**: `util/run-generator` and `util/build-generator` source `util/paths` (CORE_SWIFT, GENERATOR_COMPONENTS) and run `util/step/*` scripts in order: `embedCoreSwift` (Step 1: regenerates `components/swift/swiftConstEmb64.swift` = `let SWIFT_EMB64_CORE = base64` of core/swift + DialectController + registerOneliners), `buildGenerator` (Step 2: `swift build -c release`), `runGenerator` (Step 3, run-generator only). `build-generator` also sets `STEP=0` first.
 
 ## Key Concepts
 
@@ -54,7 +55,7 @@ example/util/run-mac
 - **DialectController**: Reactive engine — queue field mutations, process cascade
 - **dialect.yml**: Declarative rules with `should` blocks, `if`/`then` conditions, plus `oneliners` mapping field-changes to effect/UI callbacks (e.g. `readFile: cliReadInputFile(c.inputFileName)`)
 - **Oneliner effects**: registered via generic `registerOneliners<T>(ctrl, items:[Any]) -> T?` (from ref/kom) where items are `[fieldName, (T)->Void, ...]`; caller pins T via `let _: CLIContext? = registerOneliners(...)`. Effect funcs call `cliSet(field, value)` to push results back into the context, expanding the cascade.
-- **Multiple components**: each component (CLIComponent, YMLComponent, GenComponent) owns its own context + controller and registers its own oneliners/shoulds. **Cross-component bridging** is done via oneliners in the source component, e.g. CLI's `inputContents` oneliner calls `ymlSet(F.inputContents, c.inputContents)` and YML's `entities` oneliner calls `genSet(F.entities, c.entities)` to push values into the YML/Gen controllers (`F` field-name constants are shared/global). Each component's init must call `xxxRegisterEffects(ctrl)` (oneliners) and `xxxRegisterShoulds(ctrl)`.
+- **Multiple components**: each component (CLIComponent, YMLComponent, SwiftComponent) owns its own context + controller and registers its own oneliners/shoulds. **Cross-component bridging** is done via oneliners in the source component, e.g. CLI's `inputContents` oneliner calls `ymlSet(F.inputContents, c.inputContents)` and YML's `entities` oneliner calls `swiftSet(F.entities, c.entities)` to push values into the YML/Swift controllers (`F` field-name constants are shared/global). Each component's init must call `xxxRegisterEffects(ctrl)` (oneliners) and `xxxRegisterShoulds(ctrl)`. Swift's `out` oneliner calls `otherWriteFile(c.path, c.out)` (needs `path` field in SwiftContext).
 - **Per-component helper files** (components/yml/): `ymlConst.swift` (global constants like `YML_PREFIX_VERSION`), `ymlFun.swift` (pure helpers/parsers like `ymlParseVersion`), `ymlEffect.swift` (effects that `ymlSet` results back), `ymlAux.swift` (aux/print helpers). Matching `cliConst/cliFun/cliEffect/cliAux`.
 - **YML schema parsing** (chunks): input is split into **chunks** = `[String: [String]]` keyed by the chunk's first (non-indented) line. Blank lines (`""`) delimit chunks — detected by `ymlIsLineChunkStart`/`ymlIsLineChunkEnd`. Downstream parsers consume structures: `ymlParseEntities` (top-level `Key:` lines, `hasSuffix(":")`), `ymlParseEntityTypes` (indented `type:` under each entity, `YML_PREFIX_TYPE` bakes in the 4-space indent), `ymlParseVersion` (from the chunk key prefix `YML_PREFIX_VERSION`). Should-chains cascade: `inputLines` → `chunks`/`entities`, then `chunks` → `version`, `entities` → `entityTypes`.
 

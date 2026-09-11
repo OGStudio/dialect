@@ -1,3 +1,4 @@
+import Foundation
 
 /// Print each key/value processed by a controller into console
 func otherSetupConsoleLogging(
@@ -9,4 +10,12 @@ func otherSetupConsoleLogging(
         let line = "ИГР \(prefix) k/v: '\(c.recentField)'/'\(value)'"
         print(line)
     }
+}
+
+/// Write output text to a file
+func otherWriteFile(
+    _ path: String,
+    _ content: String
+) {
+    try! content.write(toFile: path, atomically: true, encoding: .utf8)
 }
