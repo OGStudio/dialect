@@ -1,0 +1,1 @@
+let SWIFT_TYPE = "swift"

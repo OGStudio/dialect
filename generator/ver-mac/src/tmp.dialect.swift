@@ -18,6 +18,7 @@ struct F {
     static let out = "out"
     static let outputPaths = "outputPaths"
     static let parseInput = "parseInput"
+    static let path = "path"
     static let readFile = "readFile"
     static let version = "version"
 }
@@ -96,6 +97,7 @@ struct SwiftContext: DialectContext {
     var didSetup = false
     var entities = [String]()
     var out = ""
+    var outputPaths = [OutputPath]()
     var path = ""
 
     var recentField = ""
@@ -109,6 +111,8 @@ struct SwiftContext: DialectContext {
             return entities as! T
         } else if (name == "out") {
             return out as! T
+        } else if (name == "outputPaths") {
+            return outputPaths as! T
         } else if (name == "path") {
             return path as! T
         }
@@ -128,6 +132,8 @@ struct SwiftContext: DialectContext {
             entities = value as! [String]
         } else if (name == "out") {
             out = value as! String
+        } else if (name == "outputPaths") {
+            outputPaths = value as! [OutputPath]
         } else if (name == "path") {
             path = value as! String
         }
@@ -348,12 +354,30 @@ func swiftShouldResetOut(_ c: SwiftContext) -> SwiftContext {
     return c
 }
 
+func swiftShouldResetPath(_ c: SwiftContext) -> SwiftContext {
+    var c = c
+
+    /* 1. Extract Swift path if present */
+    if
+        c.recentField == F.outputPaths &&
+        c.outputPaths.contains { $0.type == SWIFT_TYPE }
+    {
+        c.path = c.outputPaths.first { $0.type == SWIFT_TYPE }?.path ?? "N/A"
+        c.recentField = F.path
+        return c
+    }
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
 // SWIFT related functions
 
 func swiftRegisterShoulds(_ ctrl: DialectController) {
     [
         swiftShouldResetDidLaunch,
         swiftShouldResetOut,
+        swiftShouldResetPath,
     ].forEach { f in
         ctrl.registerFunction { c in f(c as! SwiftContext) }
     }
@@ -535,6 +559,7 @@ func ymlSet(
 func ymlRegisterEffects(_ ctrl: DialectController) {
     let _: YMLContext? = registerOneliners(ctrl, [
         F.entities, { (c: YMLContext) in swiftSet(F.entities, c.entities) },
+        F.outputPaths, { (c: YMLContext) in swiftSet(F.outputPaths, c.outputPaths) },
         F.parseInput, { (c: YMLContext) in ymlReadLines(c.inputContents) },
     ])
 }

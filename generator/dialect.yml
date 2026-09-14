@@ -85,6 +85,13 @@ SwiftComponent:
                     c.recentField == F.didLaunch
                 then:
                     c.out = SWIFT_EMB64_CORE
+        path:
+            1. Extract Swift path if present
+                if:
+                    c.recentField == F.outputPaths &&
+                    c.outputPaths.contains { $0.type == SWIFT_TYPE }
+                then:
+                    c.path = c.outputPaths.first { $0.type == SWIFT_TYPE }?.path ?? "N/A"
 
 SwiftContext:
     type: context
@@ -94,11 +101,13 @@ SwiftContext:
         entities: [String]
         path: String
         out: String
+        outputPaths: [OutputPath]
 
 YMLComponent:
     type: component
     oneliners:
         - entities: swiftSet(F.entities, c.entities)
+        - outputPaths: swiftSet(F.outputPaths, c.outputPaths)
         - parseInput: ymlReadLines(c.inputContents)
     shoulds:
         chunks:
