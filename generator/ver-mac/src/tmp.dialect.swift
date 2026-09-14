@@ -11,6 +11,7 @@ struct F {
     static let entityFieldTypes = "entityFieldTypes"
     static let entityFields = "entityFields"
     static let entityTypes = "entityTypes"
+    static let inputAbsoluteDir = "inputAbsoluteDir"
     static let inputContents = "inputContents"
     static let inputError = "inputError"
     static let inputFileName = "inputFileName"
@@ -30,6 +31,7 @@ struct CLIContext: DialectContext {
     var consoleOutput = ""
     var didLaunch = false
     var didSetup = false
+    var inputAbsoluteDir = ""
     var inputContents = ""
     var inputError = ""
     var inputFileName = ""
@@ -46,6 +48,8 @@ struct CLIContext: DialectContext {
             return didLaunch as! T
         } else if (name == "didSetup") {
             return didSetup as! T
+        } else if (name == "inputAbsoluteDir") {
+            return inputAbsoluteDir as! T
         } else if (name == "inputContents") {
             return inputContents as! T
         } else if (name == "inputError") {
@@ -71,6 +75,8 @@ struct CLIContext: DialectContext {
             didLaunch = value as! Bool
         } else if (name == "didSetup") {
             didSetup = value as! Bool
+        } else if (name == "inputAbsoluteDir") {
+            inputAbsoluteDir = value as! String
         } else if (name == "inputContents") {
             inputContents = value as! String
         } else if (name == "inputError") {
@@ -570,6 +576,7 @@ func cliRegisterEffects(_ ctrl: DialectController) {
     let _: CLIContext? = registerOneliners(ctrl, [
         F.consoleOutput, { (c: CLIContext) in print(c.consoleOutput) },
         F.inputContents, { (c: CLIContext) in ymlSet(F.inputContents, c.inputContents) },
+        F.inputFileName, { (c: CLIContext) in cliResolveAbsoluteDir(c.inputFileName) },
         F.readFile, { (c: CLIContext) in cliReadInputFile(c.inputFileName) },
     ])
 }

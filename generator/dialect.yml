@@ -9,6 +9,7 @@ CLIComponent:
     oneliners:
         - consoleOutput: print(c.consoleOutput)
         - inputContents: ymlSet(F.inputContents, c.inputContents)
+        - inputFileName: cliResolveAbsoluteDir(c.inputFileName)
         - readFile: cliReadInputFile(c.inputFileName)
     shoulds:
         consoleOutput:
@@ -51,6 +52,7 @@ CLIContext:
         arguments: [String]
         didLaunch: Bool
         didSetup: Bool
+        inputAbsoluteDir: String
         inputContents: String
         inputError: String
         inputFileName: String
