@@ -360,7 +360,7 @@ func swiftShouldResetPath(_ c: SwiftContext) -> SwiftContext {
     /* 1. Extract Swift path if present */
     if
         c.recentField == F.outputPaths &&
-        c.outputPaths.contains { $0.type == SWIFT_TYPE }
+        c.outputPaths.contains(where: { $0.type == SWIFT_TYPE })
     {
         c.path = c.outputPaths.first { $0.type == SWIFT_TYPE }?.path ?? "N/A"
         c.recentField = F.path
