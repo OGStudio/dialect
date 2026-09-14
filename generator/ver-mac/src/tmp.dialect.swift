@@ -102,6 +102,7 @@ struct SwiftContext: DialectContext {
     var didLaunch = false
     var didSetup = false
     var entities = [String]()
+    var inputAbsoluteDir = ""
     var out = ""
     var outputPaths = [OutputPath]()
     var path = ""
@@ -115,6 +116,8 @@ struct SwiftContext: DialectContext {
             return didSetup as! T
         } else if (name == "entities") {
             return entities as! T
+        } else if (name == "inputAbsoluteDir") {
+            return inputAbsoluteDir as! T
         } else if (name == "out") {
             return out as! T
         } else if (name == "outputPaths") {
@@ -136,6 +139,8 @@ struct SwiftContext: DialectContext {
             didSetup = value as! Bool
         } else if (name == "entities") {
             entities = value as! [String]
+        } else if (name == "inputAbsoluteDir") {
+            inputAbsoluteDir = value as! String
         } else if (name == "out") {
             out = value as! String
         } else if (name == "outputPaths") {
@@ -368,7 +373,8 @@ func swiftShouldResetPath(_ c: SwiftContext) -> SwiftContext {
         c.recentField == F.outputPaths &&
         c.outputPaths.contains(where: { $0.type == SWIFT_TYPE })
     {
-        c.path = c.outputPaths.first { $0.type == SWIFT_TYPE }?.path ?? "N/A"
+        let last = c.outputPaths.first { $0.type == SWIFT_TYPE }?.path ?? "N/A"
+        c.path = c.inputAbsoluteDir + "/" + last
         c.recentField = F.path
         return c
     }
@@ -575,6 +581,7 @@ func ymlRegisterEffects(_ ctrl: DialectController) {
 func cliRegisterEffects(_ ctrl: DialectController) {
     let _: CLIContext? = registerOneliners(ctrl, [
         F.consoleOutput, { (c: CLIContext) in print(c.consoleOutput) },
+        F.inputAbsoluteDir, { (c: CLIContext) in swiftSet(F.inputAbsoluteDir, c.inputAbsoluteDir) },
         F.inputContents, { (c: CLIContext) in ymlSet(F.inputContents, c.inputContents) },
         F.inputFileName, { (c: CLIContext) in cliResolveAbsoluteDir(c.inputFileName) },
         F.readFile, { (c: CLIContext) in cliReadInputFile(c.inputFileName) },

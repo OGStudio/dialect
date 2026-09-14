@@ -8,6 +8,7 @@ CLIComponent:
     type: component
     oneliners:
         - consoleOutput: print(c.consoleOutput)
+        - inputAbsoluteDir: swiftSet(F.inputAbsoluteDir, c.inputAbsoluteDir)
         - inputContents: ymlSet(F.inputContents, c.inputContents)
         - inputFileName: cliResolveAbsoluteDir(c.inputFileName)
         - readFile: cliReadInputFile(c.inputFileName)
@@ -93,7 +94,8 @@ SwiftComponent:
                     c.recentField == F.outputPaths &&
                     c.outputPaths.contains(where: { $0.type == SWIFT_TYPE })
                 then:
-                    c.path = c.outputPaths.first { $0.type == SWIFT_TYPE }?.path ?? "N/A"
+                    let last = c.outputPaths.first { $0.type == SWIFT_TYPE }?.path ?? "N/A"
+                    c.path = c.inputAbsoluteDir + "/" + last
 
 SwiftContext:
     type: context
@@ -101,6 +103,7 @@ SwiftContext:
         didLaunch: Bool
         didSetup: Bool
         entities: [String]
+        inputAbsoluteDir: String
         path: String
         out: String
         outputPaths: [OutputPath]
