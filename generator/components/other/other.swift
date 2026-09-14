@@ -20,3 +20,14 @@ func otherWriteFile(
     print("ИГР otherWF path/content.count: '\(path)'/'\(content.count)'")
     try! content.write(toFile: path, atomically: true, encoding: .utf8)
 }
+
+/// Decode a base64 string back into a regular string
+func otherBase64ToString(_ encoded: String) -> String {
+    guard
+        let data = Data(base64Encoded: encoded),
+        let str = String(data: data, encoding: .utf8)
+    else {
+        return ""
+    }
+    return str
+}

@@ -1,3 +1,4 @@
+
 // Register several oneliner callbacks to a controller
 func registerOneliners<T>(
     _ ctrl: DialectController,

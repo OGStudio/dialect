@@ -356,7 +356,7 @@ func swiftShouldResetOut(_ c: SwiftContext) -> SwiftContext {
     if
         c.recentField == F.didLaunch
     {
-        c.out = SWIFT_EMB64_CORE
+        c.out = otherBase64ToString(SWIFT_EMB64_CORE)
         c.recentField = F.out
         return c
     }

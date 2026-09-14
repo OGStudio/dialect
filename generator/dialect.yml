@@ -87,7 +87,7 @@ SwiftComponent:
                 if:
                     c.recentField == F.didLaunch
                 then:
-                    c.out = SWIFT_EMB64_CORE
+                    c.out = otherBase64ToString(SWIFT_EMB64_CORE)
         path:
             1. Extract Swift path if present
                 if:
