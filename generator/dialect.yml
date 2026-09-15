@@ -51,6 +51,7 @@ CLIContext:
     type: context
     fields:
         arguments: [String]
+        consoleOutput: String
         didLaunch: Bool
         didSetup: Bool
         inputAbsoluteDir: String
@@ -87,7 +88,9 @@ SwiftComponent:
                 if:
                     c.recentField == F.didLaunch
                 then:
-                    c.out = otherBase64ToString(SWIFT_EMB64_CORE)
+                    c.out =
+                        otherBase64ToString(SWIFT_EMB64_CORE) +
+                        c.outFields
         outFields:
             1. When entity fields are available
                 if:

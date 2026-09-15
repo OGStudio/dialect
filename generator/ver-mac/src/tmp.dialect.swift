@@ -1,30 +1,6 @@
 // Temporarily manually written
 // Will be generated someday
 
-struct F {
-    static let arguments = "arguments"
-    static let chunks = "chunks"
-    static let consoleOutput = "consoleOutput"
-    static let didLaunch = "didLaunch"
-    static let didSetup = "didSetup"
-    static let entities = "entities"
-    static let entityFieldTypes = "entityFieldTypes"
-    static let entityFields = "entityFields"
-    static let entityTypes = "entityTypes"
-    static let inputAbsoluteDir = "inputAbsoluteDir"
-    static let inputContents = "inputContents"
-    static let inputError = "inputError"
-    static let inputFileName = "inputFileName"
-    static let inputLines = "inputLines"
-    static let out = "out"
-    static let outFields = "outFields"
-    static let outputPaths = "outputPaths"
-    static let parseInput = "parseInput"
-    static let path = "path"
-    static let readFile = "readFile"
-    static let version = "version"
-}
-
 // CLIContext
 
 struct CLIContext: DialectContext {
@@ -367,7 +343,9 @@ func swiftShouldResetOut(_ c: SwiftContext) -> SwiftContext {
     if
         c.recentField == F.didLaunch
     {
-        c.out = otherBase64ToString(SWIFT_EMB64_CORE)
+        c.out =
+            otherBase64ToString(SWIFT_EMB64_CORE) +
+            c.outFields
         c.recentField = F.out
         return c
     }
