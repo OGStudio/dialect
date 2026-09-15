@@ -117,6 +117,7 @@ func registerOneliners<T>(
     // A hack for generics to operate
     return nil
 }
+
 struct F {
     static let arguments = "arguments"
     static let chunks = "chunks"
