@@ -120,6 +120,7 @@ func registerOneliners<T>(
 struct F {
     static let arguments = "arguments"
     static let chunks = "chunks"
+    static let consoleOutput = "consoleOutput"
     static let didLaunch = "didLaunch"
     static let didSetup = "didSetup"
     static let entities = "entities"
