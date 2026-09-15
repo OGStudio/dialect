@@ -17,6 +17,7 @@ struct F {
     static let inputFileName = "inputFileName"
     static let inputLines = "inputLines"
     static let out = "out"
+    static let outFields = "outFields"
     static let outputPaths = "outputPaths"
     static let parseInput = "parseInput"
     static let path = "path"
@@ -102,8 +103,10 @@ struct SwiftContext: DialectContext {
     var didLaunch = false
     var didSetup = false
     var entities = [String]()
+    var entityFields = [Int: [String]]()
     var inputAbsoluteDir = ""
     var out = ""
+    var outFields = ""
     var outputPaths = [OutputPath]()
     var path = ""
 
@@ -116,10 +119,14 @@ struct SwiftContext: DialectContext {
             return didSetup as! T
         } else if (name == "entities") {
             return entities as! T
+        } else if (name == "entityFields") {
+            return entityFields as! T
         } else if (name == "inputAbsoluteDir") {
             return inputAbsoluteDir as! T
         } else if (name == "out") {
             return out as! T
+        } else if (name == "outFields") {
+            return outFields as! T
         } else if (name == "outputPaths") {
             return outputPaths as! T
         } else if (name == "path") {
@@ -139,10 +146,14 @@ struct SwiftContext: DialectContext {
             didSetup = value as! Bool
         } else if (name == "entities") {
             entities = value as! [String]
+        } else if (name == "entityFields") {
+            entityFields = value as! [Int: [String]]
         } else if (name == "inputAbsoluteDir") {
             inputAbsoluteDir = value as! String
         } else if (name == "out") {
             out = value as! String
+        } else if (name == "outFields") {
+            outFields = value as! String
         } else if (name == "outputPaths") {
             outputPaths = value as! [OutputPath]
         } else if (name == "path") {
@@ -365,6 +376,22 @@ func swiftShouldResetOut(_ c: SwiftContext) -> SwiftContext {
     return c
 }
 
+func swiftShouldResetOutFields(_ c: SwiftContext) -> SwiftContext {
+    var c = c
+
+    /* 1. When entity fields are available */
+    if
+        c.recentField == F.entityFields
+    {
+        c.outFields = swiftFields(c.entityFields)
+        c.recentField = F.outFields
+        return c
+    }
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
 func swiftShouldResetPath(_ c: SwiftContext) -> SwiftContext {
     var c = c
 
@@ -389,6 +416,7 @@ func swiftRegisterShoulds(_ ctrl: DialectController) {
     [
         swiftShouldResetDidLaunch,
         swiftShouldResetOut,
+        swiftShouldResetOutFields,
         swiftShouldResetPath,
     ].forEach { f in
         ctrl.registerFunction { c in f(c as! SwiftContext) }
@@ -571,6 +599,7 @@ func ymlSet(
 func ymlRegisterEffects(_ ctrl: DialectController) {
     let _: YMLContext? = registerOneliners(ctrl, [
         F.entities, { (c: YMLContext) in swiftSet(F.entities, c.entities) },
+        F.entityFields, { (c: YMLContext) in swiftSet(F.entityFields, c.entityFields) },
         F.outputPaths, { (c: YMLContext) in swiftSet(F.outputPaths, c.outputPaths) },
         F.parseInput, { (c: YMLContext) in ymlReadLines(c.inputContents) },
     ])

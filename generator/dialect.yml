@@ -88,6 +88,12 @@ SwiftComponent:
                     c.recentField == F.didLaunch
                 then:
                     c.out = otherBase64ToString(SWIFT_EMB64_CORE)
+        outFields:
+            1. When entity fields are available
+                if:
+                    c.recentField == F.entityFields
+                then:
+                    c.outFields = swiftFields(c.entityFields)
         path:
             1. Extract Swift path if present
                 if:
@@ -103,15 +109,18 @@ SwiftContext:
         didLaunch: Bool
         didSetup: Bool
         entities: [String]
+        entityFields: [Int: [String]]
         inputAbsoluteDir: String
         path: String
         out: String
+        outFields: String
         outputPaths: [OutputPath]
 
 YMLComponent:
     type: component
     oneliners:
         - entities: swiftSet(F.entities, c.entities)
+        - entityFields: swiftSet(F.entityFields, c.entityFields)
         - outputPaths: swiftSet(F.outputPaths, c.outputPaths)
         - parseInput: ymlReadLines(c.inputContents)
     shoulds:
