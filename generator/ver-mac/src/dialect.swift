@@ -118,6 +118,7 @@ func registerOneliners<T>(
     return nil
 }
 
+// Context field names for static type check
 struct F {
     static let arguments = "arguments"
     static let chunks = "chunks"
@@ -141,4 +142,5 @@ struct F {
     static let readFile = "readFile"
     static let type = "type"
     static let version = "version"
+
 }
