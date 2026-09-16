@@ -152,6 +152,12 @@ YMLComponent:
                     c.recentField == F.entities
                 then:
                     c.entityFields = ymlParseEntityFields(c.chunks, c.entities)
+        entityFieldTypes:
+            1. Upon entity fields:
+                if:
+                    c.recentField == F.entityFields
+                then:
+                    c.entityFieldTypes = ymlParseEntityFieldTypes(c.chunks, c.entities, c.entityFields)
         entityTypes:
             1. Upon entities:
                 if:

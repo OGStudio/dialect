@@ -66,6 +66,53 @@ func ymlParseEntities(_ chunks: [String: [String]]) -> [String] {
     return entities
 }
 
+func ymlParseEntityFieldTypes(
+    _ chunks: [String: [String]],
+    _ entities: [String],
+    _ entityFields: [Int: [String]]
+) -> [Int: [Int: String]] {
+    var result = [Int: [Int: String]]()
+    var entityId = 0
+
+    for entity in entities {
+        guard let lines = chunks["\(entity):"] else {
+            entityId += 1
+            continue
+        }
+
+        var types = [Int: String]()
+        var fieldId = 0
+        var inFields = false
+
+        for ln in lines {
+            if ln.hasPrefix(YML_PREFIX_FIELDS) {
+                inFields = true
+                continue
+            }
+            if inFields && !ln.hasPrefix(YML_PREFIX_FIELD) {
+                break
+            }
+            if inFields {
+                let nameAndType = String(ln.dropFirst(YML_PREFIX_FIELD.count))
+                let parts = nameAndType.split(
+                    separator: YML_FIELD_DELIMITER,
+                    maxSplits: 1,
+                    omittingEmptySubsequences: false
+                )
+                if parts.count == 2 {
+                    types[fieldId] = String(parts[1])
+                    fieldId += 1
+                }
+            }
+        }
+
+        result[entityId] = types
+        entityId += 1
+    }
+
+    return result
+}
+
 func ymlParseEntityFields(
     _ chunks: [String: [String]],
     _ entities: [String]
