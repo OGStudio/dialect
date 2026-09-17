@@ -137,6 +137,7 @@ struct F {
     static let out = "out"
     static let outFields = "outFields"
     static let outputPaths = "outputPaths"
+    static let outStructs = "outStructs"
     static let parseInput = "parseInput"
     static let path = "path"
     static let readFile = "readFile"
