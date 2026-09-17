@@ -20,3 +20,12 @@ func swiftFields(_ entityFields: [Int: [String]]) -> String {
     // Construct the whole struct
     return SWIFT_FIELDS_T.replacingOccurrences(of: "%ITEMS%", with: sitems)
 }
+
+/// Generate entities of type `struct`
+func swiftStructs(
+    _ entities: [String],
+    _ entityFields: [Int: [String]],
+    _ entityFieldTypes: [Int: [Int: String]]
+) -> String {
+    return "\n\n//TODO-swiftStructs\n\n"
+}

@@ -370,6 +370,22 @@ func swiftShouldResetOutFields(_ c: SwiftContext) -> SwiftContext {
     return c
 }
 
+func swiftShouldResetOutStructs(_ c: SwiftContext) -> SwiftContext {
+    var c = c
+
+    /* 1. When entity field types are available */
+    if
+        c.recentField == F.entityFieldTypes
+    {
+        c.outStructs = swiftStructs(c.entities, c.entityFields, c.entityFieldTypes)
+        c.recentField = F.outStructs
+        return c
+    }
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
 func swiftShouldResetPath(_ c: SwiftContext) -> SwiftContext {
     var c = c
 
@@ -387,6 +403,7 @@ func swiftShouldResetPath(_ c: SwiftContext) -> SwiftContext {
     c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
     return c
 }
+
 
 // SWIFT related functions
 

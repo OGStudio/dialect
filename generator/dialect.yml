@@ -102,7 +102,7 @@ SwiftComponent:
                 if:
                     c.recentField == F.entityFieldTypes
                 then:
-                    c.outStructs = swiftStructs(c.entities, c.entityFieldTypes)
+                    c.outStructs = swiftStructs(c.entities, c.entityFields, c.entityFieldTypes)
         path:
             1. Extract Swift path if present
                 if:
