@@ -27,7 +27,20 @@ func swiftStruct(
     _ fields: [String],
     _ fieldTypes: [Int: String]
 ) -> String {
-    return SWIFT_STRUCT_T.replacingOccurrences(of: "%NAME%", with: name)
+    var fields = ""
+    var fieldId = 0
+    for field in fields {
+        let type = fieldTypes[fieldId]
+        fields +=
+            SWIFT_STRUCT_FIELD_T
+                .replacingOccurrences(of: "%NAME%", with: field)
+                .replacingOccurrences(of: "%DEFAULT%", with: type)
+        fieldId += 1
+    }
+    return
+        SWIFT_STRUCT_T
+            .replacingOccurrences(of: "%NAME%", with: name)
+            .replacingOccurrences(of: "%FIELDS%", with: fields)
 }
 
 /// Generate entities of `struct` type
