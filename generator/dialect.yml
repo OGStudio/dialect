@@ -97,6 +97,12 @@ SwiftComponent:
                     c.recentField == F.entityFields
                 then:
                     c.outFields = swiftFields(c.entityFields)
+        outStructs:
+            1. When entity field types are available
+                if:
+                    c.recentField == F.entityFieldTypes
+                then:
+                    c.outStructs = swiftStructs(c.entities, c.entityFieldTypes)
         path:
             1. Extract Swift path if present
                 if:
@@ -113,17 +119,20 @@ SwiftContext:
         didSetup: Bool
         entities: [String]
         entityFields: [Int: [String]]
+        entityFieldTypes: [Int: [Int: String]]
         inputAbsoluteDir: String
         path: String
         out: String
         outFields: String
         outputPaths: [OutputPath]
+        outStructs: String
 
 YMLComponent:
     type: component
     oneliners:
         - entities: swiftSet(F.entities, c.entities)
         - entityFields: swiftSet(F.entityFields, c.entityFields)
+        - entityFieldTypes: swiftSet(F.entityFieldTypes, c.entityFieldTypes)
         - outputPaths: swiftSet(F.outputPaths, c.outputPaths)
         - parseInput: ymlReadLines(c.inputContents)
     shoulds:
