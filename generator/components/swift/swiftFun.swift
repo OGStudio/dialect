@@ -21,6 +21,15 @@ func swiftFields(_ entityFields: [Int: [String]]) -> String {
     return SWIFT_FIELDS_T.replacingOccurrences(of: "%ITEMS%", with: sitems)
 }
 
+/// Generate single `struct` entity
+func swiftStruct(
+    _ name: String,
+    _ fields: [String],
+    _ fieldTypes: [Int: String]
+) -> String {
+    return SWIFT_STRUCT_T.replacingOccurrences(of: "%NAME%", with: name)
+}
+
 /// Generate entities of `struct` type
 func swiftStructs(
     _ entities: [String],
@@ -28,8 +37,9 @@ func swiftStructs(
     _ entityFields: [Int: [String]],
     _ entityFieldTypes: [Int: [Int: String]]
 ) -> String {
-    var out = "\n\n// TODO swiftStructs\n\n"
+    var out = ""
 
+    // Locate structs
     var entityId = 0
     var structIds = [Int]()
     for entity in entities {
@@ -42,11 +52,20 @@ func swiftStructs(
 
     print("ИГР swiftS structI: '\(structIds)'")
 
-    //SWIFT_STRUCTS_T.replacingOccurrences(of: "%ITEMS%", with: structs)
+    // Generate each struct
+    for id in structIds {
+        out +=
+            swiftStruct(
+                entities[id],
+                entityFields[id]!,
+                entityFieldTypes[id]!
+            )
+    }
 
     return out
 }
 
+/*
 /// Map a field's SSOT type to a Swift default literal (mirrors the hand-written structs)
 func swiftDefaultLiteral(for types: [Int: [Int: String]]?, field: String) -> String {
     guard let types = types else { return "\"\"" }
@@ -66,3 +85,4 @@ func swiftDefaultLiteral(for types: [Int: [Int: String]]?, field: String) -> Str
     }
     return "\"\""
 }
+*/

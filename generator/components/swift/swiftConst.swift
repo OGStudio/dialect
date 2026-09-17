@@ -8,10 +8,10 @@ struct F {
 """
 let SWIFT_STRUCT_FIELD_T = "    var %NAME% = %DEFAULT%\n"
 let SWIFT_STRUCT_T = """
+
 struct %NAME% {
 %FIELDS%
 }
 """
-let SWIFT_STRUCTS_T = "%STRUCTS%"
 let SWIFT_TYPE = "swift"
 let SWIFT_TYPE_STRUCT = "struct"
