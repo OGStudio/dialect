@@ -90,7 +90,8 @@ SwiftComponent:
                 then:
                     c.out =
                         otherBase64ToString(SWIFT_EMB64_CORE) +
-                        c.outFields
+                        c.outFields +
+                        c.outStructs
         outFields:
             1. When entity fields are available
                 if:

@@ -145,3 +145,8 @@ struct F {
     static let version = "version"
 
 }
+struct OutputPath {
+    var path = String()
+    var type = String()
+
+}

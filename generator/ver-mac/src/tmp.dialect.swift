@@ -66,13 +66,6 @@ struct CLIContext: DialectContext {
     }
 }
 
-// OutputPath
-
-struct OutputPath {
-    var path = ""
-    var type = ""
-}
-
 // SwiftContext
 
 struct SwiftContext: DialectContext {
@@ -361,7 +354,8 @@ func swiftShouldResetOut(_ c: SwiftContext) -> SwiftContext {
     {
         c.out =
             otherBase64ToString(SWIFT_EMB64_CORE) +
-            c.outFields
+            c.outFields +
+            c.outStructs
         c.recentField = F.out
         return c
     }

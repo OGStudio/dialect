@@ -27,20 +27,21 @@ func swiftStruct(
     _ fields: [String],
     _ fieldTypes: [Int: String]
 ) -> String {
-    var fields = ""
+    var outFields = ""
     var fieldId = 0
     for field in fields {
-        let type = fieldTypes[fieldId]
-        fields +=
+        let type = fieldTypes[fieldId]!
+        let defaultValue = "\(type)()"
+        outFields +=
             SWIFT_STRUCT_FIELD_T
                 .replacingOccurrences(of: "%NAME%", with: field)
-                .replacingOccurrences(of: "%DEFAULT%", with: type)
+                .replacingOccurrences(of: "%DEFAULT%", with: defaultValue)
         fieldId += 1
     }
     return
         SWIFT_STRUCT_T
             .replacingOccurrences(of: "%NAME%", with: name)
-            .replacingOccurrences(of: "%FIELDS%", with: fields)
+            .replacingOccurrences(of: "%FIELDS%", with: outFields)
 }
 
 /// Generate entities of `struct` type
@@ -55,15 +56,13 @@ func swiftStructs(
     // Locate structs
     var entityId = 0
     var structIds = [Int]()
-    for entity in entities {
+    for _ in entities {
         let type = entityTypes[entityId]
         if type == SWIFT_TYPE_STRUCT {
             structIds.append(entityId)
         }
         entityId += 1
     }
-
-    print("ИГР swiftS structI: '\(structIds)'")
 
     // Generate each struct
     for id in structIds {
@@ -77,25 +76,3 @@ func swiftStructs(
 
     return out
 }
-
-/*
-/// Map a field's SSOT type to a Swift default literal (mirrors the hand-written structs)
-func swiftDefaultLiteral(for types: [Int: [Int: String]]?, field: String) -> String {
-    guard let types = types else { return "\"\"" }
-    for entry in types.values {
-        for (_, type) in entry {
-            switch type {
-            case "Bool": return "false"
-            case "OutputPath": return "OutputPath()"
-            case "[OutputPath]": return "[OutputPath]()"
-            case "[String]": return "[String]()"
-            case "[Int: [String]]": return "[Int: [String]]()"
-            case "[Int: [Int: String]]": return "[Int: [Int: String]]()"
-            case "Int": return "0"
-            default: return "\"\""
-            }
-        }
-    }
-    return "\"\""
-}
-*/
