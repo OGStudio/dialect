@@ -81,6 +81,7 @@ struct SwiftContext: DialectContext {
     var entities = [String]()
     var entityFields = [Int: [String]]()
     var entityFieldTypes = [Int: [Int: String]]()
+    var entityTypes = [Int: String]()
     var inputAbsoluteDir = ""
 
     var out = ""
@@ -102,6 +103,8 @@ struct SwiftContext: DialectContext {
             return entityFields as! T
         } else if (name == "entityFieldTypes") {
             return entityFieldTypes as! T
+        } else if (name == "entityTypes") {
+            return entityTypes as! T
         } else if (name == "inputAbsoluteDir") {
             return inputAbsoluteDir as! T
         } else if (name == "out") {
@@ -133,6 +136,8 @@ struct SwiftContext: DialectContext {
             entityFields = value as! [Int: [String]]
         } else if (name == "entityFieldTypes") {
             entityFieldTypes = value as! [Int: [Int: String]]
+        } else if (name == "entityTypes") {
+            entityTypes = value as! [Int: String]
         } else if (name == "inputAbsoluteDir") {
             inputAbsoluteDir = value as! String
         } else if (name == "out") {
@@ -388,7 +393,7 @@ func swiftShouldResetOutStructs(_ c: SwiftContext) -> SwiftContext {
     if
         c.recentField == F.entityFieldTypes
     {
-        c.outStructs = swiftStructs(c.entities, c.entityFields, c.entityFieldTypes)
+        c.outStructs = swiftStructs(c.entities, c.entityTypes, c.entityFields, c.entityFieldTypes)
         c.recentField = F.outStructs
         return c
     }
@@ -625,6 +630,7 @@ func ymlRegisterEffects(_ ctrl: DialectController) {
         F.entities, { (c: YMLContext) in swiftSet(F.entities, c.entities) },
         F.entityFields, { (c: YMLContext) in swiftSet(F.entityFields, c.entityFields) },
         F.entityFieldTypes, { (c: YMLContext) in swiftSet(F.entityFieldTypes, c.entityFieldTypes) },
+        F.entityTypes, { (c: YMLContext) in swiftSet(F.entityTypes, c.entityTypes) },
         F.outputPaths, { (c: YMLContext) in swiftSet(F.outputPaths, c.outputPaths) },
         F.parseInput, { (c: YMLContext) in ymlReadLines(c.inputContents) },
     ])
