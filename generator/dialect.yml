@@ -91,7 +91,14 @@ SwiftComponent:
                     c.out =
                         otherBase64ToString(SWIFT_EMB64_CORE) +
                         c.outFields +
-                        c.outStructs
+                        c.outStructs +
+                        c.outContexts
+        outContexts:
+            1. When entity field types are available
+                if:
+                    c.recentField == F.entityFieldTypes
+                then:
+                    c.outContexts = swiftContexts(c.entities, c.entityTypes, c.entityFields, c.entityFieldTypes)
         outFields:
             1. When entity fields are available
                 if:
@@ -125,6 +132,7 @@ SwiftContext:
         inputAbsoluteDir: String
         path: String
         out: String
+        outContexts: String
         outFields: String
         outputPaths: [OutputPath]
         outStructs: String

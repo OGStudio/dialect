@@ -135,6 +135,7 @@ struct F {
     static let inputFileName = "inputFileName"
     static let inputLines = "inputLines"
     static let out = "out"
+    static let outContexts = "outContexts"
     static let outFields = "outFields"
     static let outStructs = "outStructs"
     static let outputPaths = "outputPaths"

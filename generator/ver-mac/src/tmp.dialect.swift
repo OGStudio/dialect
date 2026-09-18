@@ -78,6 +78,7 @@ struct SwiftContext: DialectContext {
     var inputAbsoluteDir = ""
 
     var out = ""
+    var outContexts = ""
     var outFields = ""
     var outStructs = ""
     var outputPaths = [OutputPath]()
@@ -102,6 +103,8 @@ struct SwiftContext: DialectContext {
             return inputAbsoluteDir as! T
         } else if (name == "out") {
             return out as! T
+        } else if (name == "outContexts") {
+            return outContexts as! T
         } else if (name == "outFields") {
             return outFields as! T
         } else if (name == "outStructs") {
@@ -135,6 +138,8 @@ struct SwiftContext: DialectContext {
             inputAbsoluteDir = value as! String
         } else if (name == "out") {
             out = value as! String
+        } else if (name == "outContexts") {
+            outContexts = value as! String
         } else if (name == "outFields") {
             outFields = value as! String
         } else if (name == "outStructs") {
@@ -355,8 +360,25 @@ func swiftShouldResetOut(_ c: SwiftContext) -> SwiftContext {
         c.out =
             otherBase64ToString(SWIFT_EMB64_CORE) +
             c.outFields +
-            c.outStructs
+            c.outStructs +
+            c.outContexts
         c.recentField = F.out
+        return c
+    }
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func swiftShouldResetOutContexts(_ c: SwiftContext) -> SwiftContext {
+    var c = c
+
+    /* 1. When entity field types are available */
+    if
+        c.recentField == F.entityFieldTypes
+    {
+        c.outContexts = swiftContexts(c.entities, c.entityTypes, c.entityFields, c.entityFieldTypes)
+        c.recentField = F.outContexts
         return c
     }
 
@@ -421,6 +443,7 @@ func swiftRegisterShoulds(_ ctrl: DialectController) {
     [
         swiftShouldResetDidLaunch,
         swiftShouldResetOut,
+        swiftShouldResetOutContexts,
         swiftShouldResetOutFields,
         swiftShouldResetOutStructs,
         swiftShouldResetPath,
