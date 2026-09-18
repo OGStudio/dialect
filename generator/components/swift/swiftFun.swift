@@ -11,17 +11,20 @@ func swiftContext(
     var outSetters = ""
     var fieldId = 0
     for field in fields {
+        let els = (fieldId == 0) ? "" : "else "
         let type = fieldTypes[fieldId]!
         let defaultValue = swiftTypeDefaultValue(type)
         outFields +=
             SWIFT_CONTEXT_FIELD_T
-                .replacingOccurrences(of: "%NAME%", with: field)
                 .replacingOccurrences(of: "%DEFAULT%", with: defaultValue)
+                .replacingOccurrences(of: "%NAME%", with: field)
         outGetters +=
             SWIFT_CONTEXT_GETTER_T
+                .replacingOccurrences(of: "%ELSE%", with: els)
                 .replacingOccurrences(of: "%NAME%", with: field)
         outSetters +=
             SWIFT_CONTEXT_SETTER_T
+                .replacingOccurrences(of: "%ELSE%", with: els)
                 .replacingOccurrences(of: "%NAME%", with: field)
                 .replacingOccurrences(of: "%TYPE%", with: type)
         fieldId += 1

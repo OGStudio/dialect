@@ -1,13 +1,15 @@
 let SWIFT_CONTEXT_FIELD_T = "    var %NAME% = %DEFAULT%\n"
 let SWIFT_CONTEXT_GETTER_T = """
-            if (name == \"%NAME%\") {
-                return %NAME% as! T
-            }
+        %ELSE%if (name == \"%NAME%\") {
+            return %NAME% as! T
+        }
+
 """
 let SWIFT_CONTEXT_SETTER_T = """
-            if (name == \"%NAME%\") {
-                %NAME% = value as! %TYPE%
-            }
+        %ELSE%if (name == \"%NAME%\") {
+            %NAME% = value as! %TYPE%
+        }
+
 """
 let SWIFT_CONTEXT_T = """
 
