@@ -60,6 +60,7 @@ func swiftContexts(
 
     // Generate each context
     for id in contextIds {
+        /**/print("ИГР swiftC contextI/name: '\(id)'/'\(entities[id])'")
         out +=
             swiftContext(
                 entities[id],
