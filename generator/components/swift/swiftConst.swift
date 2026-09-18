@@ -29,6 +29,7 @@ struct %NAME%: DialectContext {
 %SETTERS%
     }
 }
+
 """
 let SWIFT_FIELD_T = "    static let %NAME% = \"%NAME%\"\n"
 let SWIFT_FIELDS_T = """
@@ -44,6 +45,7 @@ let SWIFT_STRUCT_T = """
 struct %NAME% {
 %FIELDS%
 }
+
 """
 let SWIFT_TYPE = "swift"
 let SWIFT_TYPE_CONTEXT = "context"
