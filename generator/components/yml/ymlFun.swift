@@ -63,7 +63,7 @@ func ymlParseEntities(_ chunks: [String: [String]]) -> [String] {
         }
     }
 
-    return entities
+    return entities.sorted()
 }
 
 func ymlParseEntityFieldTypes(

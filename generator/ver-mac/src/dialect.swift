@@ -151,3 +151,316 @@ struct OutputPath {
     var type = String()
 
 }
+
+struct CLIContext: DialectContext {
+    var arguments = [String]()
+    var consoleOutput = String()
+    var didLaunch = Bool()
+    var didSetup = Bool()
+    var inputAbsoluteDir = String()
+    var inputContents = String()
+    var inputError = String()
+    var inputFileName = String()
+    var readFile = Bool()
+
+    var recentField = ""
+
+    func field<T>(_ name: String) -> T {
+        if (name == "arguments") {
+            return arguments as! T
+        }
+        else if (name == "consoleOutput") {
+            return consoleOutput as! T
+        }
+        else if (name == "didLaunch") {
+            return didLaunch as! T
+        }
+        else if (name == "didSetup") {
+            return didSetup as! T
+        }
+        else if (name == "inputAbsoluteDir") {
+            return inputAbsoluteDir as! T
+        }
+        else if (name == "inputContents") {
+            return inputContents as! T
+        }
+        else if (name == "inputError") {
+            return inputError as! T
+        }
+        else if (name == "inputFileName") {
+            return inputFileName as! T
+        }
+        else if (name == "readFile") {
+            return readFile as! T
+        }
+
+        return "unknown-field-name" as! T
+    }
+
+    mutating func setField(
+        _ name: String,
+        _ value: Any
+    ) {
+        if (name == "arguments") {
+            arguments = value as! [String]
+        }
+        else if (name == "consoleOutput") {
+            consoleOutput = value as! String
+        }
+        else if (name == "didLaunch") {
+            didLaunch = value as! Bool
+        }
+        else if (name == "didSetup") {
+            didSetup = value as! Bool
+        }
+        else if (name == "inputAbsoluteDir") {
+            inputAbsoluteDir = value as! String
+        }
+        else if (name == "inputContents") {
+            inputContents = value as! String
+        }
+        else if (name == "inputError") {
+            inputError = value as! String
+        }
+        else if (name == "inputFileName") {
+            inputFileName = value as! String
+        }
+        else if (name == "readFile") {
+            readFile = value as! Bool
+        }
+
+    }
+}
+
+struct RootContext: DialectContext {
+    var didLaunch = Bool()
+
+    var recentField = ""
+
+    func field<T>(_ name: String) -> T {
+        if (name == "didLaunch") {
+            return didLaunch as! T
+        }
+
+        return "unknown-field-name" as! T
+    }
+
+    mutating func setField(
+        _ name: String,
+        _ value: Any
+    ) {
+        if (name == "didLaunch") {
+            didLaunch = value as! Bool
+        }
+
+    }
+}
+
+struct SwiftContext: DialectContext {
+    var didLaunch = Bool()
+    var didSetup = Bool()
+    var entities = [String]()
+    var entityFields = [Int: [String]]()
+    var entityFieldTypes = [Int: [Int: String]]()
+    var entityTypes = [Int: String]()
+    var inputAbsoluteDir = String()
+    var path = String()
+    var out = String()
+    var outContexts = String()
+    var outFields = String()
+    var outputPaths = [OutputPath]()
+    var outStructs = String()
+
+    var recentField = ""
+
+    func field<T>(_ name: String) -> T {
+        if (name == "didLaunch") {
+            return didLaunch as! T
+        }
+        else if (name == "didSetup") {
+            return didSetup as! T
+        }
+        else if (name == "entities") {
+            return entities as! T
+        }
+        else if (name == "entityFields") {
+            return entityFields as! T
+        }
+        else if (name == "entityFieldTypes") {
+            return entityFieldTypes as! T
+        }
+        else if (name == "entityTypes") {
+            return entityTypes as! T
+        }
+        else if (name == "inputAbsoluteDir") {
+            return inputAbsoluteDir as! T
+        }
+        else if (name == "path") {
+            return path as! T
+        }
+        else if (name == "out") {
+            return out as! T
+        }
+        else if (name == "outContexts") {
+            return outContexts as! T
+        }
+        else if (name == "outFields") {
+            return outFields as! T
+        }
+        else if (name == "outputPaths") {
+            return outputPaths as! T
+        }
+        else if (name == "outStructs") {
+            return outStructs as! T
+        }
+
+        return "unknown-field-name" as! T
+    }
+
+    mutating func setField(
+        _ name: String,
+        _ value: Any
+    ) {
+        if (name == "didLaunch") {
+            didLaunch = value as! Bool
+        }
+        else if (name == "didSetup") {
+            didSetup = value as! Bool
+        }
+        else if (name == "entities") {
+            entities = value as! [String]
+        }
+        else if (name == "entityFields") {
+            entityFields = value as! [Int: [String]]
+        }
+        else if (name == "entityFieldTypes") {
+            entityFieldTypes = value as! [Int: [Int: String]]
+        }
+        else if (name == "entityTypes") {
+            entityTypes = value as! [Int: String]
+        }
+        else if (name == "inputAbsoluteDir") {
+            inputAbsoluteDir = value as! String
+        }
+        else if (name == "path") {
+            path = value as! String
+        }
+        else if (name == "out") {
+            out = value as! String
+        }
+        else if (name == "outContexts") {
+            outContexts = value as! String
+        }
+        else if (name == "outFields") {
+            outFields = value as! String
+        }
+        else if (name == "outputPaths") {
+            outputPaths = value as! [OutputPath]
+        }
+        else if (name == "outStructs") {
+            outStructs = value as! String
+        }
+
+    }
+}
+
+struct YMLContext: DialectContext {
+    var chunks = [String: [String]]()
+    var didLaunch = Bool()
+    var didSetup = Bool()
+    var entities = [String]()
+    var entityFields = [Int: [String]]()
+    var entityFieldTypes = [Int: [Int: String]]()
+    var entityTypes = [Int: String]()
+    var inputContents = String()
+    var inputLines = [String]()
+    var outputPaths = [OutputPath]()
+    var parseInput = Bool()
+    var version = Int()
+
+    var recentField = ""
+
+    func field<T>(_ name: String) -> T {
+        if (name == "chunks") {
+            return chunks as! T
+        }
+        else if (name == "didLaunch") {
+            return didLaunch as! T
+        }
+        else if (name == "didSetup") {
+            return didSetup as! T
+        }
+        else if (name == "entities") {
+            return entities as! T
+        }
+        else if (name == "entityFields") {
+            return entityFields as! T
+        }
+        else if (name == "entityFieldTypes") {
+            return entityFieldTypes as! T
+        }
+        else if (name == "entityTypes") {
+            return entityTypes as! T
+        }
+        else if (name == "inputContents") {
+            return inputContents as! T
+        }
+        else if (name == "inputLines") {
+            return inputLines as! T
+        }
+        else if (name == "outputPaths") {
+            return outputPaths as! T
+        }
+        else if (name == "parseInput") {
+            return parseInput as! T
+        }
+        else if (name == "version") {
+            return version as! T
+        }
+
+        return "unknown-field-name" as! T
+    }
+
+    mutating func setField(
+        _ name: String,
+        _ value: Any
+    ) {
+        if (name == "chunks") {
+            chunks = value as! [String: [String]]
+        }
+        else if (name == "didLaunch") {
+            didLaunch = value as! Bool
+        }
+        else if (name == "didSetup") {
+            didSetup = value as! Bool
+        }
+        else if (name == "entities") {
+            entities = value as! [String]
+        }
+        else if (name == "entityFields") {
+            entityFields = value as! [Int: [String]]
+        }
+        else if (name == "entityFieldTypes") {
+            entityFieldTypes = value as! [Int: [Int: String]]
+        }
+        else if (name == "entityTypes") {
+            entityTypes = value as! [Int: String]
+        }
+        else if (name == "inputContents") {
+            inputContents = value as! String
+        }
+        else if (name == "inputLines") {
+            inputLines = value as! [String]
+        }
+        else if (name == "outputPaths") {
+            outputPaths = value as! [OutputPath]
+        }
+        else if (name == "parseInput") {
+            parseInput = value as! Bool
+        }
+        else if (name == "version") {
+            version = value as! Int
+        }
+
+    }
+}
