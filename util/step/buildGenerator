@@ -5,5 +5,4 @@ echo -e "\n> > > > Step №$STEP. Build generator"
 
 swift build \
     --package-path "$SDIR/../generator/ver-mac" \
-    -c release \
-    2>/dev/null
+    -c release
