@@ -13,7 +13,7 @@ func otherBase64ToString(_ encoded: String) -> String {
 
 /// Print to stderr
 func otherPrintStderr(_ txt: String) {
-    if let dat = txt.data(using: .utf8) {
+    if let dat = "\(txt)\n".data(using: .utf8) {
         FileHandle.standardError.write(dat)
     }
 }
