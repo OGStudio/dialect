@@ -11,7 +11,14 @@ func otherBase64ToString(_ encoded: String) -> String {
     return str
 }
 
-/// Print each key/value processed by a controller into console
+/// Print to stderr
+func otherPrintStderr(_ txt: String) {
+    if let dat = txt.data(using: .utf8) {
+        FileHandle.standardError.write(dat)
+    }
+}
+
+/// Print each key/value processed by a controller into stderr
 func otherSetupConsoleLogging(
     _ ctrl: DialectController,
     _ prefix: String
@@ -19,7 +26,7 @@ func otherSetupConsoleLogging(
     ctrl.registerCallback { c -> Void in
         let value = c.fieldAny(c.recentField)
         let line = "ИГР \(prefix) k/v: '\(c.recentField)'/'\(value)'"
-        print(line)
+        otherPrintStderr(line)
     }
 }
 
@@ -28,6 +35,5 @@ func otherWriteFile(
     _ path: String,
     _ content: String
 ) {
-    print("ИГР otherWF path/content.count: '\(path)'/'\(content.count)'")
     try! content.write(toFile: path, atomically: true, encoding: .utf8)
 }
