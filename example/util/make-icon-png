@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+# Generates the app icon master PNG using ImageMagick.
+# Usage: ./make-icon-png [-t|--text TEXT] [output.png]
+#   TEXT defaults to "HW"; output defaults to /tmp/opencode/AppIcon-1024.png
+# Env: ICON_SIZE=1024
+
+set -euo pipefail
+
+TEXT="HW"
+OUT="/tmp/opencode/AppIcon-1024.png"
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -t|--text)
+            [ $# -ge 2 ] || { echo "error: $1 needs a value" >&2; exit 1; }
+            TEXT="$2"; shift 2 ;;
+        --text=*)
+            TEXT="${1#*=}"; shift ;;
+        *)
+            OUT="$1"; shift ;;
+    esac
+done
+S="${ICON_SIZE:-1024}"
+
+IM="$(command -v magick || command -v convert || true)"
+if [ -z "$IM" ]; then
+    echo "error: ImageMagick not found (install with: brew install imagemagick / apt install imagemagick)" >&2
+    exit 1
+fi
+
+mkdir -p "$(dirname "$OUT")"
+
+FONT_ARGS=()
+if command -v fc-match >/dev/null 2>&1; then
+    FONT_FILE="$(fc-match -f '%{file}' 'sans-serif:bold' 2>/dev/null || true)"
+    [ -n "$FONT_FILE" ] && FONT_ARGS=(-font "$FONT_FILE")
+fi
+
+PS=$(( 614 * S / 1024 ))
+KERN=$(( -20 * S / 1024 ))
+HALF=$(( S / 2 ))
+QUARTER=$(( S / 4 ))
+TEXT_X=$(( QUARTER - 72 * S / 1024 ))
+INSET=$(( 20 * S / 1000 ))
+RADIUS=$(( 224 * ( S - 2 * INSET ) / 1000 ))
+
+KERN_ARGS=()
+if "$IM" xc: -kerning 1 info: >/dev/null 2>&1; then
+    KERN_ARGS=(-kerning "$KERN")
+elif "$IM" xc: -kern 1 info: >/dev/null 2>&1; then
+    KERN_ARGS=(-kern "$KERN")
+fi
+
+"$IM" \
+    \( -size "${S}x${S}" -define gradient:angle=135 gradient:'#4785ff'-'#9e57f5' \
+       \( -size "${S}x${HALF}" gradient:'rgba(255,255,255,0)'-'rgba(255,255,255,0.28)' \) \
+       -gravity northwest -geometry '+0+0' -composite \
+       -gravity center ${FONT_ARGS[@]+"${FONT_ARGS[@]}"} ${KERN_ARGS[@]+"${KERN_ARGS[@]}"} \
+       -fill white -pointsize "$PS" -annotate "-${TEXT_X}+0" "$TEXT" \) \
+    \( -size "${S}x${S}" xc:none -fill white \
+       -draw "roundrectangle $INSET,$INSET $(( S - INSET - 1 )),$(( S - INSET - 1 )) $RADIUS,$RADIUS" \) \
+    -compose DstIn -composite \
+    -depth 8 -strip \
+    "$OUT"
+
+echo "wrote $OUT"

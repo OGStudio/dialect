@@ -1,0 +1,14 @@
+#!/bin/bash -e
+SDIR=$(cd "$(dirname "$0")" ; pwd -P)
+
+BUILD=$SDIR/../build
+mkdir -p $BUILD
+
+swiftc \
+    -o $BUILD/test-swift \
+    $SDIR/../swift/DialectContext.swift \
+    $SDIR/../swift/DialectController.swift \
+    $SDIR/../test/swift/tests.swift \
+    $SDIR/../test/swift/main.swift
+
+$BUILD/test-swift

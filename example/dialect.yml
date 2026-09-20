@@ -1,0 +1,32 @@
+version: 4
+
+HelloWorldContext:
+    type: context
+    fields:
+        didClickCount: Bool
+        didLaunch: Bool
+        didSetup: Bool
+        count: Int
+
+HelloWorld:
+    type: should
+    shoulds:
+        count:
+            1. Upon hitting 10 the first time:
+                if:
+                    c.recentField == F.didClickCount &&
+                    c.count == 9 # We're hitting 10 right now
+                then:
+                    c.count += 10
+            2. Upon each button click:
+                if:
+                    c.recentField == F.didClickCount
+                then:
+                    c.count += 1
+        didLaunch:
+            1. Only once during the first setup:
+                if:
+                    c.recentField == F.didSetup &&
+                    c.didLaunch == false
+                then:
+                    c.didLaunch = true

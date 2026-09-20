@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# Converts the master icon PNG into Resources/AppIcon.icns.
+# Usage: ./make-icon-icns [master.png]   (default /tmp/opencode/AppIcon-1024.png)
+
+set -euo pipefail
+
+PNG="${1:-/tmp/opencode/AppIcon-1024.png}"
+DIR="$(cd "$(dirname "$0")/../ver-mac" && pwd)"
+ICONSET="$(mktemp -d)/AppIcon.iconset"
+
+IM="$(command -v magick || command -v convert || true)"
+if [ -z "$IM" ]; then
+    echo "error: ImageMagick not found (install with: brew install imagemagick / apt install imagemagick)" >&2
+    exit 1
+fi
+
+mkdir -p "$ICONSET"
+
+for size_name in 16:icon_16x16.png 32:icon_16x16@2x.png 32:icon_32x32.png 64:icon_32x32@2x.png \
+                 128:icon_128x128.png 256:icon_128x128@2x.png 256:icon_256x256.png \
+                 512:icon_256x256@2x.png 512:icon_512x512.png 1024:icon_512x512@2x.png; do
+    size="${size_name%%:*}"
+    name="${size_name##*:}"
+    "$IM" "$PNG" -resize "${size}x${size}" -depth 8 -strip "$ICONSET/$name"
+done
+
+mkdir -p "$DIR/Resources"
+iconutil -c icns "$ICONSET" -o "$DIR/Resources/AppIcon.icns"
+
+echo "wrote $DIR/Resources/AppIcon.icns"

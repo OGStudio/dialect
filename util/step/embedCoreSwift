@@ -1,0 +1,21 @@
+#!/bin/bash
+
+STEP=$((STEP+1))
+echo -e "\n> > > > Step №$STEP. Embed core/swift files"
+TMP=$(mktemp)
+TMP64=$(mktemp)
+trap 'rm -f "$TMP" "$TMP64"' EXIT
+EMB64=$GENERATOR_COMPONENTS/swift/swiftConstEmb64.swift
+
+# Combine core/swift files
+cat $CORE_SWIFT/DialectContext.swift > $TMP
+cat $CORE_SWIFT/DialectController.swift >> $TMP
+cat $CORE_SWIFT/registerOneliners.swift >> $TMP
+
+# Convert to Base64
+base64 -i $TMP -o $TMP64
+
+# Generate source code file
+echo -n "let SWIFT_EMB64_CORE=\"" > $EMB64
+cat $TMP64 | tr -d '\n' >> $EMB64
+echo "\"" >> $EMB64

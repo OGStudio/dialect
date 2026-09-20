@@ -1,0 +1,19 @@
+#!/bin/bash
+
+set -euo pipefail
+cd "$(dirname "$0")/../ver-mac"
+
+swift build
+
+APP=.build/HelloWorld.app
+rm -rf "$APP"
+mkdir -p "$APP/Contents/MacOS"
+
+cp .build/debug/HelloWorld "$APP/Contents/MacOS/HelloWorld"
+
+cp src/Info.plist "$APP/Contents/Info.plist"
+
+mkdir -p "$APP/Contents/Resources"
+cp Resources/AppIcon.icns "$APP/Contents/Resources/AppIcon.icns"
+
+open "$APP"

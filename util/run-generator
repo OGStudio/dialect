@@ -1,0 +1,9 @@
+#!/bin/bash -e
+SDIR=$(cd "$(dirname "$0")" ; pwd -P)
+
+T=$SDIR/step
+source $SDIR/paths
+
+source $T/embedCoreSwift
+source $T/buildGenerator
+source $T/runGenerator "$@"
