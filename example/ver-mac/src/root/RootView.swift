@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct ContentView: View {
+struct RootView: View {
     @State private var count = 0
 
     var body: some View {
@@ -16,6 +16,6 @@ struct ContentView: View {
             }
         }
         .padding(40)
-        .frame(minWidth: 200, minHeight: 400)
+        .frame(minWidth: 400, minHeight: 300)
     }
 }
