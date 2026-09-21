@@ -5,4 +5,6 @@ T=$SDIR/step
 source $SDIR/paths
 
 STEP=0
-source $T/runMac
+#source $T/generateDialect
+source $T/buildMac
+source $T/packageMac

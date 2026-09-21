@@ -1,0 +1,7 @@
+#!/bin/bash -e
+
+STEP=$((STEP+1))
+echo -e "\n> > > > Step №$STEP. Build for macOS"
+
+cd $SDIR/../ver-mac
+swift build
