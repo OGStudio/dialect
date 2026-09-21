@@ -3,9 +3,10 @@
 STEP=$((STEP+1))
 echo -e "\n> > > > Step №$STEP. Make an app package for macOS"
 
+rm -rf $APP_MAC
+
 APP_DAT=$APP_MAC/Contents
 
-rm -rf $APP_MAC
 mkdir -p $APP_DAT/MacOS
 mkdir -p $APP_DAT/Resources
 
