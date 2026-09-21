@@ -10,13 +10,13 @@ RootComponent:
         count:
             1. Upon hitting 10 the first time:
                 if:
-                    c.recentField == F.didClickCount &&
+                    c.recentField == F.didClickIncrement &&
                     c.count == 9
                 then:
                     c.count += 10
             2. Upon each button click:
                 if:
-                    c.recentField == F.didClickCount
+                    c.recentField == F.didClickIncrement
                 then:
                     c.count += 1
         didLaunch:
@@ -31,6 +31,6 @@ RootContext:
     type: context
     fields:
         count: Int
-        didClickCount: Bool
+        didClickIncrement: Bool
         didLaunch: Bool
         didSetup: Bool

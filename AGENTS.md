@@ -21,10 +21,11 @@ generator/         The Swift port of the Klin code generator (tool)
     tmp.dialect.swift   Hand-written contexts, shoulds, register/set funcs, oneliners (temp, will be generated)
   dialect.yml       v4 dialect: CLIComponent, CLIContext, SwiftComponent, SwiftContext, OutputPath, RootContext, YMLComponent, YMLContext
   util/run-generator    Build & run generator binary (utility scripts live at the repo root)
-example/           Sample macOS SwiftUI app + dialect.yml
-  ver-mac/         SPM-based SwiftUI app (macOS 11+)
-  dialect.yml      Example dialect definition
-  util/run-mac     Build & launch the example app
+example/           Sample macOS SwiftUI app + its own dialect.yml (a self-contained 2nd generation target)
+  ver-mac/         SPM-based SwiftUI app (macOS 11+); fully regenerated `src/dialect.swift` (the engine is inline Swift source here — NOT a base64-embedded core)
+  dialect.yml      Example dialect definition: one component (HelloWorldComponent) + one context (HelloWorldContext: count/didClickCount/didLaunch/didSetup) — no cross-component bridging needed (single context, single component)
+  util/run-mac     Build & launch the example app (steps: generatorStepGenerateDialect -> generatorStepBuildMac -> ... -> runMac)
+  src/tmp.dialect.swift  EMPTY (0 bytes) by design — the example's dialect.swift is fully regeneratable, so no hand-written mirror like the generator's own chicken-egg tmp
 ref/               Reference to original Kotlin Dialect (symlink -> ../../kotlin-dialect)
   kom/             Newer Kotlin Multiplatform reference (symlink -> ../../kom)
 ```

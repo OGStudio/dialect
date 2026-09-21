@@ -12,7 +12,7 @@ struct RootView: View {
                 .font(.title2.monospacedDigit())
 
             Button("Increment") {
-                count += 1
+                rootSet(F.didClickIncrement, true)
             }
         }
         .padding(40)
