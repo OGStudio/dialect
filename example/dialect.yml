@@ -1,21 +1,13 @@
 version: 4
 
-HelloWorldContext:
-    type: context
-    fields:
-        didClickCount: Bool
-        didLaunch: Bool
-        didSetup: Bool
-        count: Int
-
-HelloWorld:
-    type: should
+HelloWorldComponent:
+    type: component
     shoulds:
         count:
             1. Upon hitting 10 the first time:
                 if:
                     c.recentField == F.didClickCount &&
-                    c.count == 9 # We're hitting 10 right now
+                    c.count == 9
                 then:
                     c.count += 10
             2. Upon each button click:
@@ -30,3 +22,11 @@ HelloWorld:
                     c.didLaunch == false
                 then:
                     c.didLaunch = true
+
+HelloWorldContext:
+    type: context
+    fields:
+        count: Int
+        didClickCount: Bool
+        didLaunch: Bool
+        didSetup: Bool
