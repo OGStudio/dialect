@@ -121,14 +121,14 @@ func registerOneliners<T>(
 // Context field names for static type check
 struct F {
     static let count = "count"
-    static let didClickCount = "didClickCount"
+    static let didClickIncrement = "didClickIncrement"
     static let didLaunch = "didLaunch"
     static let didSetup = "didSetup"
 
 }
 struct RootContext: DialectContext {
     var count = Int()
-    var didClickCount = Bool()
+    var didClickIncrement = Bool()
     var didLaunch = Bool()
     var didSetup = Bool()
 
@@ -138,8 +138,8 @@ struct RootContext: DialectContext {
         if (name == "count") {
             return count as! T
         }
-        else if (name == "didClickCount") {
-            return didClickCount as! T
+        else if (name == "didClickIncrement") {
+            return didClickIncrement as! T
         }
         else if (name == "didLaunch") {
             return didLaunch as! T
@@ -158,8 +158,8 @@ struct RootContext: DialectContext {
         if (name == "count") {
             count = value as! Int
         }
-        else if (name == "didClickCount") {
-            didClickCount = value as! Bool
+        else if (name == "didClickIncrement") {
+            didClickIncrement = value as! Bool
         }
         else if (name == "didLaunch") {
             didLaunch = value as! Bool
