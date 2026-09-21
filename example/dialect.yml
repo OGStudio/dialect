@@ -4,7 +4,7 @@ output:
     ver-mac/src/dialect.swift:
         type: swift
 
-HelloWorldComponent:
+RootComponent:
     type: component
     shoulds:
         count:
@@ -27,7 +27,7 @@ HelloWorldComponent:
                 then:
                     c.didLaunch = true
 
-HelloWorldContext:
+RootContext:
     type: context
     fields:
         count: Int

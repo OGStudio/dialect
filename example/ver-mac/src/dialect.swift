@@ -126,7 +126,7 @@ struct F {
     static let didSetup = "didSetup"
 
 }
-struct HelloWorldContext: DialectContext {
+struct RootContext: DialectContext {
     var count = Int()
     var didClickCount = Bool()
     var didLaunch = Bool()
