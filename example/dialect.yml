@@ -7,7 +7,7 @@ output:
 RootComponent:
     type: component
     oneliners:
-        - count: print(c.count)
+        - countText: RootVM.shared?.countText = c.countText
     shoulds:
         count:
             1. Upon hitting 10 the first time:
@@ -21,6 +21,12 @@ RootComponent:
                     c.recentField == F.didClickIncrement
                 then:
                     c.count += 1
+        countText:
+            1. Each count update
+                if:
+                    c.recentField == F.count
+                then:
+                    c.countText = "Count: '\(c.count)'"
         didLaunch:
             1. Only once during the first setup:
                 if:
@@ -33,6 +39,7 @@ RootContext:
     type: context
     fields:
         count: Int
+        countText: String
         didClickIncrement: Bool
         didLaunch: Bool
         didSetup: Bool

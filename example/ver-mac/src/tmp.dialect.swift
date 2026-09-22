@@ -68,6 +68,6 @@ func rootSet(
 
 func rootRegisterEffects(_ ctrl: DialectController) {
     let _: RootContext? = registerOneliners(ctrl, [
-        F.count, { (c: RootContext) in RootVM.shared!.counter = "\(c.count)" },
+        F.countText, { (c: RootContext) in RootVM.shared?.countText = c.countText },
     ])
 }

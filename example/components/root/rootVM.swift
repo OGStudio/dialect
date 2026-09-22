@@ -1,7 +1,7 @@
 import Combine
 
 final class RootVM: ObservableObject {
-    @Published var counter = 0
+    @Published var countText = ""
 
     static private(set) weak var shared: RootVM?
   

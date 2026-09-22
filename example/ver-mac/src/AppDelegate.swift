@@ -1,12 +1,13 @@
 import AppKit
 
-let root = RootComponent()
-let rootVM = RootVM()
 
 final class AppDelegate:
     NSObject,
     NSApplicationDelegate
 {
+    let root = RootComponent()
+    let rootVM = RootVM()
+
     func applicationDidFinishLaunching(_ notification: Notification) {
         root.setup()
 

@@ -12,7 +12,7 @@ struct RootView: View {
             Text("Hello, World!")
                 .font(.largeTitle)
 
-            Text("Count: \(vm.counter)")
+            Text(vm.countText)
                 .font(.title2.monospacedDigit())
 
             Button("Increment") {
