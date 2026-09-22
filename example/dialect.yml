@@ -7,6 +7,7 @@ output:
 RootComponent:
     type: component
     oneliners:
+        - countText: print(c.countText)
         - countText: RootVM.shared?.countText = c.countText
     shoulds:
         count:

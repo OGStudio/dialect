@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct RootView: View {
-    let vm: RootVM
+    @ObservedObject var vm: RootVM
 
     init(_ vm: RootVM) {
         self.vm = vm
