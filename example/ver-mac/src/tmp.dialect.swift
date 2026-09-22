@@ -29,6 +29,20 @@ func rootShouldResetCount(_ c: RootContext) -> RootContext {
     return c
 }
 
+func rootShouldResetCountText(_ c: RootContext) -> RootContext {
+    var c = c
+
+    /* 1. Each count update*/
+    if c.recentField == F.count {
+        c.countText = "Count: '\(c.count)'"
+        c.recentField = F.countText
+        return c
+    }
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
 func rootShouldResetDidLaunch(_ c: RootContext) -> RootContext {
     var c = c
 
@@ -51,6 +65,7 @@ func rootShouldResetDidLaunch(_ c: RootContext) -> RootContext {
 func rootRegisterShoulds(_ ctrl: DialectController) {
     [
         rootShouldResetCount,
+        rootShouldResetCountText,
         rootShouldResetDidLaunch,
     ].forEach { f in
         ctrl.registerFunction { c in f(c as! RootContext) }
