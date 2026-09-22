@@ -9,10 +9,10 @@ final class AppDelegate:
     let rootVM = RootVM()
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        root.setup()
-
         NSApp.setActivationPolicy(.regular)
         NSApp.activate(ignoringOtherApps: true)
+
+        root.setup()
     }
 
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
