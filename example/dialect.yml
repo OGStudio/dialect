@@ -6,6 +6,8 @@ output:
 
 RootComponent:
     type: component
+    oneliners:
+        - count: print(c.count)
     shoulds:
         count:
             1. Upon hitting 10 the first time:
