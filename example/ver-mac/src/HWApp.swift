@@ -7,7 +7,7 @@ struct HelloWorldApp: App {
 
     var body: some Scene {
         WindowGroup {
-            RootView()
+            RootView(RootVM.shared!)
         }
     }
 }

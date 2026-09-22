@@ -1,14 +1,18 @@
 import SwiftUI
 
 struct RootView: View {
-    @State private var count = 0
+    let vm: RootVM
+
+    init(_ vm: RootVM) {
+        self.vm = vm
+    }
 
     var body: some View {
         VStack(spacing: 16) {
             Text("Hello, World!")
                 .font(.largeTitle)
 
-            Text("Count: \(count)")
+            Text("Count: \(vm.counter)")
                 .font(.title2.monospacedDigit())
 
             Button("Increment") {

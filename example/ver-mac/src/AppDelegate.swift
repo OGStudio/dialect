@@ -1,6 +1,7 @@
 import AppKit
 
 let root = RootComponent()
+let rootVM = RootVM()
 
 final class AppDelegate:
     NSObject,
