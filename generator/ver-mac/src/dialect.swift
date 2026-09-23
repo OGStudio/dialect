@@ -137,6 +137,7 @@ struct F {
     static let out = "out"
     static let outContexts = "outContexts"
     static let outFields = "outFields"
+    static let outShoulds = "outShoulds"
     static let outStructs = "outStructs"
     static let outputPaths = "outputPaths"
     static let parseInput = "parseInput"
@@ -269,6 +270,7 @@ struct SwiftContext: DialectContext {
     var outContexts = String()
     var outFields = String()
     var outputPaths = [OutputPath]()
+    var outShoulds = String()
     var outStructs = String()
 
     var recentField = ""
@@ -309,6 +311,9 @@ struct SwiftContext: DialectContext {
         }
         else if (name == "outputPaths") {
             return outputPaths as! T
+        }
+        else if (name == "outShoulds") {
+            return outShoulds as! T
         }
         else if (name == "outStructs") {
             return outStructs as! T
@@ -356,6 +361,9 @@ struct SwiftContext: DialectContext {
         }
         else if (name == "outputPaths") {
             outputPaths = value as! [OutputPath]
+        }
+        else if (name == "outShoulds") {
+            outShoulds = value as! String
         }
         else if (name == "outStructs") {
             outStructs = value as! String

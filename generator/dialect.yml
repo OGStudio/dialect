@@ -92,7 +92,8 @@ SwiftComponent:
                         otherBase64ToString(SWIFT_EMB64_CORE) +
                         c.outFields +
                         c.outStructs +
-                        c.outContexts
+                        c.outContexts +
+                        c.outShoulds
         outContexts:
             1. When entity field types are available
                 if:
@@ -135,6 +136,7 @@ SwiftContext:
         outContexts: String
         outFields: String
         outputPaths: [OutputPath]
+        outShoulds: String
         outStructs: String
 
 YMLComponent:
