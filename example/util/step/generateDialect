@@ -3,4 +3,4 @@
 STEP=$((STEP+1))
 echo -e "\n> > > > Step №$STEP. Generate Dialect"
 
-$SDIR/../../util/run-generator --file=dialect.yml 2>/tmp/dialect.log
+$SDIR/../../util/run-generator --file=$SDIR/../dialect.yml 2>/tmp/dialect.log
