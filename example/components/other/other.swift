@@ -11,6 +11,27 @@ func otherBase64ToString(_ encoded: String) -> String {
     return str
 }
 
+/// Capitalize the first letter of a string
+func otherCapitalize(_ s: String) -> String {
+    guard let first = s.first else {
+        return s
+    }
+    return String(first).uppercased() + String(s.dropFirst())
+}
+
+/// Count leading spaces in a line
+func otherLineIndent(_ line: String) -> Int {
+    var count = 0
+    for ch in line {
+        if ch == " " {
+            count += 1
+        } else {
+            break
+        }
+    }
+    return count
+}
+
 /// Print to stderr
 func otherPrintStderr(_ txt: String) {
     if let dat = "\(txt)\n".data(using: .utf8) {

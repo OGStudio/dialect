@@ -47,6 +47,32 @@ struct %NAME% {
 }
 
 """
+let SWIFT_SHOULD_BRANCH_T = """
+    /* %DESC% */
+    if
+%IF%
+    {
+%THEN%
+        c.recentField = F.%FIELD%
+        return c
+    }
+
+
+"""
+let SWIFT_SHOULD_T = """
+
+func %FUNC%(_ c: %CONTEXT%) -> %CONTEXT% {
+    var c = c
+
+%BOTH%
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+"""
+let SWIFT_SUFFIX_COMPONENT = "Component"
+let SWIFT_SUFFIX_CONTEXT = "Context"
 let SWIFT_TYPE = "swift"
+let SWIFT_TYPE_COMPONENT = "component"
 let SWIFT_TYPE_CONTEXT = "context"
 let SWIFT_TYPE_STRUCT = "struct"
