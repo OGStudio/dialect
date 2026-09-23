@@ -32,9 +32,16 @@ func rootShouldResetCount(_ c: RootContext) -> RootContext {
 func rootShouldResetCountText(_ c: RootContext) -> RootContext {
     var c = c
 
-    /* 1. Each count update*/
+    /* 1. Upon each count update */
     if c.recentField == F.count {
         c.countText = "Count: '\(c.count)'"
+        c.recentField = F.countText
+        return c
+    }
+
+    /* 2. Upon launch */
+    if c.recentField == F.didLaunch {
+        c.countText = "Press the button to count"
         c.recentField = F.countText
         return c
     }

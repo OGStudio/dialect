@@ -23,11 +23,16 @@ RootComponent:
                 then:
                     c.count += 1
         countText:
-            1. Each count update
+            1. Upon each count change
                 if:
                     c.recentField == F.count
                 then:
                     c.countText = "Count: '\(c.count)'"
+            2. Upon launch
+                if:
+                    c.recentField == F.didLaunch
+                then:
+                    c.countText = "Press the button to count"
         didLaunch:
             1. Only once during the first setup:
                 if:
