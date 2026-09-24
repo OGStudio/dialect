@@ -218,7 +218,43 @@ func ymlParseEntityShouldBranches(
         if !shoulds.isEmpty {
             entityIds.append(id)
         }
-        print("ИГР ymlPESB entityI/shoulds.isEmpty: '\(id)'/'\(shoulds.isEmpty)'")
+    }
+
+    for entityId in entityIds {
+        let entity = entities[entityId]
+        guard let lines = chunks["\(entity):"] else { continue }
+
+        var currentBranch = ShouldBranch()
+        var isParsing = false
+        var shouldId = -1
+        var shouldSections = [Int: [ShouldBranch]]()
+
+        for ln in lines {
+
+            // Detect parsed region
+            if ln.hasPrefix(YML_PREFIX_SHOULDS) {
+                isParsing = true
+                continue
+            }
+            if !isParsing {
+                continue
+            }
+
+            // Detect should section
+            if otherLineIndent(ln) == YML_INDENT_SHOULD {
+                shouldId += 1
+                shouldSections[shouldId] = []
+                continue
+            }
+
+            // Detect branch description
+            if otherLineIndent(ln) == YML_INDENT_SHOULD_BRANCH_DESC {
+                currentBranch.desc = String(ln.dropFirst(YML_INDENT_SHOULD_BRANCH_DESC).dropLast())
+                shouldSections[shouldId]?.append(currentBranch)
+            }
+        }
+
+        print("ИГР ymlPESB shouldS entityId/value: '\(entityId)'/'\(shouldSections)'")
     }
 
     return result

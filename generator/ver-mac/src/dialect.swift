@@ -275,8 +275,8 @@ struct SwiftContext: DialectContext {
     var entities = [String]()
     var entityFields = [Int: [String]]()
     var entityFieldTypes = [Int: [Int: String]]()
-    var entityShoulds = [Int: [String]]()
     var entityShouldBranches = [Int: [Int: [ShouldBranch]]]()
+    var entityShoulds = [Int: [String]]()
     var entityTypes = [Int: String]()
     var inputAbsoluteDir = String()
     var path = String()
@@ -305,11 +305,11 @@ struct SwiftContext: DialectContext {
         else if (name == "entityFieldTypes") {
             return entityFieldTypes as! T
         }
-        else if (name == "entityShoulds") {
-            return entityShoulds as! T
-        }
         else if (name == "entityShouldBranches") {
             return entityShouldBranches as! T
+        }
+        else if (name == "entityShoulds") {
+            return entityShoulds as! T
         }
         else if (name == "entityTypes") {
             return entityTypes as! T
@@ -361,11 +361,11 @@ struct SwiftContext: DialectContext {
         else if (name == "entityFieldTypes") {
             entityFieldTypes = value as! [Int: [Int: String]]
         }
-        else if (name == "entityShoulds") {
-            entityShoulds = value as! [Int: [String]]
-        }
         else if (name == "entityShouldBranches") {
             entityShouldBranches = value as! [Int: [Int: [ShouldBranch]]]
+        }
+        else if (name == "entityShoulds") {
+            entityShoulds = value as! [Int: [String]]
         }
         else if (name == "entityTypes") {
             entityTypes = value as! [Int: String]
@@ -405,8 +405,8 @@ struct YMLContext: DialectContext {
     var entities = [String]()
     var entityFields = [Int: [String]]()
     var entityFieldTypes = [Int: [Int: String]]()
-    var entityShoulds = [Int: [String]]()
     var entityShouldBranches = [Int: [Int: [ShouldBranch]]]()
+    var entityShoulds = [Int: [String]]()
     var entityTypes = [Int: String]()
     var inputContents = String()
     var inputLines = [String]()
@@ -435,11 +435,11 @@ struct YMLContext: DialectContext {
         else if (name == "entityFieldTypes") {
             return entityFieldTypes as! T
         }
-        else if (name == "entityShoulds") {
-            return entityShoulds as! T
-        }
         else if (name == "entityShouldBranches") {
             return entityShouldBranches as! T
+        }
+        else if (name == "entityShoulds") {
+            return entityShoulds as! T
         }
         else if (name == "entityTypes") {
             return entityTypes as! T
@@ -485,11 +485,11 @@ struct YMLContext: DialectContext {
         else if (name == "entityFieldTypes") {
             entityFieldTypes = value as! [Int: [Int: String]]
         }
-        else if (name == "entityShoulds") {
-            entityShoulds = value as! [Int: [String]]
-        }
         else if (name == "entityShouldBranches") {
             entityShouldBranches = value as! [Int: [Int: [ShouldBranch]]]
+        }
+        else if (name == "entityShoulds") {
+            entityShoulds = value as! [Int: [String]]
         }
         else if (name == "entityTypes") {
             entityTypes = value as! [Int: String]
