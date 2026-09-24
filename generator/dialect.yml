@@ -71,6 +71,13 @@ RootContext:
     fields:
         didLaunch: Bool
 
+ShouldBranch:
+    type: struct
+    fields:
+        desc: String
+        if: String
+        then: String
+
 SwiftComponent:
     type: component
     oneliners:
@@ -84,7 +91,7 @@ SwiftComponent:
                 then:
                     c.didLaunch = true
         out:
-            1. At first just provide ctrl/ctx/reg
+            1. At first just provide ctrl/ctx/reg:
                 if:
                     c.recentField == F.didLaunch
                 then:
@@ -95,25 +102,31 @@ SwiftComponent:
                         c.outContexts +
                         c.outShoulds
         outContexts:
-            1. When entity field types are available
+            1. When entity field types are available:
                 if:
                     c.recentField == F.entityFieldTypes
                 then:
                     c.outContexts = swiftContexts(c.entities, c.entityTypes, c.entityFields, c.entityFieldTypes)
         outFields:
-            1. When entity fields are available
+            1. When entity fields are available:
                 if:
                     c.recentField == F.entityFields
                 then:
                     c.outFields = swiftFields(c.entityFields)
+        outShoulds:
+            1. When entity should branches are available:
+                if:
+                    c.recentField == F.entityShouldBranches
+                then:
+                    c.outShoulds = swiftShoulds(c.entities, c.entityTypes, c.entityShoulds, c.entityShouldBranches)
         outStructs:
-            1. When entity field types are available
+            1. When entity field types are available:
                 if:
                     c.recentField == F.entityFieldTypes
                 then:
                     c.outStructs = swiftStructs(c.entities, c.entityTypes, c.entityFields, c.entityFieldTypes)
         path:
-            1. Extract Swift path if present
+            1. Extract Swift path if present:
                 if:
                     c.recentField == F.outputPaths &&
                     c.outputPaths.contains(where: { $0.type == SWIFT_TYPE })
@@ -129,6 +142,8 @@ SwiftContext:
         entities: [String]
         entityFields: [Int: [String]]
         entityFieldTypes: [Int: [Int: String]]
+        entityShoulds: [Int: [String]]
+        entityShouldBranches: [Int: [Int: [ShouldBranch]]]
         entityTypes: [Int: String]
         inputAbsoluteDir: String
         path: String
@@ -145,6 +160,8 @@ YMLComponent:
         - entities: swiftSet(F.entities, c.entities)
         - entityFields: swiftSet(F.entityFields, c.entityFields)
         - entityFieldTypes: swiftSet(F.entityFieldTypes, c.entityFieldTypes)
+        - entityShouldBranches: swiftSet(F.entityShouldBranches, c.entityShouldBranches)
+        - entityShoulds: swiftSet(F.entityShoulds, c.entityShoulds)
         - entityTypes: swiftSet(F.entityTypes, c.entityTypes)
         - outputPaths: swiftSet(F.outputPaths, c.outputPaths)
         - parseInput: ymlReadLines(c.inputContents)
@@ -180,6 +197,18 @@ YMLComponent:
                     c.recentField == F.entityFields
                 then:
                     c.entityFieldTypes = ymlParseEntityFieldTypes(c.chunks, c.entities, c.entityFields)
+        entityShoulds:
+            1. Upon entities:
+                if:
+                    c.recentField == F.entities
+                then:
+                    c.entityShoulds = ymlParseEntityShoulds(c.chunks, c.entities)
+        entityShouldBranches:
+            1. Upon entity shoulds:
+                if:
+                    c.recentField == F.entityShoulds
+                then:
+                    c.entityShouldBranches = ymlParseEntityShouldBranches(c.chunks, c.entities, c.entityShoulds)
         entityTypes:
             1. Upon entities:
                 if:
@@ -215,6 +244,8 @@ YMLContext:
         entities: [String]
         entityFields: [Int: [String]]
         entityFieldTypes: [Int: [Int: String]]
+        entityShoulds: [Int: [String]]
+        entityShouldBranches: [Int: [Int: [ShouldBranch]]]
         entityTypes: [Int: String]
         inputContents: String
         inputLines: [String]

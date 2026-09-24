@@ -38,6 +38,14 @@ func swiftContext(
             .replacingOccurrences(of: "%SETTERS%", with: outSetters)
 }
 
+/// Generate the context name for a component
+func swiftContextName(_ entity: String) -> String {
+    if entity.hasSuffix(SWIFT_SUFFIX_COMPONENT) {
+        return String(entity.dropLast(SWIFT_SUFFIX_COMPONENT.count)) + SWIFT_SUFFIX_CONTEXT
+    }
+    return entity
+}
+
 /// Generate entities of `context` type
 func swiftContexts(
     _ entities: [String],
@@ -85,12 +93,79 @@ func swiftFields(_ entityFields: [Int: [String]]) -> String {
     // Construct the body of the struct
     var sitems = ""
     for name in names.sorted() {
-        sitems += SWIFT_FIELD_T.replacingOccurrences(of: "%NAME%", with: name)
+        sitems +=
+            SWIFT_FIELD_T
+                .replacingOccurrences(of: "%DECL%", with: swiftKeywordEscape(name))
+                .replacingOccurrences(of: "%NAME%", with: name)
     }
 
     // Construct the whole struct
     return SWIFT_FIELDS_T.replacingOccurrences(of: "%ITEMS%", with: sitems)
 }
+
+/// Escape a field name when it collides with a Swift keyword
+func swiftKeywordEscape(_ name: String) -> String {
+    if swiftKeywords.contains(name) {
+        return "`\(name)`"
+    }
+    return name
+}
+
+/*
+/// Generate should-functions for a single component entity
+func swiftShould(
+    _ name: String,
+    _ contextName: String,
+    _ branches: [ShouldBranch]
+) -> String {
+    var outBranches = ""
+    for branch in branches {
+        outBranches +=
+            SWIFT_SHOULD_BRANCH_T
+                .replacingOccurrences(of: "%DESC%", with: branch.desc)
+                .replacingOccurrences(of: "%FIELD%", with: name)
+                .replacingOccurrences(of: "%IF%", with: branch.`if`)
+                .replacingOccurrences(of: "%THEN%", with: branch.then)
+    }
+
+    let prefix = String(contextName.dropLast("Context".count)).lowercased()
+    let funcName = prefix + "ShouldReset" + otherCapitalize(name)
+
+    return
+        SWIFT_SHOULD_T
+            .replacingOccurrences(of: "%FUNC%", with: funcName)
+            .replacingOccurrences(of: "%CONTEXT%", with: contextName)
+            .replacingOccurrences(of: "%BOTH%", with: outBranches)
+}
+
+/// Generate should-functions for all components
+func swiftShoulds(
+    _ entities: [String],
+    _ entityTypes: [Int: String],
+    _ entityShoulds: [Int: [String]],
+    _ entityShouldBranches: [Int: [Int: [ShouldBranch]]]
+) -> String {
+    var out = ""
+    var entityId = 0
+
+    for entity in entities {
+        if entityTypes[entityId] == SWIFT_TYPE_COMPONENT {
+            let contextName = swiftContextName(entity)
+
+            let fields = entityShoulds[entityId] ?? []
+            var fieldId = 0
+            for field in fields {
+                let branches = entityShouldBranches[entityId]?[fieldId] ?? []
+                out += swiftShould(field, contextName, branches)
+                fieldId += 1
+            }
+        }
+        entityId += 1
+    }
+
+    return out
+}
+*/
 
 /// Generate single `struct` entity
 func swiftStruct(
@@ -105,7 +180,7 @@ func swiftStruct(
         let defaultValue = swiftTypeDefaultValue(type)
         outFields +=
             SWIFT_STRUCT_FIELD_T
-                .replacingOccurrences(of: "%NAME%", with: field)
+                .replacingOccurrences(of: "%NAME%", with: swiftKeywordEscape(field))
                 .replacingOccurrences(of: "%DEFAULT%", with: defaultValue)
         fieldId += 1
     }

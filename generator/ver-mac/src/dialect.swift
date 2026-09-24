@@ -123,12 +123,16 @@ struct F {
     static let arguments = "arguments"
     static let chunks = "chunks"
     static let consoleOutput = "consoleOutput"
+    static let desc = "desc"
     static let didLaunch = "didLaunch"
     static let didSetup = "didSetup"
     static let entities = "entities"
     static let entityFieldTypes = "entityFieldTypes"
     static let entityFields = "entityFields"
+    static let entityShouldBranches = "entityShouldBranches"
+    static let entityShoulds = "entityShoulds"
     static let entityTypes = "entityTypes"
+    static let `if` = "if"
     static let inputAbsoluteDir = "inputAbsoluteDir"
     static let inputContents = "inputContents"
     static let inputError = "inputError"
@@ -143,6 +147,7 @@ struct F {
     static let parseInput = "parseInput"
     static let path = "path"
     static let readFile = "readFile"
+    static let then = "then"
     static let type = "type"
     static let version = "version"
 
@@ -150,6 +155,13 @@ struct F {
 struct OutputPath {
     var path = String()
     var type = String()
+
+}
+
+struct ShouldBranch {
+    var desc = String()
+    var `if` = String()
+    var then = String()
 
 }
 
@@ -263,6 +275,8 @@ struct SwiftContext: DialectContext {
     var entities = [String]()
     var entityFields = [Int: [String]]()
     var entityFieldTypes = [Int: [Int: String]]()
+    var entityShoulds = [Int: [String]]()
+    var entityShouldBranches = [Int: [Int: [ShouldBranch]]]()
     var entityTypes = [Int: String]()
     var inputAbsoluteDir = String()
     var path = String()
@@ -290,6 +304,12 @@ struct SwiftContext: DialectContext {
         }
         else if (name == "entityFieldTypes") {
             return entityFieldTypes as! T
+        }
+        else if (name == "entityShoulds") {
+            return entityShoulds as! T
+        }
+        else if (name == "entityShouldBranches") {
+            return entityShouldBranches as! T
         }
         else if (name == "entityTypes") {
             return entityTypes as! T
@@ -341,6 +361,12 @@ struct SwiftContext: DialectContext {
         else if (name == "entityFieldTypes") {
             entityFieldTypes = value as! [Int: [Int: String]]
         }
+        else if (name == "entityShoulds") {
+            entityShoulds = value as! [Int: [String]]
+        }
+        else if (name == "entityShouldBranches") {
+            entityShouldBranches = value as! [Int: [Int: [ShouldBranch]]]
+        }
         else if (name == "entityTypes") {
             entityTypes = value as! [Int: String]
         }
@@ -379,6 +405,8 @@ struct YMLContext: DialectContext {
     var entities = [String]()
     var entityFields = [Int: [String]]()
     var entityFieldTypes = [Int: [Int: String]]()
+    var entityShoulds = [Int: [String]]()
+    var entityShouldBranches = [Int: [Int: [ShouldBranch]]]()
     var entityTypes = [Int: String]()
     var inputContents = String()
     var inputLines = [String]()
@@ -406,6 +434,12 @@ struct YMLContext: DialectContext {
         }
         else if (name == "entityFieldTypes") {
             return entityFieldTypes as! T
+        }
+        else if (name == "entityShoulds") {
+            return entityShoulds as! T
+        }
+        else if (name == "entityShouldBranches") {
+            return entityShouldBranches as! T
         }
         else if (name == "entityTypes") {
             return entityTypes as! T
@@ -450,6 +484,12 @@ struct YMLContext: DialectContext {
         }
         else if (name == "entityFieldTypes") {
             entityFieldTypes = value as! [Int: [Int: String]]
+        }
+        else if (name == "entityShoulds") {
+            entityShoulds = value as! [Int: [String]]
+        }
+        else if (name == "entityShouldBranches") {
+            entityShouldBranches = value as! [Int: [Int: [ShouldBranch]]]
         }
         else if (name == "entityTypes") {
             entityTypes = value as! [Int: String]

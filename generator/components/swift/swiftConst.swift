@@ -31,7 +31,7 @@ struct %NAME%: DialectContext {
 }
 
 """
-let SWIFT_FIELD_T = "    static let %NAME% = \"%NAME%\"\n"
+let SWIFT_FIELD_T = "    static let %DECL% = \"%NAME%\"\n"
 let SWIFT_FIELDS_T = """
 
 // Context field names for static type check
@@ -76,3 +76,58 @@ let SWIFT_TYPE = "swift"
 let SWIFT_TYPE_COMPONENT = "component"
 let SWIFT_TYPE_CONTEXT = "context"
 let SWIFT_TYPE_STRUCT = "struct"
+let swiftKeywords = Set<String>([
+    "Any",
+    "as",
+    "associatedtype",
+    "break",
+    "case",
+    "catch",
+    "class",
+    "continue",
+    "default",
+    "defer",
+    "deinit",
+    "do",
+    "else",
+    "enum",
+    "extension",
+    "fallthrough",
+    "false",
+    "fileprivate",
+    "for",
+    "func",
+    "guard",
+    "if",
+    "import",
+    "in",
+    "init",
+    "inout",
+    "internal",
+    "is",
+    "let",
+    "nil",
+    "open",
+    "operator",
+    "private",
+    "protocol",
+    "public",
+    "repeat",
+    "rethrows",
+    "return",
+    "self",
+    "Self",
+    "static",
+    "struct",
+    "subscript",
+    "super",
+    "switch",
+    "throw",
+    "throws",
+    "true",
+    "try",
+    "typealias",
+    "var",
+    "where",
+    "while",
+])
