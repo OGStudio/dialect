@@ -224,7 +224,6 @@ func ymlParseEntityShouldBranches(
         let entity = entities[entityId]
         guard let lines = chunks["\(entity):"] else { continue }
 
-        var currentBranch = ShouldBranch()
         var isParsing = false
         var isParsingIf = false
         var isParsingThen = false
@@ -269,13 +268,24 @@ func ymlParseEntityShouldBranches(
 
             // Parse branch description
             if otherLineIndent(ln) == YML_INDENT_SHOULD_BRANCH_DESC {
-                currentBranch.desc = String(ln.dropFirst(YML_INDENT_SHOULD_BRANCH_DESC).dropLast())
-                shouldSections[shouldId]?.append(currentBranch)
+                shouldSections[shouldId]!.append(ShouldBranch())
+                let lastId = shouldSections[shouldId]!.count - 1
+                let desc = String(ln.dropFirst(YML_INDENT_SHOULD_BRANCH_DESC).dropLast())
+                shouldSections[shouldId]![lastId].desc = desc
             }
 
-            // Parse branch if
+            // Parse `if`
             if isParsingIf {
-                //currentBranch.if += do we use lines here or newlines?
+                let lastId = shouldSections[shouldId]!.count - 1
+                let condition = String(ln.dropFirst(YML_INDENT_SHOULD_BRANCH_IF))
+                shouldSections[shouldId]![lastId].if.append(condition)
+            }
+
+            // Parse `then`
+            if isParsingThen {
+                let lastId = shouldSections[shouldId]!.count - 1
+                let body = String(ln.dropFirst(YML_INDENT_SHOULD_BRANCH_THEN))
+                shouldSections[shouldId]![lastId].then.append(body)
             }
         }
 
