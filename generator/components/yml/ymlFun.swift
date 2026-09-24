@@ -286,12 +286,11 @@ func ymlParseEntityShoulds(
             }
             if 
                 inShoulds &&
-                ln.hasPrefix(YML_PREFIX_SHOULD) &&
+                otherLineIndent(ln) == YML_INDENT_SHOULD &&
                 ln.hasSuffix(":")
             {
-                let name = ln.dropFirst(YML_PREFIX_SHOULD.count).dropLast()
+                let name = ln.dropFirst(YML_INDENT_SHOULD).dropLast()
                 shoulds.append(String(name))
-                print("ИГР ymlPES ln/name: '\(ln)'/'\(name)'")
             }
         }
 
