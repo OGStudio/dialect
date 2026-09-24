@@ -142,8 +142,8 @@ SwiftContext:
         entities: [String]
         entityFields: [Int: [String]]
         entityFieldTypes: [Int: [Int: String]]
-        entityShoulds: [Int: [String]]
         entityShouldBranches: [Int: [Int: [ShouldBranch]]]
+        entityShoulds: [Int: [String]]
         entityTypes: [Int: String]
         inputAbsoluteDir: String
         path: String
@@ -244,8 +244,8 @@ YMLContext:
         entities: [String]
         entityFields: [Int: [String]]
         entityFieldTypes: [Int: [Int: String]]
-        entityShoulds: [Int: [String]]
         entityShouldBranches: [Int: [Int: [ShouldBranch]]]
+        entityShoulds: [Int: [String]]
         entityTypes: [Int: String]
         inputContents: String
         inputLines: [String]
