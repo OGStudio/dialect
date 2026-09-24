@@ -6,7 +6,6 @@ final class RootVM: ObservableObject {
     static private(set) weak var shared: RootVM?
   
     init() {
-        print("ИГР RootVM.init")
         Self.shared = self
     }
 }
