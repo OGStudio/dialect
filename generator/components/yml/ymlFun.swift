@@ -289,7 +289,7 @@ func ymlParseEntityShouldBranches(
             }
         }
 
-        print("ИГР ymlPESB shouldS entityId/value: '\(entityId)'/'\(shouldSections)'")
+        result[entityId] = shouldSections
     }
 
     return result
