@@ -160,8 +160,8 @@ struct OutputPath {
 
 struct ShouldBranch {
     var desc = String()
-    var `if` = String()
-    var then = String()
+    var `if` = [String]()
+    var then = [String]()
 
 }
 

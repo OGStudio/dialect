@@ -226,6 +226,8 @@ func ymlParseEntityShouldBranches(
 
         var currentBranch = ShouldBranch()
         var isParsing = false
+        var isParsingIf = false
+        var isParsingThen = false
         var shouldId = -1
         var shouldSections = [Int: [ShouldBranch]]()
 
@@ -240,6 +242,24 @@ func ymlParseEntityShouldBranches(
                 continue
             }
 
+            // Detect parsing `if`
+            if ln.hasPrefix(YML_PREFIX_SHOULD_BRANCH_IF) {
+                isParsingIf = true
+                continue
+            }
+            if ln.hasPrefix(YML_PREFIX_SHOULD_BRANCH_THEN) {
+                isParsingIf = false
+            }
+
+            // Detect parsing `then`
+            if ln.hasPrefix(YML_PREFIX_SHOULD_BRANCH_THEN) {
+                isParsingThen = true
+                continue
+            }
+            if otherLineIndent(ln) == YML_INDENT_SHOULD {
+                isParsingThen = false
+            }
+
             // Detect should section
             if otherLineIndent(ln) == YML_INDENT_SHOULD {
                 shouldId += 1
@@ -247,10 +267,15 @@ func ymlParseEntityShouldBranches(
                 continue
             }
 
-            // Detect branch description
+            // Parse branch description
             if otherLineIndent(ln) == YML_INDENT_SHOULD_BRANCH_DESC {
                 currentBranch.desc = String(ln.dropFirst(YML_INDENT_SHOULD_BRANCH_DESC).dropLast())
                 shouldSections[shouldId]?.append(currentBranch)
+            }
+
+            // Parse branch if
+            if isParsingIf {
+                //currentBranch.if += do we use lines here or newlines?
             }
         }
 
