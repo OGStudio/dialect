@@ -197,18 +197,18 @@ YMLComponent:
                     c.recentField == F.entityFields
                 then:
                     c.entityFieldTypes = ymlParseEntityFieldTypes(c.chunks, c.entities, c.entityFields)
-        entityShoulds:
-            1. Upon entities:
-                if:
-                    c.recentField == F.entities
-                then:
-                    c.entityShoulds = ymlParseEntityShoulds(c.chunks, c.entities)
         entityShouldBranches:
             1. Upon entity shoulds:
                 if:
                     c.recentField == F.entityShoulds
                 then:
                     c.entityShouldBranches = ymlParseEntityShouldBranches(c.chunks, c.entities, c.entityShoulds)
+        entityShoulds:
+            1. Upon entities:
+                if:
+                    c.recentField == F.entities
+                then:
+                    c.entityShoulds = ymlParseEntityShoulds(c.chunks, c.entities)
         entityTypes:
             1. Upon entities:
                 if:
