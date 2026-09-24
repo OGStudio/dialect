@@ -204,15 +204,27 @@ func ymlParseEntityFields(
     return result
 }
 
-/*
 func ymlParseEntityShouldBranches(
     _ chunks: [String: [String]],
     _ entities: [String],
     _ entityShoulds: [Int: [String]]
 ) -> [Int: [Int: [ShouldBranch]]] {
     var result = [Int: [Int: [ShouldBranch]]]()
-    var entityId = 0
 
+    // Collect entity ids with shoulds
+    var entityIds = [Int]()
+    for id in entityShoulds.keys.sorted() {
+        let shoulds = entityShoulds[id]!
+        if !shoulds.isEmpty {
+            entityIds.append(id)
+        }
+        print("ИГР ymlPESB entityI/shoulds.isEmpty: '\(id)'/'\(shoulds.isEmpty)'")
+    }
+
+    return result
+}
+
+/*
     for entity in entities {
         var all = [Int: [ShouldBranch]]()
 
@@ -257,10 +269,7 @@ func ymlParseEntityShouldBranches(
         result[entityId] = all
         entityId += 1
     }
-
-    return result
-}
-*/
+    */
 
 func ymlParseEntityShoulds(
     _ chunks: [String: [String]],

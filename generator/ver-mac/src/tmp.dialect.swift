@@ -410,6 +410,7 @@ func ymlRegisterShoulds(_ ctrl: DialectController) {
         ymlShouldResetEntities,
         ymlShouldResetEntityFields,
         ymlShouldResetEntityFieldTypes,
+        ymlShouldResetEntityShouldBranches,
         ymlShouldResetEntityShoulds,
         ymlShouldResetEntityTypes,
         ymlShouldResetOutputPaths,
