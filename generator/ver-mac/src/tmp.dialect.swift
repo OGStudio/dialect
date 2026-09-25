@@ -171,6 +171,22 @@ func swiftShouldResetOutFields(_ c: SwiftContext) -> SwiftContext {
     return c
 }
 
+func swiftShouldResetOutShoulds(_ c: SwiftContext) -> SwiftContext {
+    var c = c
+
+    /* 1. When entity should branches are available */
+    if
+        c.recentField == F.entityShouldBranches
+    {
+        c.outShoulds = swiftShoulds(c.entities, c.entityShoulds, c.entityShouldBranches)
+        c.recentField = F.outShoulds
+        return c
+    }
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
 func swiftShouldResetOutStructs(_ c: SwiftContext) -> SwiftContext {
     var c = c
 
@@ -214,6 +230,7 @@ func swiftRegisterShoulds(_ ctrl: DialectController) {
         swiftShouldResetOut,
         swiftShouldResetOutContexts,
         swiftShouldResetOutFields,
+        swiftShouldResetOutShoulds,
         swiftShouldResetOutStructs,
         swiftShouldResetPath,
     ].forEach { f in
@@ -450,6 +467,8 @@ func ymlRegisterEffects(_ ctrl: DialectController) {
         F.entities, { (c: YMLContext) in swiftSet(F.entities, c.entities) },
         F.entityFields, { (c: YMLContext) in swiftSet(F.entityFields, c.entityFields) },
         F.entityFieldTypes, { (c: YMLContext) in swiftSet(F.entityFieldTypes, c.entityFieldTypes) },
+        F.entityShouldBranches, { (c: YMLContext) in swiftSet(F.entityShouldBranches, c.entityShouldBranches) },
+        F.entityShoulds, { (c: YMLContext) in swiftSet(F.entityShoulds, c.entityShoulds) },
         F.entityTypes, { (c: YMLContext) in swiftSet(F.entityTypes, c.entityTypes) },
         F.outputPaths, { (c: YMLContext) in swiftSet(F.outputPaths, c.outputPaths) },
         F.parseInput, { (c: YMLContext) in ymlReadLines(c.inputContents) },
