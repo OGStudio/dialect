@@ -101,8 +101,8 @@ func swiftFields(_ entityFields: [Int: [String]]) -> String {
 }
 
 /// Join branch lines, indenting each by 8 spaces while keeping relative indent
-func swiftShouldLines(_ lines: [String]) -> String {
-    return lines.map { "        " + $0 }.joined(separator: "\n")
+func swiftFormatShould(_ lines: [String]) -> String {
+    return lines.map { SWIFT_SHOULD_INDENTATION + $0 }.joined(separator: "\n")
 }
 
 /// Generate should-functions for a single component entity
@@ -117,8 +117,8 @@ func swiftShould(
             SWIFT_SHOULD_BRANCH_T
                 .replacingOccurrences(of: "%ABOUT%", with: branch.about)
                 .replacingOccurrences(of: "%FIELD%", with: name)
-                .replacingOccurrences(of: "%CONDITION%", with: swiftShouldLines(branch.condition))
-                .replacingOccurrences(of: "%REACTION%", with: swiftShouldLines(branch.reaction))
+                .replacingOccurrences(of: "%CONDITION%", with: swiftFormatShould(branch.condition))
+                .replacingOccurrences(of: "%REACTION%", with: swiftFormatShould(branch.reaction))
     }
 
     let prefix = String(contextName.dropLast(SWIFT_SUFFIX_CONTEXT.count)).lowercased()

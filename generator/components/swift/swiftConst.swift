@@ -59,6 +59,7 @@ let SWIFT_SHOULD_BRANCH_T = """
 
 
 """
+let SWIFT_SHOULD_INDENTATION = "        "
 let SWIFT_SHOULD_T = """
 
 func %FUNC%(_ c: %CONTEXT%) -> %CONTEXT% {
