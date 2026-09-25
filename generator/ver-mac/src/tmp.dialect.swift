@@ -130,8 +130,7 @@ func swiftShouldResetOut(_ c: SwiftContext) -> SwiftContext {
             otherBase64ToString(SWIFT_EMB64_CORE) +
             c.outFields +
             c.outStructs +
-            c.outContexts +
-            c.outShoulds
+            c.outContexts
         c.recentField = F.out
         return c
     }

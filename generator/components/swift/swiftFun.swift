@@ -111,7 +111,11 @@ func swiftKeywordEscape(_ name: String) -> String {
     return name
 }
 
-/*
+/// Join branch lines, indenting each by 8 spaces while keeping relative indent
+func swiftShouldLines(_ lines: [String]) -> String {
+    return lines.map { "        " + $0 }.joined(separator: "\n")
+}
+
 /// Generate should-functions for a single component entity
 func swiftShould(
     _ name: String,
@@ -124,11 +128,11 @@ func swiftShould(
             SWIFT_SHOULD_BRANCH_T
                 .replacingOccurrences(of: "%ABOUT%", with: branch.about)
                 .replacingOccurrences(of: "%FIELD%", with: name)
-                .replacingOccurrences(of: "%CONDITION%", with: branch.condition)
-                .replacingOccurrences(of: "%REACTION%", with: branch.reaction)
+                .replacingOccurrences(of: "%CONDITION%", with: swiftShouldLines(branch.condition))
+                .replacingOccurrences(of: "%REACTION%", with: swiftShouldLines(branch.reaction))
     }
 
-    let prefix = String(contextName.dropLast("Context".count)).lowercased()
+    let prefix = String(contextName.dropLast(SWIFT_SUFFIX_CONTEXT.count)).lowercased()
     let funcName = prefix + "ShouldReset" + otherCapitalize(name)
 
     return
@@ -165,7 +169,6 @@ func swiftShoulds(
 
     return out
 }
-*/
 
 /// Generate single `struct` entity
 func swiftStruct(
