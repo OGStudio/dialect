@@ -48,11 +48,11 @@ struct %NAME% {
 
 """
 let SWIFT_SHOULD_BRANCH_T = """
-    /* %DESC% */
+    /* %ABOUT% */
     if
-%IF%
+%CONDITION%
     {
-%THEN%
+%REACTION%
         c.recentField = F.%FIELD%
         return c
     }

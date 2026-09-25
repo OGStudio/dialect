@@ -23,17 +23,17 @@ typedef struct OutputPath {
     char* type;
 } OutputPath;
 
-// A list of strings (for ShouldBranch's if:[String]/then:[String])
+// A list of strings (for ShouldBranch's condition:[String]/reaction:[String])
 typedef struct StringList {
     char** items;
     size_t count;
 } StringList;
 
-// ShouldBranch: desc: String, if: [String], then: [String]
+// ShouldBranch: about: String, condition: [String], reaction: [String]
 typedef struct ShouldBranch {
-    char* desc;
-    StringList if_; // `if` is a C keyword
-    StringList then;
+    char* about;
+    StringList condition;
+    StringList reaction;
 } ShouldBranch;
 
 typedef struct DialectValue {

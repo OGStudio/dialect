@@ -120,10 +120,11 @@ func registerOneliners<T>(
 
 // Context field names for static type check
 struct F {
+    static let about = "about"
     static let arguments = "arguments"
     static let chunks = "chunks"
+    static let condition = "condition"
     static let consoleOutput = "consoleOutput"
-    static let desc = "desc"
     static let didLaunch = "didLaunch"
     static let didSetup = "didSetup"
     static let entities = "entities"
@@ -132,7 +133,6 @@ struct F {
     static let entityShouldBranches = "entityShouldBranches"
     static let entityShoulds = "entityShoulds"
     static let entityTypes = "entityTypes"
-    static let `if` = "if"
     static let inputAbsoluteDir = "inputAbsoluteDir"
     static let inputContents = "inputContents"
     static let inputError = "inputError"
@@ -146,8 +146,8 @@ struct F {
     static let outputPaths = "outputPaths"
     static let parseInput = "parseInput"
     static let path = "path"
+    static let reaction = "reaction"
     static let readFile = "readFile"
-    static let then = "then"
     static let type = "type"
     static let version = "version"
 
@@ -159,9 +159,9 @@ struct OutputPath {
 }
 
 struct ShouldBranch {
-    var desc = String()
-    var `if` = [String]()
-    var then = [String]()
+    var about = String()
+    var condition = [String]()
+    var reaction = [String]()
 
 }
 

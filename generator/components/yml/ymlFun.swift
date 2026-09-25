@@ -218,22 +218,22 @@ func ymlParseEntityShouldBranches(
             if otherLineIndent(ln) == YML_INDENT_SHOULD_BRANCH_DESC {
                 shouldSections[shouldId]!.append(ShouldBranch())
                 let lastId = shouldSections[shouldId]!.count - 1
-                let desc = String(ln.dropFirst(YML_INDENT_SHOULD_BRANCH_DESC).dropLast())
-                shouldSections[shouldId]![lastId].desc = desc
+                let about = String(ln.dropFirst(YML_INDENT_SHOULD_BRANCH_DESC).dropLast())
+                shouldSections[shouldId]![lastId].about = about
             }
 
-            // Parse branch `if`
+            // Parse branch `condition`
             if isParsingIf {
                 let lastId = shouldSections[shouldId]!.count - 1
                 let condition = String(ln.dropFirst(YML_INDENT_SHOULD_BRANCH_IF))
-                shouldSections[shouldId]![lastId].if.append(condition)
+                shouldSections[shouldId]![lastId].condition.append(condition)
             }
 
-            // Parse branch `then`
+            // Parse branch `reaction`
             if isParsingThen {
                 let lastId = shouldSections[shouldId]!.count - 1
-                let body = String(ln.dropFirst(YML_INDENT_SHOULD_BRANCH_THEN))
-                shouldSections[shouldId]![lastId].then.append(body)
+                let reaction = String(ln.dropFirst(YML_INDENT_SHOULD_BRANCH_THEN))
+                shouldSections[shouldId]![lastId].reaction.append(reaction)
             }
         }
 

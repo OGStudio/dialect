@@ -122,10 +122,10 @@ func swiftShould(
     for branch in branches {
         outBranches +=
             SWIFT_SHOULD_BRANCH_T
-                .replacingOccurrences(of: "%DESC%", with: branch.desc)
+                .replacingOccurrences(of: "%ABOUT%", with: branch.about)
                 .replacingOccurrences(of: "%FIELD%", with: name)
-                .replacingOccurrences(of: "%IF%", with: branch.`if`)
-                .replacingOccurrences(of: "%THEN%", with: branch.then)
+                .replacingOccurrences(of: "%CONDITION%", with: branch.condition)
+                .replacingOccurrences(of: "%REACTION%", with: branch.reaction)
     }
 
     let prefix = String(contextName.dropLast("Context".count)).lowercased()

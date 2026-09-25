@@ -74,9 +74,9 @@ RootContext:
 ShouldBranch:
     type: struct
     fields:
-        desc: String
-        if: [String]
-        then: [String]
+        about: String
+        condition: [String]
+        reaction: [String]
 
 SwiftComponent:
     type: component

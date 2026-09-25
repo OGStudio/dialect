@@ -10,11 +10,11 @@ type
     path*: string
     `type`*: string
 
-  # ShouldBranch: desc: String, if: [String], then: [String]
+  # ShouldBranch: about: String, condition: [String], reaction: [String]
   ShouldBranch* = object
-    desc*: string
-    `if`*: seq[string]
-    then*: seq[string]
+    about*: string
+    condition*: seq[string]
+    reaction*: seq[string]
 
   DialectValueKind* = enum
     dValueNone, dValueBool, dValueString, dValueOutputPath, dValueShouldBranch
