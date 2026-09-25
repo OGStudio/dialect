@@ -93,9 +93,7 @@ func swiftFields(_ entityFields: [Int: [String]]) -> String {
     // Construct the body of the struct
     var sitems = ""
     for name in names.sorted() {
-        sitems +=
-            SWIFT_FIELD_T
-                .replacingOccurrences(of: "%NAME%", with: name)
+        sitems += SWIFT_FIELD_T.replacingOccurrences(of: "%NAME%", with: name)
     }
 
     // Construct the whole struct
