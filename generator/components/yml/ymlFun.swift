@@ -222,14 +222,14 @@ func ymlParseEntityShouldBranches(
                 shouldSections[shouldId]![lastId].about = about
             }
 
-            // Parse branch `condition`
+            // Parse branch condition
             if isParsingCondition {
                 let lastId = shouldSections[shouldId]!.count - 1
                 let condition = String(ln.dropFirst(YML_INDENT_SHOULD_BRANCH_IF))
                 shouldSections[shouldId]![lastId].condition.append(condition)
             }
 
-            // Parse branch `reaction`
+            // Parse branch reaction
             if isParsingReaction {
                 let lastId = shouldSections[shouldId]!.count - 1
                 let reaction = String(ln.dropFirst(YML_INDENT_SHOULD_BRANCH_THEN))
