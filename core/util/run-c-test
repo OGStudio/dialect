@@ -1,0 +1,16 @@
+#!/bin/bash -e
+SDIR=$(cd "$(dirname "$0")" ; pwd -P)
+
+BUILD=$SDIR/../build
+mkdir -p $BUILD
+
+cc \
+    -I $SDIR/../c \
+    -o $BUILD/test-c \
+    $SDIR/../c/DialectContext.c \
+    $SDIR/../c/DialectController.c \
+    $SDIR/../c/registerOneliners.c \
+    $SDIR/../test/c/tests.c \
+    $SDIR/../test/c/main.c
+
+$BUILD/test-c
