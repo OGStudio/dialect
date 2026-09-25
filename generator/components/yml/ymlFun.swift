@@ -1,28 +1,3 @@
-/*
-func ymlDedent(_ lines: [String]) -> String {
-    if lines.isEmpty {
-        return ""
-    }
-
-    let base = otherLineIndent(lines[0])
-    let amount = base - 8
-    var out = ""
-    var isFirst = true
-    for ln in lines {
-        if !isFirst {
-            out += "\n"
-        }
-        isFirst = false
-        if amount > 0 && otherLineIndent(ln) >= amount {
-            out += String(ln.dropFirst(amount))
-        } else {
-            out += ln
-        }
-    }
-    return out
-}
-*/
-
 func ymlIsLineChunkEnd(_ ln: String) -> Bool {
     return ln.isEmpty
 }
@@ -33,34 +8,6 @@ func ymlIsLineChunkStart(_ ln: String) -> Bool {
     // 2. it is not empty
     return !ln.hasPrefix(" ") && !ln.isEmpty
 }
-
-/*
-func ymlParseBranches(_ lines: [String]) -> [ShouldBranch] {
-    var branches = [ShouldBranch]()
-    var current = [String]()
-
-    for ln in lines {
-        let trimmed = ln.trimmingCharacters(in: .whitespaces)
-        if
-            otherLineIndent(ln) == 12,
-            let first = trimmed.first,
-            first.isNumber
-        {
-            if !current.isEmpty {
-                branches.append(ymlParseShouldBranch(current))
-            }
-            current = [ln]
-        } else {
-            current.append(ln)
-        }
-    }
-    if !current.isEmpty {
-        branches.append(ymlParseShouldBranch(current))
-    }
-
-    return branches
-}
-*/
 
 func ymlParseChunks(_ lines: [String]) -> [String: [String]] {
     var chunks = [String: [String]]()
@@ -220,6 +167,7 @@ func ymlParseEntityShouldBranches(
         }
     }
 
+    // Collect should branches
     for entityId in entityIds {
         let entity = entities[entityId]
         guard let lines = chunks["\(entity):"] else { continue }
@@ -274,14 +222,14 @@ func ymlParseEntityShouldBranches(
                 shouldSections[shouldId]![lastId].desc = desc
             }
 
-            // Parse `if`
+            // Parse branch `if`
             if isParsingIf {
                 let lastId = shouldSections[shouldId]!.count - 1
                 let condition = String(ln.dropFirst(YML_INDENT_SHOULD_BRANCH_IF))
                 shouldSections[shouldId]![lastId].if.append(condition)
             }
 
-            // Parse `then`
+            // Parse branch `then`
             if isParsingThen {
                 let lastId = shouldSections[shouldId]!.count - 1
                 let body = String(ln.dropFirst(YML_INDENT_SHOULD_BRANCH_THEN))
@@ -294,53 +242,6 @@ func ymlParseEntityShouldBranches(
 
     return result
 }
-
-/*
-    for entity in entities {
-        var all = [Int: [ShouldBranch]]()
-
-        guard let lines = chunks["\(entity):"] else {
-            entityId += 1
-            continue
-        }
-
-        let names = entityShoulds[entityId] ?? []
-        var currentIndex: Int? = nil
-        var block = [String]()
-
-        func flush() {
-            if let index = currentIndex, !block.isEmpty {
-                all[index] = ymlParseBranches(block)
-                block = []
-            }
-        }
-
-        var inShoulds = false
-
-        for ln in lines {
-            if ln.hasPrefix(YML_PREFIX_SHOULDS) {
-                inShoulds = true
-                continue
-            }
-            if !inShoulds {
-                continue
-            }
-
-            if otherLineIndent(ln) == 8 {
-                flush()
-                let trimmed = ln.trimmingCharacters(in: .whitespaces)
-                let fieldName = trimmed.hasSuffix(":") ? String(trimmed.dropLast(1)) : trimmed
-                currentIndex = names.firstIndex(of: fieldName)
-            } else if otherLineIndent(ln) > 8 {
-                block.append(ln)
-            }
-        }
-        flush()
-
-        result[entityId] = all
-        entityId += 1
-    }
-    */
 
 func ymlParseEntityShoulds(
     _ chunks: [String: [String]],
@@ -435,43 +336,6 @@ func ymlParseOutputPaths(_ chunks: [String: [String]]) -> [OutputPath] {
 
     return paths
 }
-
-/*
-func ymlParseShouldBranch(_ lines: [String]) -> ShouldBranch {
-    var branch = ShouldBranch()
-    var ifLines = [String]()
-    var thenLines = [String]()
-    var section = "if"
-
-    for (index, ln) in lines.enumerated() {
-        let trimmed = ln.trimmingCharacters(in: .whitespaces)
-        if index == 0 {
-            var desc = trimmed
-            if desc.hasSuffix(":") {
-                desc = String(desc.dropLast(1))
-            }
-            branch.desc = desc
-            continue
-        }
-        if trimmed == "if:" {
-            section = "if"
-        } else if trimmed == "then:" {
-            section = "then"
-        } else if !trimmed.isEmpty {
-            if section == "if" {
-                ifLines.append(ln)
-            } else {
-                thenLines.append(ln)
-            }
-        }
-    }
-
-    branch.`if` = ymlDedent(ifLines)
-    branch.then = ymlDedent(thenLines)
-
-    return branch
-}
-*/
 
 func ymlParseVersion(_ chunks: [String: [String]]) -> Int {
     for key in chunks.keys {
