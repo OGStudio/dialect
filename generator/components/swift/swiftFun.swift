@@ -40,10 +40,7 @@ func swiftContext(
 
 /// Generate the context name for a component
 func swiftContextName(_ entity: String) -> String {
-    if entity.hasSuffix(SWIFT_SUFFIX_COMPONENT) {
-        return String(entity.dropLast(SWIFT_SUFFIX_COMPONENT.count)) + SWIFT_SUFFIX_CONTEXT
-    }
-    return entity
+    return entity.replacingOccurrences(of: SWIFT_SUFFIX_COMPONENT, with: SWIFT_SUFFIX_CONTEXT)
 }
 
 /// Generate entities of `context` type
