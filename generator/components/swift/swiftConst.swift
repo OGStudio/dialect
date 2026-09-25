@@ -60,12 +60,13 @@ let SWIFT_SHOULD_BRANCH_T = """
 
 """
 let SWIFT_SHOULD_INDENTATION = "        "
+let SWIFT_SHOULD_RESET = "ShouldReset"
 let SWIFT_SHOULD_T = """
 
 func %FUNC%(_ c: %CONTEXT%) -> %CONTEXT% {
     var c = c
 
-%BOTH%
+%BRANCHES%
     c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
     return c
 }

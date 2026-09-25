@@ -117,7 +117,7 @@ SwiftComponent:
                 if:
                     c.recentField == F.entityShouldBranches
                 then:
-                    c.outShoulds = swiftShoulds(c.entities, c.entityTypes, c.entityShoulds, c.entityShouldBranches)
+                    c.outShoulds = swiftShoulds(c.entities, c.entityShoulds, c.entityShouldBranches)
         outStructs:
             1. When entity field types are available:
                 if:
