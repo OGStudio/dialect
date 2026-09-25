@@ -8,10 +8,13 @@ Declarative reactive state management for macOS. This is a **new Swift port ("v4
 core/              Core runtime library
   swift/           Swift: DialectContext protocol + DialectController engine
   c/               C port of the Swift engine (dialect.h, DialectContext.c, DialectController.c, registerOneliners.c)
+  nim/             Nim port of the Swift engine (dialectContext.nim, dialectController.nim, registerOneliners.nim)
   test/swift/      8 unit tests (custom runner, no XCTest)
   test/c/          C port of the 8 unit tests
+  test/nim/        Nim port of the 8 unit tests
   util/run-swift-test   Compile & run core Swift tests (raw swiftc)
   util/run-c-test       Compile & run core C tests (raw cc)
+  util/run-nim-test     Compile & run core Nim tests (raw nim)
 generator/         The Swift port of the Klin code generator (tool)
   ver-mac/         SPM package (macOS 13+, no external dependencies)
     src/           Source; many files are SYMLINKS per group dir -> ../../../components/...
@@ -44,6 +47,9 @@ core/util/run-swift-test
 
 # Core C tests (raw cc)
 core/util/run-c-test
+
+# Core Nim tests (raw nim)
+core/util/run-nim-test
 
 # Build generator (step-based; util/paths + util/step/* sourced by both scripts)
 util/build-generator

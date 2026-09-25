@@ -13,13 +13,36 @@ typedef enum {
     D_VALUE_NONE = 0,
     D_VALUE_BOOL,
     D_VALUE_STRING,
+    D_VALUE_OUTPUT_PATH,
+    D_VALUE_SHOULD_BRANCH,
 } DialectValueKind;
+
+// OutputPath: path: String, type: String
+typedef struct OutputPath {
+    char* path;
+    char* type;
+} OutputPath;
+
+// A list of strings (for ShouldBranch's if:[String]/then:[String])
+typedef struct StringList {
+    char** items;
+    size_t count;
+} StringList;
+
+// ShouldBranch: desc: String, if: [String], then: [String]
+typedef struct ShouldBranch {
+    char* desc;
+    StringList if_; // `if` is a C keyword
+    StringList then;
+} ShouldBranch;
 
 typedef struct DialectValue {
     DialectValueKind kind;
     union {
         bool boolean;
         char* str; // owned copy when kind == D_VALUE_STRING
+        OutputPath outputPath;
+        ShouldBranch shouldBranch;
     } as;
 } DialectValue;
 

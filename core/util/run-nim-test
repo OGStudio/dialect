@@ -1,0 +1,14 @@
+#!/bin/bash -e
+SDIR=$(cd "$(dirname "$0")" ; pwd -P)
+
+BUILD=$SDIR/../build
+mkdir -p $BUILD
+
+nim c \
+    --hints:off \
+    --verbosity:0 \
+    --path:$SDIR/../nim \
+    -o:$BUILD/test-nim \
+    $SDIR/../test/nim/main.nim
+
+$BUILD/test-nim
