@@ -173,8 +173,8 @@ func ymlParseEntityShouldBranches(
         guard let lines = chunks["\(entity):"] else { continue }
 
         var isParsing = false
-        var isParsingIf = false
-        var isParsingThen = false
+        var isParsingCondition = false
+        var isParsingReaction = false
         var shouldId = -1
         var shouldSections = [Int: [ShouldBranch]]()
 
@@ -189,22 +189,22 @@ func ymlParseEntityShouldBranches(
                 continue
             }
 
-            // Detect parsing `if`
+            // Detect parsing `condition`
             if ln.hasPrefix(YML_PREFIX_SHOULD_BRANCH_IF) {
-                isParsingIf = true
+                isParsingCondition = true
                 continue
             }
             if ln.hasPrefix(YML_PREFIX_SHOULD_BRANCH_THEN) {
-                isParsingIf = false
+                isParsingCondition = false
             }
 
-            // Detect parsing `then`
+            // Detect parsing `reaction`
             if ln.hasPrefix(YML_PREFIX_SHOULD_BRANCH_THEN) {
-                isParsingThen = true
+                isParsingReaction = true
                 continue
             }
             if otherLineIndent(ln) == YML_INDENT_SHOULD {
-                isParsingThen = false
+                isParsingReaction = false
             }
 
             // Detect should section
@@ -223,14 +223,14 @@ func ymlParseEntityShouldBranches(
             }
 
             // Parse branch `condition`
-            if isParsingIf {
+            if isParsingCondition {
                 let lastId = shouldSections[shouldId]!.count - 1
                 let condition = String(ln.dropFirst(YML_INDENT_SHOULD_BRANCH_IF))
                 shouldSections[shouldId]![lastId].condition.append(condition)
             }
 
             // Parse branch `reaction`
-            if isParsingThen {
+            if isParsingReaction {
                 let lastId = shouldSections[shouldId]!.count - 1
                 let reaction = String(ln.dropFirst(YML_INDENT_SHOULD_BRANCH_THEN))
                 shouldSections[shouldId]![lastId].reaction.append(reaction)
