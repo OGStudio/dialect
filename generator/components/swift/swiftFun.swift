@@ -95,7 +95,6 @@ func swiftFields(_ entityFields: [Int: [String]]) -> String {
     for name in names.sorted() {
         sitems +=
             SWIFT_FIELD_T
-                .replacingOccurrences(of: "%DECL%", with: name)
                 .replacingOccurrences(of: "%NAME%", with: name)
     }
 
