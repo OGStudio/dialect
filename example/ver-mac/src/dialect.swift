@@ -178,3 +178,74 @@ struct RootContext: DialectContext {
 
     }
 }
+
+func rootShouldResetCount(_ c: RootContext) -> RootContext {
+    var c = c
+
+    /* 1. Upon hitting 10 the first time */
+    if
+        c.recentField == F.didClickIncrement &&
+        c.count == 9
+    {
+        c.count += 10
+        c.recentField = F.count
+        return c
+    }
+
+    /* 2. Upon each button click */
+    if
+        c.recentField == F.didClickIncrement
+    {
+        c.count += 1
+        c.recentField = F.count
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func rootShouldResetCountText(_ c: RootContext) -> RootContext {
+    var c = c
+
+    /* 1. Upon each count chang */
+    if
+        c.recentField == F.count
+    {
+        c.countText = "Count: '\(c.count)'"
+        c.recentField = F.countText
+        return c
+    }
+
+    /* 2. Upon launc */
+    if
+        c.recentField == F.didLaunch
+    {
+        c.countText = "Press the button to count"
+        c.recentField = F.countText
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func rootShouldResetDidLaunch(_ c: RootContext) -> RootContext {
+    var c = c
+
+    /* 1. Only once during the first setup */
+    if
+        c.recentField == F.didSetup &&
+        c.didLaunch == false
+    {
+        c.didLaunch = true
+        c.recentField = F.didLaunch
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}

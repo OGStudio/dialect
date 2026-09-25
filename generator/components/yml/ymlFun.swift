@@ -216,6 +216,8 @@ func ymlParseEntityShouldBranches(
 
             // Parse branch description
             if otherLineIndent(ln) == YML_INDENT_SHOULD_BRANCH_DESC {
+                isParsingCondition = false
+                isParsingReaction = false
                 shouldSections[shouldId]!.append(ShouldBranch())
                 let lastId = shouldSections[shouldId]!.count - 1
                 let about = String(ln.dropFirst(YML_INDENT_SHOULD_BRANCH_DESC).dropLast())
