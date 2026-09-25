@@ -95,20 +95,12 @@ func swiftFields(_ entityFields: [Int: [String]]) -> String {
     for name in names.sorted() {
         sitems +=
             SWIFT_FIELD_T
-                .replacingOccurrences(of: "%DECL%", with: swiftKeywordEscape(name))
+                .replacingOccurrences(of: "%DECL%", with: name)
                 .replacingOccurrences(of: "%NAME%", with: name)
     }
 
     // Construct the whole struct
     return SWIFT_FIELDS_T.replacingOccurrences(of: "%ITEMS%", with: sitems)
-}
-
-/// Escape a field name when it collides with a Swift keyword
-func swiftKeywordEscape(_ name: String) -> String {
-    if swiftKeywords.contains(name) {
-        return "`\(name)`"
-    }
-    return name
 }
 
 /// Join branch lines, indenting each by 8 spaces while keeping relative indent
@@ -183,7 +175,7 @@ func swiftStruct(
         let defaultValue = swiftTypeDefaultValue(type)
         outFields +=
             SWIFT_STRUCT_FIELD_T
-                .replacingOccurrences(of: "%NAME%", with: swiftKeywordEscape(field))
+                .replacingOccurrences(of: "%NAME%", with: field)
                 .replacingOccurrences(of: "%DEFAULT%", with: defaultValue)
         fieldId += 1
     }
