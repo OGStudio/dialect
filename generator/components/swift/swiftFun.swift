@@ -38,6 +38,11 @@ func swiftContext(
             .replacingOccurrences(of: "%SETTERS%", with: outSetters)
 }
 
+/// Generate the context name for a component
+func swiftContextName(_ entity: String) -> String {
+    return entity.replacingOccurrences(of: SWIFT_SUFFIX_COMPONENT, with: SWIFT_SUFFIX_CONTEXT)
+}
+
 /// Generate entities of `context` type
 func swiftContexts(
     _ entities: [String],
@@ -90,6 +95,72 @@ func swiftFields(_ entityFields: [Int: [String]]) -> String {
 
     // Construct the whole struct
     return SWIFT_FIELDS_T.replacingOccurrences(of: "%ITEMS%", with: sitems)
+}
+
+/// Join branch lines, indenting each by 8 spaces while keeping relative indent
+func swiftFormatShould(_ lines: [String]) -> String {
+    return lines.map { SWIFT_SHOULD_INDENTATION + $0 }.joined(separator: "\n")
+}
+
+/// Generate single should function
+func swiftShould(
+    _ name: String,
+    _ contextName: String,
+    _ branches: [ShouldBranch]
+) -> String {
+    var outBranches = ""
+    for branch in branches {
+        outBranches +=
+            SWIFT_SHOULD_BRANCH_T
+                .replacingOccurrences(of: "%ABOUT%", with: branch.about)
+                .replacingOccurrences(of: "%FIELD%", with: name)
+                .replacingOccurrences(of: "%CONDITION%", with: swiftFormatShould(branch.condition))
+                .replacingOccurrences(of: "%REACTION%", with: swiftFormatShould(branch.reaction))
+    }
+
+    let prefix = String(contextName.dropLast(SWIFT_SUFFIX_CONTEXT.count)).lowercased()
+    let funcName = prefix + SWIFT_SHOULD_RESET + otherCapitalize(name)
+
+    return
+        SWIFT_SHOULD_T
+            .replacingOccurrences(of: "%FUNC%", with: funcName)
+            .replacingOccurrences(of: "%CONTEXT%", with: contextName)
+            .replacingOccurrences(of: "%BRANCHES%", with: outBranches)
+}
+
+/// Generate should-functions for all components
+func swiftShoulds(
+    _ entities: [String],
+    _ entityShoulds: [Int: [String]],
+    _ entityShouldBranches: [Int: [Int: [ShouldBranch]]]
+) -> String {
+    var out = ""
+
+    // Collect entity ids with shoulds
+    var entityIds = [Int]()
+    for entityId in entityShoulds.keys.sorted() {
+        let shoulds = entityShoulds[entityId]!
+        if !shoulds.isEmpty {
+            entityIds.append(entityId)
+        }
+    }
+
+    // Generate should-functions for each component
+    for entityId in entityIds {
+        let contextName = swiftContextName(entities[entityId])
+
+        let shoulds = entityShoulds[entityId] ?? []
+        var shouldId = 0
+        for should in shoulds {
+            let branches = entityShouldBranches[entityId]?[shouldId] ?? []
+            if !branches.isEmpty {
+                out += swiftShould(should, contextName, branches)
+            }
+            shouldId += 1
+        }
+    }
+
+    return out
 }
 
 /// Generate single `struct` entity

@@ -151,6 +151,139 @@ func ymlParseEntityFields(
     return result
 }
 
+func ymlParseEntityShouldBranches(
+    _ chunks: [String: [String]],
+    _ entities: [String],
+    _ entityShoulds: [Int: [String]]
+) -> [Int: [Int: [ShouldBranch]]] {
+    var result = [Int: [Int: [ShouldBranch]]]()
+
+    // Collect entity ids with shoulds
+    var entityIds = [Int]()
+    for id in entityShoulds.keys.sorted() {
+        let shoulds = entityShoulds[id]!
+        if !shoulds.isEmpty {
+            entityIds.append(id)
+        }
+    }
+
+    // Collect should branches
+    for entityId in entityIds {
+        let entity = entities[entityId]
+        guard let lines = chunks["\(entity):"] else { continue }
+
+        var isParsing = false
+        var isParsingCondition = false
+        var isParsingReaction = false
+        var shouldId = -1
+        var shouldSections = [Int: [ShouldBranch]]()
+
+        for ln in lines {
+
+            // Detect parsed region
+            if ln.hasPrefix(YML_PREFIX_SHOULDS) {
+                isParsing = true
+                continue
+            }
+            if !isParsing {
+                continue
+            }
+
+            // Detect parsing `condition`
+            if ln.hasPrefix(YML_PREFIX_SHOULD_BRANCH_IF) {
+                isParsingCondition = true
+                continue
+            }
+            if ln.hasPrefix(YML_PREFIX_SHOULD_BRANCH_THEN) {
+                isParsingCondition = false
+            }
+
+            // Detect parsing `reaction`
+            if ln.hasPrefix(YML_PREFIX_SHOULD_BRANCH_THEN) {
+                isParsingReaction = true
+                continue
+            }
+            if otherLineIndent(ln) == YML_INDENT_SHOULD {
+                isParsingReaction = false
+            }
+
+            // Detect should section
+            if otherLineIndent(ln) == YML_INDENT_SHOULD {
+                shouldId += 1
+                shouldSections[shouldId] = []
+                continue
+            }
+
+            // Parse branch description
+            if otherLineIndent(ln) == YML_INDENT_SHOULD_BRANCH_DESC {
+                isParsingCondition = false
+                isParsingReaction = false
+                shouldSections[shouldId]!.append(ShouldBranch())
+                let lastId = shouldSections[shouldId]!.count - 1
+                let about = String(ln.dropFirst(YML_INDENT_SHOULD_BRANCH_DESC).dropLast())
+                shouldSections[shouldId]![lastId].about = about
+            }
+
+            // Parse branch condition
+            if isParsingCondition {
+                let lastId = shouldSections[shouldId]!.count - 1
+                let condition = String(ln.dropFirst(YML_INDENT_SHOULD_BRANCH_IF))
+                shouldSections[shouldId]![lastId].condition.append(condition)
+            }
+
+            // Parse branch reaction
+            if isParsingReaction {
+                let lastId = shouldSections[shouldId]!.count - 1
+                let reaction = String(ln.dropFirst(YML_INDENT_SHOULD_BRANCH_THEN))
+                shouldSections[shouldId]![lastId].reaction.append(reaction)
+            }
+        }
+
+        result[entityId] = shouldSections
+    }
+
+    return result
+}
+
+func ymlParseEntityShoulds(
+    _ chunks: [String: [String]],
+    _ entities: [String]
+) -> [Int: [String]] {
+    var result = [Int: [String]]()
+    var i = 0
+
+    for entity in entities {
+        var shoulds = [String]()
+
+        guard let lines = chunks["\(entity):"] else {
+            i += 1
+            continue
+        }
+
+        var inShoulds = false
+
+        for ln in lines {
+            if ln.hasPrefix(YML_PREFIX_SHOULDS) {
+                inShoulds = true
+                continue
+            }
+            if 
+                inShoulds &&
+                otherLineIndent(ln) == YML_INDENT_SHOULD &&
+                ln.hasSuffix(":")
+            {
+                let name = ln.dropFirst(YML_INDENT_SHOULD).dropLast()
+                shoulds.append(String(name))
+            }
+        }
+
+        result[i] = shoulds
+        i += 1
+    }
+
+    return result
+}
+
 func ymlParseEntityTypes(
     _ chunks: [String: [String]],
     _ entities: [String]

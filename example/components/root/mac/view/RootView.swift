@@ -1,21 +1,25 @@
 import SwiftUI
 
-struct ContentView: View {
-    @State private var count = 0
+struct RootView: View {
+    @ObservedObject var vm: RootVM
+
+    init(_ vm: RootVM) {
+        self.vm = vm
+    }
 
     var body: some View {
         VStack(spacing: 16) {
             Text("Hello, World!")
                 .font(.largeTitle)
 
-            Text("Count: \(count)")
+            Text(vm.countText)
                 .font(.title2.monospacedDigit())
 
             Button("Increment") {
-                count += 1
+                rootSet(F.didClickIncrement, true)
             }
         }
         .padding(40)
-        .frame(minWidth: 200, minHeight: 400)
+        .frame(minWidth: 400, minHeight: 300)
     }
 }

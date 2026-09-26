@@ -1,0 +1,6 @@
+#!/bin/bash -e
+
+STEP=$((STEP+1))
+echo -e "\n> > > > Step №$STEP. Run macOS app"
+
+$SDIR/../ver-mac/.build/HelloWorld.app/Contents/MacOS/HelloWorld

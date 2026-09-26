@@ -1,0 +1,15 @@
+#!/bin/bash -e
+
+STEP=$((STEP+1))
+echo -e "\n> > > > Step №$STEP. Make an app package for macOS"
+
+rm -rf $APP_MAC
+
+APP_DAT=$APP_MAC/Contents
+
+mkdir -p $APP_DAT/MacOS
+mkdir -p $APP_DAT/Resources
+
+cp $SDIR/../ver-mac/.build/debug/HelloWorld $APP_DAT/MacOS/HelloWorld
+cp $SDIR/../ver-mac/src/Info.plist $APP_DAT/Info.plist
+cp $SDIR/../ver-mac/Resources/AppIcon.icns $APP_DAT/Resources/AppIcon.icns
