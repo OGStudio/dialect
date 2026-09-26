@@ -69,6 +69,7 @@ struct %NAME% {
 %FIELDS%
 }
 
+
 """
 let SWIFT_SHOULD_BRANCH_T = """
     /* %ABOUT% */

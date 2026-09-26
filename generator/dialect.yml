@@ -60,6 +60,12 @@ CLIContext:
         inputFileName: String
         readFile: Bool
 
+Oneliner:
+    type: struct
+    fields:
+        field: String
+        reaction: String
+
 OutputPath:
     type: struct
     fields:
@@ -156,6 +162,7 @@ SwiftContext:
         entities: [String]
         entityFields: [Int: [String]]
         entityFieldTypes: [Int: [Int: String]]
+        entityOneliners: [Int: [Oneliner]]
         entityShouldBranches: [Int: [Int: [ShouldBranch]]]
         entityShoulds: [Int: [String]]
         entityTypes: [Int: String]
@@ -176,6 +183,7 @@ YMLComponent:
         - entities: swiftSet(F.entities, c.entities)
         - entityFields: swiftSet(F.entityFields, c.entityFields)
         - entityFieldTypes: swiftSet(F.entityFieldTypes, c.entityFieldTypes)
+        - entityOneliners: swiftSet(F.entityOneliners, c.entityOneliners)
         - entityShouldBranches: swiftSet(F.entityShouldBranches, c.entityShouldBranches)
         - entityShoulds: swiftSet(F.entityShoulds, c.entityShoulds)
         - entityTypes: swiftSet(F.entityTypes, c.entityTypes)
@@ -260,6 +268,7 @@ YMLContext:
         entities: [String]
         entityFields: [Int: [String]]
         entityFieldTypes: [Int: [Int: String]]
+        entityOneliners: [Int: [Oneliner]]
         entityShouldBranches: [Int: [Int: [ShouldBranch]]]
         entityShoulds: [Int: [String]]
         entityTypes: [Int: String]

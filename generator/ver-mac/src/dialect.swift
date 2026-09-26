@@ -130,9 +130,11 @@ struct F {
     static let entities = "entities"
     static let entityFieldTypes = "entityFieldTypes"
     static let entityFields = "entityFields"
+    static let entityOneliners = "entityOneliners"
     static let entityShouldBranches = "entityShouldBranches"
     static let entityShoulds = "entityShoulds"
     static let entityTypes = "entityTypes"
+    static let field = "field"
     static let inputAbsoluteDir = "inputAbsoluteDir"
     static let inputContents = "inputContents"
     static let inputError = "inputError"
@@ -154,6 +156,12 @@ struct F {
     static let version = "version"
 
 }
+struct Oneliner {
+    var field = String()
+    var reaction = String()
+
+}
+
 struct OutputPath {
     var path = String()
     var type = String()
@@ -277,6 +285,7 @@ struct SwiftContext: DialectContext {
     var entities = [String]()
     var entityFields = [Int: [String]]()
     var entityFieldTypes = [Int: [Int: String]]()
+    var entityOneliners = [Int: [Oneliner]]()
     var entityShouldBranches = [Int: [Int: [ShouldBranch]]]()
     var entityShoulds = [Int: [String]]()
     var entityTypes = [Int: String]()
@@ -308,6 +317,9 @@ struct SwiftContext: DialectContext {
         }
         else if (name == "entityFieldTypes") {
             return entityFieldTypes as! T
+        }
+        else if (name == "entityOneliners") {
+            return entityOneliners as! T
         }
         else if (name == "entityShouldBranches") {
             return entityShouldBranches as! T
@@ -371,6 +383,9 @@ struct SwiftContext: DialectContext {
         else if (name == "entityFieldTypes") {
             entityFieldTypes = value as! [Int: [Int: String]]
         }
+        else if (name == "entityOneliners") {
+            entityOneliners = value as! [Int: [Oneliner]]
+        }
         else if (name == "entityShouldBranches") {
             entityShouldBranches = value as! [Int: [Int: [ShouldBranch]]]
         }
@@ -421,6 +436,7 @@ struct YMLContext: DialectContext {
     var entities = [String]()
     var entityFields = [Int: [String]]()
     var entityFieldTypes = [Int: [Int: String]]()
+    var entityOneliners = [Int: [Oneliner]]()
     var entityShouldBranches = [Int: [Int: [ShouldBranch]]]()
     var entityShoulds = [Int: [String]]()
     var entityTypes = [Int: String]()
@@ -450,6 +466,9 @@ struct YMLContext: DialectContext {
         }
         else if (name == "entityFieldTypes") {
             return entityFieldTypes as! T
+        }
+        else if (name == "entityOneliners") {
+            return entityOneliners as! T
         }
         else if (name == "entityShouldBranches") {
             return entityShouldBranches as! T
@@ -500,6 +519,9 @@ struct YMLContext: DialectContext {
         }
         else if (name == "entityFieldTypes") {
             entityFieldTypes = value as! [Int: [Int: String]]
+        }
+        else if (name == "entityOneliners") {
+            entityOneliners = value as! [Int: [Oneliner]]
         }
         else if (name == "entityShouldBranches") {
             entityShouldBranches = value as! [Int: [Int: [ShouldBranch]]]
