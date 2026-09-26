@@ -179,6 +179,13 @@ struct RootContext: DialectContext {
     }
 }
 
+func rootSet(
+    _ key: String,
+    _ value: Any
+) {
+    RootComponent.singleton!.ctrl.set(key, value)
+}
+
 func rootShouldResetCount(_ c: RootContext) -> RootContext {
     var c = c
 
@@ -248,4 +255,23 @@ func rootShouldResetDidLaunch(_ c: RootContext) -> RootContext {
 
     c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
     return c
+}
+
+func rootRegisterShoulds(_ ctrl: DialectController) {
+    [
+        rootShouldResetCount,
+        rootShouldResetCountText,
+        rootShouldResetDidLaunch,
+
+    ].forEach { f in
+        ctrl.registerFunction { c in f(c as! RootContext) }
+    }
+}
+
+func rootRegisterEffects(_ ctrl: DialectController) {
+    let _: RootContext? = registerOneliners(ctrl, [
+        F.countText, { (c: RootContext) in print(c.countText) },
+        F.countText, { (c: RootContext) in RootVM.shared?.countText = c.countText },
+
+    ])
 }

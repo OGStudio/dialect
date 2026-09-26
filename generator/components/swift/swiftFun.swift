@@ -102,6 +102,137 @@ func swiftFormatShould(_ lines: [String]) -> String {
     return lines.map { SWIFT_SHOULD_INDENTATION + $0 }.joined(separator: "\n")
 }
 
+/// Generate single component `RegisterEffects` function
+func swiftRegisterEffect(
+    _ contextName: String,
+    _ oneliners: [Oneliner]
+) -> String {
+    let prefix = String(contextName.dropLast(SWIFT_SUFFIX_CONTEXT.count)).lowercased()
+    let funcName = prefix + SWIFT_REGISTER_EFFECTS_SUFFIX
+
+    var outItems = ""
+    for oneliner in oneliners {
+        let field = oneliner.field
+        let reaction = oneliner.reaction
+        outItems +=
+            SWIFT_REGISTER_EFFECT_ITEM_T
+                .replacingOccurrences(of: "%FIELD%", with: field)
+                .replacingOccurrences(of: "%CONTEXT%", with: contextName)
+                .replacingOccurrences(of: "%REACTION%", with: reaction)
+    }
+
+    return
+        SWIFT_REGISTER_EFFECTS_T
+            .replacingOccurrences(of: "%FUNC%", with: funcName)
+            .replacingOccurrences(of: "%CONTEXT%", with: contextName)
+            .replacingOccurrences(of: "%ITEMS%", with: outItems)
+}
+
+/// Generate `RegisterEffects` functions for all components
+func swiftRegisterEffects(
+    _ entities: [String],
+    _ entityOneliners: [Int: [Oneliner]]
+) -> String {
+    var out = ""
+
+    // Collect entity ids with oneliners
+    var entityIds = [Int]()
+    for entityId in entityOneliners.keys.sorted() {
+        let oneliners = entityOneliners[entityId]!
+        if !oneliners.isEmpty {
+            entityIds.append(entityId)
+        }
+    }
+
+    // Generate register-effects function for each component
+    for entityId in entityIds {
+        let contextName = swiftContextName(entities[entityId])
+
+        let oneliners = entityOneliners[entityId] ?? []
+        if !oneliners.isEmpty {
+            out += swiftRegisterEffect(contextName, oneliners)
+        }
+    }
+
+    return out
+}
+
+/// Generate single component `RegisterShoulds` function
+func swiftRegisterShould(
+    _ contextName: String,
+    _ shoulds: [String]
+) -> String {
+    let prefix = String(contextName.dropLast(SWIFT_SUFFIX_CONTEXT.count)).lowercased()
+    let funcName = prefix + SWIFT_REGISTER_SHOULDS_SUFFIX
+
+    var outItems = ""
+    for should in shoulds {
+        let shouldFuncName = prefix + SWIFT_SHOULD_RESET + otherCapitalize(should)
+        outItems += SWIFT_SHOULD_INDENTATION + shouldFuncName + ",\n"
+    }
+
+    return
+        SWIFT_REGISTER_SHOULDS_T
+            .replacingOccurrences(of: "%FUNC%", with: funcName)
+            .replacingOccurrences(of: "%CONTEXT%", with: contextName)
+            .replacingOccurrences(of: "%ITEMS%", with: outItems)
+}
+
+/// Generate `RegisterShoulds` functions for all components
+func swiftRegisterShoulds(
+    _ entities: [String],
+    _ entityShoulds: [Int: [String]]
+) -> String {
+    var out = ""
+
+    // Collect entity ids with shoulds
+    var entityIds = [Int]()
+    for entityId in entityShoulds.keys.sorted() {
+        let shoulds = entityShoulds[entityId]!
+        if !shoulds.isEmpty {
+            entityIds.append(entityId)
+        }
+    }
+
+    // Generate register-shoulds function for each component
+    for entityId in entityIds {
+        let contextName = swiftContextName(entities[entityId])
+
+        let shoulds = entityShoulds[entityId] ?? []
+        if !shoulds.isEmpty {
+            out += swiftRegisterShould(contextName, shoulds)
+        }
+    }
+
+    return out
+}
+
+/// Generate single component `Set` function
+func swiftSet(_ entity: String) -> String {
+    let contextName = swiftContextName(entity)
+    let prefix = String(contextName.dropLast(SWIFT_SUFFIX_CONTEXT.count)).lowercased()
+    let funcName = prefix + SWIFT_SET_SUFFIX
+
+    return
+        SWIFT_SET_T
+            .replacingOccurrences(of: "%FUNC%", with: funcName)
+            .replacingOccurrences(of: "%COMPONENT%", with: entity)
+}
+
+/// Generate `Set` functions for all components
+func swiftSets(_ entities: [String]) -> String {
+    var out = ""
+
+    // Generate each component's `Set` function
+    for entity in entities {
+        if entity.hasSuffix(SWIFT_SUFFIX_COMPONENT) {
+            out += swiftSet(entity)
+        }
+    }
+
+    return out
+}
+
 /// Generate single should function
 func swiftShould(
     _ name: String,

@@ -130,9 +130,11 @@ struct F {
     static let entities = "entities"
     static let entityFieldTypes = "entityFieldTypes"
     static let entityFields = "entityFields"
+    static let entityOneliners = "entityOneliners"
     static let entityShouldBranches = "entityShouldBranches"
     static let entityShoulds = "entityShoulds"
     static let entityTypes = "entityTypes"
+    static let field = "field"
     static let inputAbsoluteDir = "inputAbsoluteDir"
     static let inputContents = "inputContents"
     static let inputError = "inputError"
@@ -141,6 +143,9 @@ struct F {
     static let out = "out"
     static let outContexts = "outContexts"
     static let outFields = "outFields"
+    static let outRegisterEffects = "outRegisterEffects"
+    static let outRegisterShoulds = "outRegisterShoulds"
+    static let outSets = "outSets"
     static let outShoulds = "outShoulds"
     static let outStructs = "outStructs"
     static let outputPaths = "outputPaths"
@@ -152,11 +157,19 @@ struct F {
     static let version = "version"
 
 }
+struct Oneliner {
+    var field = String()
+    var reaction = String()
+
+}
+
+
 struct OutputPath {
     var path = String()
     var type = String()
 
 }
+
 
 struct ShouldBranch {
     var about = String()
@@ -164,6 +177,7 @@ struct ShouldBranch {
     var reaction = [String]()
 
 }
+
 
 struct CLIContext: DialectContext {
     var arguments = [String]()
@@ -275,6 +289,7 @@ struct SwiftContext: DialectContext {
     var entities = [String]()
     var entityFields = [Int: [String]]()
     var entityFieldTypes = [Int: [Int: String]]()
+    var entityOneliners = [Int: [Oneliner]]()
     var entityShouldBranches = [Int: [Int: [ShouldBranch]]]()
     var entityShoulds = [Int: [String]]()
     var entityTypes = [Int: String]()
@@ -284,6 +299,9 @@ struct SwiftContext: DialectContext {
     var outContexts = String()
     var outFields = String()
     var outputPaths = [OutputPath]()
+    var outRegisterEffects = String()
+    var outRegisterShoulds = String()
+    var outSets = String()
     var outShoulds = String()
     var outStructs = String()
 
@@ -304,6 +322,9 @@ struct SwiftContext: DialectContext {
         }
         else if (name == "entityFieldTypes") {
             return entityFieldTypes as! T
+        }
+        else if (name == "entityOneliners") {
+            return entityOneliners as! T
         }
         else if (name == "entityShouldBranches") {
             return entityShouldBranches as! T
@@ -331,6 +352,15 @@ struct SwiftContext: DialectContext {
         }
         else if (name == "outputPaths") {
             return outputPaths as! T
+        }
+        else if (name == "outRegisterEffects") {
+            return outRegisterEffects as! T
+        }
+        else if (name == "outRegisterShoulds") {
+            return outRegisterShoulds as! T
+        }
+        else if (name == "outSets") {
+            return outSets as! T
         }
         else if (name == "outShoulds") {
             return outShoulds as! T
@@ -361,6 +391,9 @@ struct SwiftContext: DialectContext {
         else if (name == "entityFieldTypes") {
             entityFieldTypes = value as! [Int: [Int: String]]
         }
+        else if (name == "entityOneliners") {
+            entityOneliners = value as! [Int: [Oneliner]]
+        }
         else if (name == "entityShouldBranches") {
             entityShouldBranches = value as! [Int: [Int: [ShouldBranch]]]
         }
@@ -388,6 +421,15 @@ struct SwiftContext: DialectContext {
         else if (name == "outputPaths") {
             outputPaths = value as! [OutputPath]
         }
+        else if (name == "outRegisterEffects") {
+            outRegisterEffects = value as! String
+        }
+        else if (name == "outRegisterShoulds") {
+            outRegisterShoulds = value as! String
+        }
+        else if (name == "outSets") {
+            outSets = value as! String
+        }
         else if (name == "outShoulds") {
             outShoulds = value as! String
         }
@@ -405,6 +447,7 @@ struct YMLContext: DialectContext {
     var entities = [String]()
     var entityFields = [Int: [String]]()
     var entityFieldTypes = [Int: [Int: String]]()
+    var entityOneliners = [Int: [Oneliner]]()
     var entityShouldBranches = [Int: [Int: [ShouldBranch]]]()
     var entityShoulds = [Int: [String]]()
     var entityTypes = [Int: String]()
@@ -434,6 +477,9 @@ struct YMLContext: DialectContext {
         }
         else if (name == "entityFieldTypes") {
             return entityFieldTypes as! T
+        }
+        else if (name == "entityOneliners") {
+            return entityOneliners as! T
         }
         else if (name == "entityShouldBranches") {
             return entityShouldBranches as! T
@@ -485,6 +531,9 @@ struct YMLContext: DialectContext {
         else if (name == "entityFieldTypes") {
             entityFieldTypes = value as! [Int: [Int: String]]
         }
+        else if (name == "entityOneliners") {
+            entityOneliners = value as! [Int: [Oneliner]]
+        }
         else if (name == "entityShouldBranches") {
             entityShouldBranches = value as! [Int: [Int: [ShouldBranch]]]
         }
@@ -511,6 +560,27 @@ struct YMLContext: DialectContext {
         }
 
     }
+}
+
+func cliSet(
+    _ key: String,
+    _ value: Any
+) {
+    CLIComponent.singleton!.ctrl.set(key, value)
+}
+
+func swiftSet(
+    _ key: String,
+    _ value: Any
+) {
+    SwiftComponent.singleton!.ctrl.set(key, value)
+}
+
+func ymlSet(
+    _ key: String,
+    _ value: Any
+) {
+    YMLComponent.singleton!.ctrl.set(key, value)
 }
 
 func cliShouldResetConsoleOutput(_ c: CLIContext) -> CLIContext {
@@ -615,7 +685,7 @@ func swiftShouldResetDidLaunch(_ c: SwiftContext) -> SwiftContext {
 func swiftShouldResetOut(_ c: SwiftContext) -> SwiftContext {
     var c = c
 
-    /* 1. At first just provide ctrl/ctx/reg */
+    /* 1. Upon launch */
     if
         c.recentField == F.didLaunch
     {
@@ -624,7 +694,10 @@ func swiftShouldResetOut(_ c: SwiftContext) -> SwiftContext {
             c.outFields +
             c.outStructs +
             c.outContexts +
-            c.outShoulds
+            c.outSets +
+            c.outShoulds +
+            c.outRegisterShoulds +
+            c.outRegisterEffects
         c.recentField = F.out
         return c
     }
@@ -660,6 +733,57 @@ func swiftShouldResetOutFields(_ c: SwiftContext) -> SwiftContext {
     {
         c.outFields = swiftFields(c.entityFields)
         c.recentField = F.outFields
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func swiftShouldResetOutRegisterEffects(_ c: SwiftContext) -> SwiftContext {
+    var c = c
+
+    /* 1. When oneliners are ready */
+    if
+        c.recentField == F.entityOneliners
+    {
+        c.outRegisterEffects = swiftRegisterEffects(c.entities, c.entityOneliners)
+        c.recentField = F.outRegisterEffects
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func swiftShouldResetOutRegisterShoulds(_ c: SwiftContext) -> SwiftContext {
+    var c = c
+
+    /* 1. When shoulds are ready */
+    if
+        c.recentField == F.entityShoulds
+    {
+        c.outRegisterShoulds = swiftRegisterShoulds(c.entities, c.entityShoulds)
+        c.recentField = F.outRegisterShoulds
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func swiftShouldResetOutSets(_ c: SwiftContext) -> SwiftContext {
+    var c = c
+
+    /* 1. When entities are ready */
+    if
+        c.recentField == F.entities
+    {
+        c.outSets = swiftSets(c.entities)
+        c.recentField = F.outSets
         return c
     }
 
@@ -807,6 +931,23 @@ func ymlShouldResetEntityFieldTypes(_ c: YMLContext) -> YMLContext {
     return c
 }
 
+func ymlShouldResetEntityOneliners(_ c: YMLContext) -> YMLContext {
+    var c = c
+
+    /* 1. Upon entities */
+    if
+        c.recentField == F.entities
+    {
+        c.entityOneliners = ymlParseEntityOneliners(c.chunks, c.entities)
+        c.recentField = F.entityOneliners
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
 func ymlShouldResetEntityShouldBranches(_ c: YMLContext) -> YMLContext {
     var c = c
 
@@ -908,4 +1049,87 @@ func ymlShouldResetVersion(_ c: YMLContext) -> YMLContext {
 
     c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
     return c
+}
+
+func cliRegisterShoulds(_ ctrl: DialectController) {
+    [
+        cliShouldResetConsoleOutput,
+        cliShouldResetDidLaunch,
+        cliShouldResetInputFileName,
+        cliShouldResetReadFile,
+
+    ].forEach { f in
+        ctrl.registerFunction { c in f(c as! CLIContext) }
+    }
+}
+
+func swiftRegisterShoulds(_ ctrl: DialectController) {
+    [
+        swiftShouldResetDidLaunch,
+        swiftShouldResetOut,
+        swiftShouldResetOutContexts,
+        swiftShouldResetOutFields,
+        swiftShouldResetOutRegisterEffects,
+        swiftShouldResetOutRegisterShoulds,
+        swiftShouldResetOutSets,
+        swiftShouldResetOutShoulds,
+        swiftShouldResetOutStructs,
+        swiftShouldResetPath,
+
+    ].forEach { f in
+        ctrl.registerFunction { c in f(c as! SwiftContext) }
+    }
+}
+
+func ymlRegisterShoulds(_ ctrl: DialectController) {
+    [
+        ymlShouldResetChunks,
+        ymlShouldResetDidLaunch,
+        ymlShouldResetEntities,
+        ymlShouldResetEntityFields,
+        ymlShouldResetEntityFieldTypes,
+        ymlShouldResetEntityOneliners,
+        ymlShouldResetEntityShouldBranches,
+        ymlShouldResetEntityShoulds,
+        ymlShouldResetEntityTypes,
+        ymlShouldResetOutputPaths,
+        ymlShouldResetParseInput,
+        ymlShouldResetVersion,
+
+    ].forEach { f in
+        ctrl.registerFunction { c in f(c as! YMLContext) }
+    }
+}
+
+func cliRegisterEffects(_ ctrl: DialectController) {
+    let _: CLIContext? = registerOneliners(ctrl, [
+        F.consoleOutput, { (c: CLIContext) in print(c.consoleOutput) },
+        F.inputAbsoluteDir, { (c: CLIContext) in swiftSet(F.inputAbsoluteDir, c.inputAbsoluteDir) },
+        F.inputContents, { (c: CLIContext) in ymlSet(F.inputContents, c.inputContents) },
+        F.inputFileName, { (c: CLIContext) in cliResolveAbsoluteDir(c.inputFileName) },
+        F.readFile, { (c: CLIContext) in cliReadInputFile(c.inputFileName) },
+
+    ])
+}
+
+func swiftRegisterEffects(_ ctrl: DialectController) {
+    let _: SwiftContext? = registerOneliners(ctrl, [
+        F.out, { (c: SwiftContext) in otherWriteFile(c.path, c.out) },
+
+    ])
+}
+
+func ymlRegisterEffects(_ ctrl: DialectController) {
+    let _: YMLContext? = registerOneliners(ctrl, [
+        F.entities, { (c: YMLContext) in swiftSet(F.entities, c.entities) },
+        F.entityFields, { (c: YMLContext) in swiftSet(F.entityFields, c.entityFields) },
+        F.entityFieldTypes, { (c: YMLContext) in swiftSet(F.entityFieldTypes, c.entityFieldTypes) },
+        F.entityOneliners, { (c: YMLContext) in swiftSet(F.entityOneliners, c.entityOneliners) },
+        F.entityShouldBranches, { (c: YMLContext) in swiftSet(F.entityShouldBranches, c.entityShouldBranches) },
+        F.entityShoulds, { (c: YMLContext) in swiftSet(F.entityShoulds, c.entityShoulds) },
+        F.entityTypes, { (c: YMLContext) in swiftSet(F.entityTypes, c.entityTypes) },
+        F.outputPaths, { (c: YMLContext) in swiftSet(F.outputPaths, c.outputPaths) },
+        F.parseInput, { (c: YMLContext) in ymlReadLines(c.inputContents) },
+
+    ])
 }

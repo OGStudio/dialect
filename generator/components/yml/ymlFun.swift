@@ -151,6 +151,59 @@ func ymlParseEntityFields(
     return result
 }
 
+func ymlParseEntityOneliners(
+    _ chunks: [String: [String]],
+    _ entities: [String]
+) -> [Int: [Oneliner]] {
+    var result = [Int: [Oneliner]]()
+
+    var entityId = 0
+    for entity in entities {
+        var isParsing = false
+        var oneliners = [Oneliner]()
+
+        guard let lines = chunks["\(entity):"] else {
+            entityId += 1
+            continue
+        }
+
+        for ln in lines {
+            // Detect oneliners' section
+            if ln.hasPrefix(YML_PREFIX_ONELINERS) {
+                isParsing = true
+                continue
+            }
+            if ln.hasPrefix(YML_PREFIX_SHOULDS) {
+                isParsing = false
+                continue
+            }
+
+            if 
+                isParsing &&
+                ln.hasPrefix(YML_PREFIX_ONELINER)
+            {
+                let kv = String(ln.dropFirst(YML_PREFIX_ONELINER.count))
+                let parts = kv.split(
+                    separator: YML_FIELD_DELIMITER,
+                    maxSplits: 1,
+                    omittingEmptySubsequences: false
+                )
+                if parts.count == 2 {
+                    var item = Oneliner()
+                    item.field = String(parts[0])
+                    item.reaction = String(parts[1])
+                    oneliners.append(item)
+                }
+            }
+        }
+
+        result[entityId] = oneliners
+        entityId += 1
+    }
+
+    return result
+}
+
 func ymlParseEntityShouldBranches(
     _ chunks: [String: [String]],
     _ entities: [String],
