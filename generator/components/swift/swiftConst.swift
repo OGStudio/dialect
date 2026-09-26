@@ -39,6 +39,7 @@ struct F {
 %ITEMS%
 }
 """
+let SWIFT_SET_SUFFIX = "Set"
 let SWIFT_SET_T = """
 
 func %FUNC%(

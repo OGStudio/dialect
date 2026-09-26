@@ -106,7 +106,7 @@ func swiftFormatShould(_ lines: [String]) -> String {
 func swiftSet(_ entity: String) -> String {
     let contextName = swiftContextName(entity)
     let prefix = String(contextName.dropLast(SWIFT_SUFFIX_CONTEXT.count)).lowercased()
-    let funcName = prefix + "Set"
+    let funcName = prefix + SWIFT_SET_SUFFIX
 
     return
         SWIFT_SET_T
