@@ -18,6 +18,7 @@ func ymlRegisterEffects(_ ctrl: DialectController) {
         F.entities, { (c: YMLContext) in swiftSet(F.entities, c.entities) },
         F.entityFields, { (c: YMLContext) in swiftSet(F.entityFields, c.entityFields) },
         F.entityFieldTypes, { (c: YMLContext) in swiftSet(F.entityFieldTypes, c.entityFieldTypes) },
+        F.entityOneliners, { (c: YMLContext) in swiftSet(F.entityOneliners, c.entityOneliners) },
         F.entityShouldBranches, { (c: YMLContext) in swiftSet(F.entityShouldBranches, c.entityShouldBranches) },
         F.entityShoulds, { (c: YMLContext) in swiftSet(F.entityShoulds, c.entityShoulds) },
         F.entityTypes, { (c: YMLContext) in swiftSet(F.entityTypes, c.entityTypes) },

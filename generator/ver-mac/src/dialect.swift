@@ -162,11 +162,13 @@ struct Oneliner {
 
 }
 
+
 struct OutputPath {
     var path = String()
     var type = String()
 
 }
+
 
 struct ShouldBranch {
     var about = String()
@@ -174,6 +176,7 @@ struct ShouldBranch {
     var reaction = [String]()
 
 }
+
 
 struct CLIContext: DialectContext {
     var arguments = [String]()
@@ -902,6 +905,23 @@ func ymlShouldResetEntityFieldTypes(_ c: YMLContext) -> YMLContext {
     return c
 }
 
+func ymlShouldResetEntityOneliners(_ c: YMLContext) -> YMLContext {
+    var c = c
+
+    /* 1. Upon entities */
+    if
+        c.recentField == F.entities
+    {
+        c.entityOneliners = ymlParseEntityOneliners(c.chunks, c.entities)
+        c.recentField = F.entityOneliners
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
 func ymlShouldResetEntityShouldBranches(_ c: YMLContext) -> YMLContext {
     var c = c
 
@@ -1041,6 +1061,7 @@ func ymlRegisterShoulds(_ ctrl: DialectController) {
         ymlShouldResetEntities,
         ymlShouldResetEntityFields,
         ymlShouldResetEntityFieldTypes,
+        ymlShouldResetEntityOneliners,
         ymlShouldResetEntityShouldBranches,
         ymlShouldResetEntityShoulds,
         ymlShouldResetEntityTypes,

@@ -221,6 +221,12 @@ YMLComponent:
                     c.recentField == F.entityFields
                 then:
                     c.entityFieldTypes = ymlParseEntityFieldTypes(c.chunks, c.entities, c.entityFields)
+        entityOneliners:
+            1. Upon entities:
+                if:
+                    c.recentField == F.entities
+                then:
+                    c.entityOneliners = ymlParseEntityOneliners(c.chunks, c.entities)
         entityShouldBranches:
             1. Upon entity shoulds:
                 if:
