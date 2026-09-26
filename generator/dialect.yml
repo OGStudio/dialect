@@ -101,7 +101,8 @@ SwiftComponent:
                         c.outStructs +
                         c.outContexts +
                         c.outSets +
-                        c.outShoulds
+                        c.outShoulds +
+                        c.outRegisterShoulds
         outContexts:
             1. When entity field types are available:
                 if:
@@ -114,6 +115,12 @@ SwiftComponent:
                     c.recentField == F.entityFields
                 then:
                     c.outFields = swiftFields(c.entityFields)
+        outRegisterShoulds:
+            1. When shoulds are ready:
+                if:
+                    c.recentField == F.entityShoulds
+                then:
+                    c.outRegisterShoulds = swiftRegisterShoulds(c.entities, c.entityShoulds)
         outSets:
             1. When entities are ready:
                 if:
@@ -157,8 +164,9 @@ SwiftContext:
         out: String
         outContexts: String
         outFields: String
-        outSets: String
         outputPaths: [OutputPath]
+        outRegisterShoulds: String
+        outSets: String
         outShoulds: String
         outStructs: String
 

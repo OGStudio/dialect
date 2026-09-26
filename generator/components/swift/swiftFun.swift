@@ -102,6 +102,56 @@ func swiftFormatShould(_ lines: [String]) -> String {
     return lines.map { SWIFT_SHOULD_INDENTATION + $0 }.joined(separator: "\n")
 }
 
+/// Generate single component `RegisterShoulds` function
+func swiftRegisterShould(
+    _ contextName: String,
+    _ shoulds: [String]
+) -> String {
+    let prefix = String(contextName.dropLast(SWIFT_SUFFIX_CONTEXT.count)).lowercased()
+    let funcName = prefix + SWIFT_REGISTER_SHOULDS_SUFFIX
+
+    var outItems = ""
+    for should in shoulds {
+        let shouldFuncName = prefix + SWIFT_SHOULD_RESET + otherCapitalize(should)
+        outItems += SWIFT_SHOULD_INDENTATION + shouldFuncName + ",\n"
+    }
+
+    return
+        SWIFT_REGISTER_SHOULDS_T
+            .replacingOccurrences(of: "%FUNC%", with: funcName)
+            .replacingOccurrences(of: "%CONTEXT%", with: contextName)
+            .replacingOccurrences(of: "%ITEMS%", with: outItems)
+}
+
+/// Generate `RegisterShoulds` functions for all components
+func swiftRegisterShoulds(
+    _ entities: [String],
+    _ entityShoulds: [Int: [String]]
+) -> String {
+    var out = ""
+
+    // Collect entity ids with shoulds
+    var entityIds = [Int]()
+    for entityId in entityShoulds.keys.sorted() {
+        let shoulds = entityShoulds[entityId]!
+        if !shoulds.isEmpty {
+            entityIds.append(entityId)
+        }
+    }
+
+    // Generate register-shoulds function for each component
+    for entityId in entityIds {
+        let contextName = swiftContextName(entities[entityId])
+
+        let shoulds = entityShoulds[entityId] ?? []
+        if !shoulds.isEmpty {
+            out += swiftRegisterShould(contextName, shoulds)
+        }
+    }
+
+    return out
+}
+
 /// Generate single component `Set` function
 func swiftSet(_ entity: String) -> String {
     let contextName = swiftContextName(entity)

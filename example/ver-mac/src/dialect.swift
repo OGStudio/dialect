@@ -256,3 +256,14 @@ func rootShouldResetDidLaunch(_ c: RootContext) -> RootContext {
     c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
     return c
 }
+
+func rootRegisterShoulds(_ ctrl: DialectController) {
+    [
+        rootShouldResetCount,
+        rootShouldResetCountText,
+        rootShouldResetDidLaunch,
+
+    ].forEach { f in
+        ctrl.registerFunction { c in f(c as! RootContext) }
+    }
+}

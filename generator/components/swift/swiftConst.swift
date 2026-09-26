@@ -39,6 +39,18 @@ struct F {
 %ITEMS%
 }
 """
+let SWIFT_REGISTER_SHOULDS_SUFFIX = "RegisterShoulds"
+let SWIFT_REGISTER_SHOULDS_T = """
+
+func %FUNC%(_ ctrl: DialectController) {
+    [
+%ITEMS%
+    ].forEach { f in
+        ctrl.registerFunction { c in f(c as! %CONTEXT%) }
+    }
+}
+
+"""
 let SWIFT_SET_SUFFIX = "Set"
 let SWIFT_SET_T = """
 

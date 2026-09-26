@@ -3,60 +3,12 @@
 
 // CLI related functions
 
-func cliRegisterShoulds(_ ctrl: DialectController) {
-    [
-        cliShouldResetConsoleOutput,
-        cliShouldResetDidLaunch,
-        cliShouldResetInputFileName,
-        cliShouldResetReadFile,
-    ].forEach { f in
-        ctrl.registerFunction { c in f(c as! CLIContext) }
-    }
-}
-
-// SWIFT related functions
-
-func swiftRegisterShoulds(_ ctrl: DialectController) {
-    [
-        swiftShouldResetDidLaunch,
-        swiftShouldResetOut,
-        swiftShouldResetOutContexts,
-        swiftShouldResetOutFields,
-        swiftShouldResetOutSets,
-        swiftShouldResetOutShoulds,
-        swiftShouldResetOutStructs,
-        swiftShouldResetPath,
-    ].forEach { f in
-        ctrl.registerFunction { c in f(c as! SwiftContext) }
-    }
-}
-
 // SWIFT oneliners
 
 func swiftRegisterEffects(_ ctrl: DialectController) {
     let _: SwiftContext? = registerOneliners(ctrl, [
         F.out, { (c: SwiftContext) in otherWriteFile(c.path, c.out) },
     ])
-}
-
-// YML related functions
-
-func ymlRegisterShoulds(_ ctrl: DialectController) {
-    [
-        ymlShouldResetChunks,
-        ymlShouldResetDidLaunch,
-        ymlShouldResetEntities,
-        ymlShouldResetEntityFields,
-        ymlShouldResetEntityFieldTypes,
-        ymlShouldResetEntityShouldBranches,
-        ymlShouldResetEntityShoulds,
-        ymlShouldResetEntityTypes,
-        ymlShouldResetOutputPaths,
-        ymlShouldResetParseInput,
-        ymlShouldResetVersion,
-    ].forEach { f in
-        ctrl.registerFunction { c in f(c as! YMLContext) }
-    }
 }
 
 // YML oneliners

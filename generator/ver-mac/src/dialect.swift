@@ -141,6 +141,7 @@ struct F {
     static let out = "out"
     static let outContexts = "outContexts"
     static let outFields = "outFields"
+    static let outRegisterShoulds = "outRegisterShoulds"
     static let outSets = "outSets"
     static let outShoulds = "outShoulds"
     static let outStructs = "outStructs"
@@ -284,8 +285,9 @@ struct SwiftContext: DialectContext {
     var out = String()
     var outContexts = String()
     var outFields = String()
-    var outSets = String()
     var outputPaths = [OutputPath]()
+    var outRegisterShoulds = String()
+    var outSets = String()
     var outShoulds = String()
     var outStructs = String()
 
@@ -331,11 +333,14 @@ struct SwiftContext: DialectContext {
         else if (name == "outFields") {
             return outFields as! T
         }
-        else if (name == "outSets") {
-            return outSets as! T
-        }
         else if (name == "outputPaths") {
             return outputPaths as! T
+        }
+        else if (name == "outRegisterShoulds") {
+            return outRegisterShoulds as! T
+        }
+        else if (name == "outSets") {
+            return outSets as! T
         }
         else if (name == "outShoulds") {
             return outShoulds as! T
@@ -390,11 +395,14 @@ struct SwiftContext: DialectContext {
         else if (name == "outFields") {
             outFields = value as! String
         }
-        else if (name == "outSets") {
-            outSets = value as! String
-        }
         else if (name == "outputPaths") {
             outputPaths = value as! [OutputPath]
+        }
+        else if (name == "outRegisterShoulds") {
+            outRegisterShoulds = value as! String
+        }
+        else if (name == "outSets") {
+            outSets = value as! String
         }
         else if (name == "outShoulds") {
             outShoulds = value as! String
@@ -654,7 +662,8 @@ func swiftShouldResetOut(_ c: SwiftContext) -> SwiftContext {
             c.outStructs +
             c.outContexts +
             c.outSets +
-            c.outShoulds
+            c.outShoulds +
+            c.outRegisterShoulds
         c.recentField = F.out
         return c
     }
@@ -690,6 +699,23 @@ func swiftShouldResetOutFields(_ c: SwiftContext) -> SwiftContext {
     {
         c.outFields = swiftFields(c.entityFields)
         c.recentField = F.outFields
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func swiftShouldResetOutRegisterShoulds(_ c: SwiftContext) -> SwiftContext {
+    var c = c
+
+    /* 1. When shoulds are ready */
+    if
+        c.recentField == F.entityShoulds
+    {
+        c.outRegisterShoulds = swiftRegisterShoulds(c.entities, c.entityShoulds)
+        c.recentField = F.outRegisterShoulds
         return c
     }
 
@@ -955,4 +981,52 @@ func ymlShouldResetVersion(_ c: YMLContext) -> YMLContext {
 
     c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
     return c
+}
+
+func cliRegisterShoulds(_ ctrl: DialectController) {
+    [
+        cliShouldResetConsoleOutput,
+        cliShouldResetDidLaunch,
+        cliShouldResetInputFileName,
+        cliShouldResetReadFile,
+
+    ].forEach { f in
+        ctrl.registerFunction { c in f(c as! CLIContext) }
+    }
+}
+
+func swiftRegisterShoulds(_ ctrl: DialectController) {
+    [
+        swiftShouldResetDidLaunch,
+        swiftShouldResetOut,
+        swiftShouldResetOutContexts,
+        swiftShouldResetOutFields,
+        swiftShouldResetOutRegisterShoulds,
+        swiftShouldResetOutSets,
+        swiftShouldResetOutShoulds,
+        swiftShouldResetOutStructs,
+        swiftShouldResetPath,
+
+    ].forEach { f in
+        ctrl.registerFunction { c in f(c as! SwiftContext) }
+    }
+}
+
+func ymlRegisterShoulds(_ ctrl: DialectController) {
+    [
+        ymlShouldResetChunks,
+        ymlShouldResetDidLaunch,
+        ymlShouldResetEntities,
+        ymlShouldResetEntityFields,
+        ymlShouldResetEntityFieldTypes,
+        ymlShouldResetEntityShouldBranches,
+        ymlShouldResetEntityShoulds,
+        ymlShouldResetEntityTypes,
+        ymlShouldResetOutputPaths,
+        ymlShouldResetParseInput,
+        ymlShouldResetVersion,
+
+    ].forEach { f in
+        ctrl.registerFunction { c in f(c as! YMLContext) }
+    }
 }
