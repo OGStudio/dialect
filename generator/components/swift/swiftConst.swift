@@ -39,6 +39,17 @@ struct F {
 %ITEMS%
 }
 """
+let SWIFT_REGISTER_EFFECTS_SUFFIX = "RegisterEffects"
+let SWIFT_REGISTER_EFFECTS_T = """
+
+func %FUNC%(_ ctrl: DialectController) {
+    let _: %CONTEXT%? = registerOneliners(ctrl, [
+%ITEMS%
+    ])
+}
+
+"""
+let SWIFT_REGISTER_EFFECT_ITEM_T = "        F.%FIELD%, { (c: %CONTEXT%) in %REACTION% },\n"
 let SWIFT_REGISTER_SHOULDS_SUFFIX = "RegisterShoulds"
 let SWIFT_REGISTER_SHOULDS_T = """
 

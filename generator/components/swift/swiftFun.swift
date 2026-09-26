@@ -102,6 +102,61 @@ func swiftFormatShould(_ lines: [String]) -> String {
     return lines.map { SWIFT_SHOULD_INDENTATION + $0 }.joined(separator: "\n")
 }
 
+/// Generate single component `RegisterEffects` function
+func swiftRegisterEffect(
+    _ contextName: String,
+    _ oneliners: [Oneliner]
+) -> String {
+    let prefix = String(contextName.dropLast(SWIFT_SUFFIX_CONTEXT.count)).lowercased()
+    let funcName = prefix + SWIFT_REGISTER_EFFECTS_SUFFIX
+
+    var outItems = ""
+    for oneliner in oneliners {
+        let field = oneliner.field
+        let reaction = oneliner.reaction
+        outItems +=
+            SWIFT_REGISTER_EFFECT_ITEM_T
+                .replacingOccurrences(of: "%FIELD%", with: field)
+                .replacingOccurrences(of: "%CONTEXT%", with: contextName)
+                .replacingOccurrences(of: "%REACTION%", with: reaction)
+    }
+
+    return
+        SWIFT_REGISTER_EFFECTS_T
+            .replacingOccurrences(of: "%FUNC%", with: funcName)
+            .replacingOccurrences(of: "%CONTEXT%", with: contextName)
+            .replacingOccurrences(of: "%ITEMS%", with: outItems)
+}
+
+/// Generate `RegisterEffects` functions for all components
+func swiftRegisterEffects(
+    _ entities: [String],
+    _ entityOneliners: [Int: [Oneliner]]
+) -> String {
+    var out = ""
+
+    // Collect entity ids with oneliners
+    var entityIds = [Int]()
+    for entityId in entityOneliners.keys.sorted() {
+        let oneliners = entityOneliners[entityId]!
+        if !oneliners.isEmpty {
+            entityIds.append(entityId)
+        }
+    }
+
+    // Generate register-effects function for each component
+    for entityId in entityIds {
+        let contextName = swiftContextName(entities[entityId])
+
+        let oneliners = entityOneliners[entityId] ?? []
+        if !oneliners.isEmpty {
+            out += swiftRegisterEffect(contextName, oneliners)
+        }
+    }
+
+    return out
+}
+
 /// Generate single component `RegisterShoulds` function
 func swiftRegisterShould(
     _ contextName: String,
