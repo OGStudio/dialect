@@ -102,6 +102,32 @@ func swiftFormatShould(_ lines: [String]) -> String {
     return lines.map { SWIFT_SHOULD_INDENTATION + $0 }.joined(separator: "\n")
 }
 
+/// Generate single component `Set` function
+func swiftSet(_ entity: String) -> String {
+    let contextName = swiftContextName(entity)
+    let prefix = String(contextName.dropLast(SWIFT_SUFFIX_CONTEXT.count)).lowercased()
+    let funcName = prefix + "Set"
+
+    return
+        SWIFT_SET_T
+            .replacingOccurrences(of: "%FUNC%", with: funcName)
+            .replacingOccurrences(of: "%COMPONENT%", with: entity)
+}
+
+/// Generate `Set` functions for all components
+func swiftSets(_ entities: [String]) -> String {
+    var out = ""
+
+    // Generate each component's `Set` function
+    for entity in entities {
+        if entity.hasSuffix(SWIFT_SUFFIX_COMPONENT) {
+            out += swiftSet(entity)
+        }
+    }
+
+    return out
+}
+
 /// Generate single should function
 func swiftShould(
     _ name: String,

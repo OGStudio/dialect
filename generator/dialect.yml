@@ -91,7 +91,7 @@ SwiftComponent:
                 then:
                     c.didLaunch = true
         out:
-            1. At first just provide ctrl/ctx/reg:
+            1. Upon launch:
                 if:
                     c.recentField == F.didLaunch
                 then:
@@ -100,6 +100,7 @@ SwiftComponent:
                         c.outFields +
                         c.outStructs +
                         c.outContexts +
+                        c.outSets +
                         c.outShoulds
         outContexts:
             1. When entity field types are available:
@@ -113,6 +114,12 @@ SwiftComponent:
                     c.recentField == F.entityFields
                 then:
                     c.outFields = swiftFields(c.entityFields)
+        outSets:
+            1. When entities are ready:
+                if:
+                    c.recentField == F.entities
+                then:
+                    c.outSets = swiftSets(c.entities)
         outShoulds:
             1. When entity should branches are available:
                 if:
@@ -150,6 +157,7 @@ SwiftContext:
         out: String
         outContexts: String
         outFields: String
+        outSets: String
         outputPaths: [OutputPath]
         outShoulds: String
         outStructs: String

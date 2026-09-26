@@ -14,13 +14,6 @@ func cliRegisterShoulds(_ ctrl: DialectController) {
     }
 }
 
-func cliSet(
-    _ key: String,
-    _ value: Any
-) {
-    CLIComponent.singleton!.ctrl.set(key, value)
-}
-
 // SWIFT related functions
 
 func swiftRegisterShoulds(_ ctrl: DialectController) {
@@ -29,19 +22,13 @@ func swiftRegisterShoulds(_ ctrl: DialectController) {
         swiftShouldResetOut,
         swiftShouldResetOutContexts,
         swiftShouldResetOutFields,
+        swiftShouldResetOutSets,
         swiftShouldResetOutShoulds,
         swiftShouldResetOutStructs,
         swiftShouldResetPath,
     ].forEach { f in
         ctrl.registerFunction { c in f(c as! SwiftContext) }
     }
-}
-
-func swiftSet(
-    _ key: String,
-    _ value: Any
-) {
-    SwiftComponent.singleton!.ctrl.set(key, value)
 }
 
 // SWIFT oneliners
@@ -70,13 +57,6 @@ func ymlRegisterShoulds(_ ctrl: DialectController) {
     ].forEach { f in
         ctrl.registerFunction { c in f(c as! YMLContext) }
     }
-}
-
-func ymlSet(
-    _ key: String,
-    _ value: Any
-) {
-    YMLComponent.singleton!.ctrl.set(key, value)
 }
 
 // YML oneliners

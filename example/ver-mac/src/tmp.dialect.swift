@@ -13,13 +13,6 @@ func rootRegisterShoulds(_ ctrl: DialectController) {
     }
 }
 
-func rootSet(
-    _ key: String,
-    _ value: Any
-) {
-    RootComponent.singleton!.ctrl.set(key, value)
-}
-
 // Root oneliners
 
 func rootRegisterEffects(_ ctrl: DialectController) {

@@ -179,6 +179,13 @@ struct RootContext: DialectContext {
     }
 }
 
+func rootSet(
+    _ key: String,
+    _ value: Any
+) {
+    RootComponent.singleton!.ctrl.set(key, value)
+}
+
 func rootShouldResetCount(_ c: RootContext) -> RootContext {
     var c = c
 

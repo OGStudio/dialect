@@ -39,6 +39,16 @@ struct F {
 %ITEMS%
 }
 """
+let SWIFT_SET_T = """
+
+func %FUNC%(
+    _ key: String,
+    _ value: Any
+) {
+    %COMPONENT%.singleton!.ctrl.set(key, value)
+}
+
+"""
 let SWIFT_STRUCT_FIELD_T = "    var %NAME% = %DEFAULT%\n"
 let SWIFT_STRUCT_T = """
 

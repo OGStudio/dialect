@@ -141,6 +141,7 @@ struct F {
     static let out = "out"
     static let outContexts = "outContexts"
     static let outFields = "outFields"
+    static let outSets = "outSets"
     static let outShoulds = "outShoulds"
     static let outStructs = "outStructs"
     static let outputPaths = "outputPaths"
@@ -283,6 +284,7 @@ struct SwiftContext: DialectContext {
     var out = String()
     var outContexts = String()
     var outFields = String()
+    var outSets = String()
     var outputPaths = [OutputPath]()
     var outShoulds = String()
     var outStructs = String()
@@ -328,6 +330,9 @@ struct SwiftContext: DialectContext {
         }
         else if (name == "outFields") {
             return outFields as! T
+        }
+        else if (name == "outSets") {
+            return outSets as! T
         }
         else if (name == "outputPaths") {
             return outputPaths as! T
@@ -384,6 +389,9 @@ struct SwiftContext: DialectContext {
         }
         else if (name == "outFields") {
             outFields = value as! String
+        }
+        else if (name == "outSets") {
+            outSets = value as! String
         }
         else if (name == "outputPaths") {
             outputPaths = value as! [OutputPath]
@@ -513,6 +521,27 @@ struct YMLContext: DialectContext {
     }
 }
 
+func cliSet(
+    _ key: String,
+    _ value: Any
+) {
+    CLIComponent.singleton!.ctrl.set(key, value)
+}
+
+func swiftSet(
+    _ key: String,
+    _ value: Any
+) {
+    SwiftComponent.singleton!.ctrl.set(key, value)
+}
+
+func ymlSet(
+    _ key: String,
+    _ value: Any
+) {
+    YMLComponent.singleton!.ctrl.set(key, value)
+}
+
 func cliShouldResetConsoleOutput(_ c: CLIContext) -> CLIContext {
     var c = c
 
@@ -615,7 +644,7 @@ func swiftShouldResetDidLaunch(_ c: SwiftContext) -> SwiftContext {
 func swiftShouldResetOut(_ c: SwiftContext) -> SwiftContext {
     var c = c
 
-    /* 1. At first just provide ctrl/ctx/reg */
+    /* 1. Upon launch */
     if
         c.recentField == F.didLaunch
     {
@@ -624,6 +653,7 @@ func swiftShouldResetOut(_ c: SwiftContext) -> SwiftContext {
             c.outFields +
             c.outStructs +
             c.outContexts +
+            c.outSets +
             c.outShoulds
         c.recentField = F.out
         return c
@@ -660,6 +690,23 @@ func swiftShouldResetOutFields(_ c: SwiftContext) -> SwiftContext {
     {
         c.outFields = swiftFields(c.entityFields)
         c.recentField = F.outFields
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func swiftShouldResetOutSets(_ c: SwiftContext) -> SwiftContext {
+    var c = c
+
+    /* 1. When entities are ready */
+    if
+        c.recentField == F.entities
+    {
+        c.outSets = swiftSets(c.entities)
+        c.recentField = F.outSets
         return c
     }
 
