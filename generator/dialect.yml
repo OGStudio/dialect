@@ -60,6 +60,12 @@ CLIContext:
         inputFileName: String
         readFile: Bool
 
+Oneliner:
+    type: struct
+    fields:
+        field: String
+        reaction: String
+
 OutputPath:
     type: struct
     fields:
@@ -91,7 +97,7 @@ SwiftComponent:
                 then:
                     c.didLaunch = true
         out:
-            1. At first just provide ctrl/ctx/reg:
+            1. Upon launch:
                 if:
                     c.recentField == F.didLaunch
                 then:
@@ -100,7 +106,10 @@ SwiftComponent:
                         c.outFields +
                         c.outStructs +
                         c.outContexts +
-                        c.outShoulds
+                        c.outSets +
+                        c.outShoulds +
+                        c.outRegisterShoulds +
+                        c.outRegisterEffects
         outContexts:
             1. When entity field types are available:
                 if:
@@ -113,6 +122,24 @@ SwiftComponent:
                     c.recentField == F.entityFields
                 then:
                     c.outFields = swiftFields(c.entityFields)
+        outRegisterEffects:
+            1. When oneliners are ready:
+                if:
+                    c.recentField == F.entityOneliners
+                then:
+                    c.outRegisterEffects = swiftRegisterEffects(c.entities, c.entityOneliners)
+        outRegisterShoulds:
+            1. When shoulds are ready:
+                if:
+                    c.recentField == F.entityShoulds
+                then:
+                    c.outRegisterShoulds = swiftRegisterShoulds(c.entities, c.entityShoulds)
+        outSets:
+            1. When entities are ready:
+                if:
+                    c.recentField == F.entities
+                then:
+                    c.outSets = swiftSets(c.entities)
         outShoulds:
             1. When entity should branches are available:
                 if:
@@ -142,6 +169,7 @@ SwiftContext:
         entities: [String]
         entityFields: [Int: [String]]
         entityFieldTypes: [Int: [Int: String]]
+        entityOneliners: [Int: [Oneliner]]
         entityShouldBranches: [Int: [Int: [ShouldBranch]]]
         entityShoulds: [Int: [String]]
         entityTypes: [Int: String]
@@ -151,6 +179,9 @@ SwiftContext:
         outContexts: String
         outFields: String
         outputPaths: [OutputPath]
+        outRegisterEffects: String
+        outRegisterShoulds: String
+        outSets: String
         outShoulds: String
         outStructs: String
 
@@ -160,6 +191,7 @@ YMLComponent:
         - entities: swiftSet(F.entities, c.entities)
         - entityFields: swiftSet(F.entityFields, c.entityFields)
         - entityFieldTypes: swiftSet(F.entityFieldTypes, c.entityFieldTypes)
+        - entityOneliners: swiftSet(F.entityOneliners, c.entityOneliners)
         - entityShouldBranches: swiftSet(F.entityShouldBranches, c.entityShouldBranches)
         - entityShoulds: swiftSet(F.entityShoulds, c.entityShoulds)
         - entityTypes: swiftSet(F.entityTypes, c.entityTypes)
@@ -197,6 +229,12 @@ YMLComponent:
                     c.recentField == F.entityFields
                 then:
                     c.entityFieldTypes = ymlParseEntityFieldTypes(c.chunks, c.entities, c.entityFields)
+        entityOneliners:
+            1. Upon entities:
+                if:
+                    c.recentField == F.entities
+                then:
+                    c.entityOneliners = ymlParseEntityOneliners(c.chunks, c.entities)
         entityShouldBranches:
             1. Upon entity shoulds:
                 if:
@@ -244,6 +282,7 @@ YMLContext:
         entities: [String]
         entityFields: [Int: [String]]
         entityFieldTypes: [Int: [Int: String]]
+        entityOneliners: [Int: [Oneliner]]
         entityShouldBranches: [Int: [Int: [ShouldBranch]]]
         entityShoulds: [Int: [String]]
         entityTypes: [Int: String]

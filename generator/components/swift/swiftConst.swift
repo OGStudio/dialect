@@ -39,12 +39,47 @@ struct F {
 %ITEMS%
 }
 """
+let SWIFT_REGISTER_EFFECTS_SUFFIX = "RegisterEffects"
+let SWIFT_REGISTER_EFFECTS_T = """
+
+func %FUNC%(_ ctrl: DialectController) {
+    let _: %CONTEXT%? = registerOneliners(ctrl, [
+%ITEMS%
+    ])
+}
+
+"""
+let SWIFT_REGISTER_EFFECT_ITEM_T = "        F.%FIELD%, { (c: %CONTEXT%) in %REACTION% },\n"
+let SWIFT_REGISTER_SHOULDS_SUFFIX = "RegisterShoulds"
+let SWIFT_REGISTER_SHOULDS_T = """
+
+func %FUNC%(_ ctrl: DialectController) {
+    [
+%ITEMS%
+    ].forEach { f in
+        ctrl.registerFunction { c in f(c as! %CONTEXT%) }
+    }
+}
+
+"""
+let SWIFT_SET_SUFFIX = "Set"
+let SWIFT_SET_T = """
+
+func %FUNC%(
+    _ key: String,
+    _ value: Any
+) {
+    %COMPONENT%.singleton!.ctrl.set(key, value)
+}
+
+"""
 let SWIFT_STRUCT_FIELD_T = "    var %NAME% = %DEFAULT%\n"
 let SWIFT_STRUCT_T = """
 
 struct %NAME% {
 %FIELDS%
 }
+
 
 """
 let SWIFT_SHOULD_BRANCH_T = """
