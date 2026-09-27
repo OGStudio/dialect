@@ -13,6 +13,15 @@ final class AppDelegate:
         NSApp.activate(ignoringOtherApps: true)
 
         root.setup()
+
+        #if os(macOS)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            for window in NSApp.windows {
+                print("Window frame: \(window.frame)")
+            }
+            fflush(stdout)
+        }
+        #endif
     }
 
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
