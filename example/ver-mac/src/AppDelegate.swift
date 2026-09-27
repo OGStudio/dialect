@@ -1,6 +1,5 @@
 import AppKit
 
-
 final class AppDelegate:
     NSObject,
     NSApplicationDelegate
@@ -9,19 +8,11 @@ final class AppDelegate:
     let rootVM = RootVM()
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        // Bring the app to foreground
         NSApp.setActivationPolicy(.regular)
         NSApp.activate(ignoringOtherApps: true)
 
         root.setup()
-
-        #if os(macOS)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            for window in NSApp.windows {
-                print("Window frame: \(window.frame)")
-            }
-            fflush(stdout)
-        }
-        #endif
     }
 
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
