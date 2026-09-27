@@ -1,1 +1,2 @@
 APP_MAC=$SDIR/../ver-mac/.build/HelloWorld.app
+APP_IOS=$SDIR/../ver-ios/.build/HelloWorld.app

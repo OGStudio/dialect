@@ -27,10 +27,14 @@ generator/         The Swift port of the Klin code generator (tool)
   dialect.swift       GENERATED (chicken-egg hand-patch of `struct F`; see below)
   dialect.yml       v4 dialect: CLIComponent, CLIContext, SwiftComponent, SwiftContext, OutputPath, RootContext, ShouldBranch, YMLComponent, YMLContext
   util/run-generator    Build & run generator binary (utility scripts live at the repo root)
-example/           Sample macOS SwiftUI app + its own dialect.yml (a self-contained 2nd generation target)
+example/           Sample SwiftUI app + its own dialect.yml (a self-contained 2nd generation target); rebuilt & runnable on both macOS and iOS simulator
   ver-mac/         SPM-based SwiftUI app (macOS 11+); fully regenerated `src/dialect.swift` (the engine is inline Swift source here — NOT a base64-embedded core)
+  ver-ios/         SPM-based SwiftUI app (iOS 15+); `src/dialect.swift`, `other/`, `root/`, `rootVM` are SYMLINKS to ver-mac/components — only the view (`root/ios/`) and app entry (UIKit AppDelegate/HWApp) are iOS-specific
+  components/      Root component source-of-truth (see SYMLINK PARITY RULE below): `other/`, `root/` (shared), `root/mac/view/RootView.swift` + `root/ios/view/RootView.swift` (per-platform views)
   dialect.yml      Example dialect definition: one component (HelloWorldComponent) + one context (HelloWorldContext: count/didClickCount/didLaunch/didSetup) — no cross-component bridging needed (single context, single component)
-  util/run-mac     Build & launch the example app (steps: generateDialect -> buildMac -> packageMac -> runMac; generateDialect runs `../../util/run-generator --file=dialect.yml` so the app fully regenerates from the built generator)
+  util/run-mac     Build & launch the example app on macOS (steps: generateDialect -> buildMac -> packageMac -> runMac; generateDialect runs `../../util/run-generator --file=dialect.yml` so the app fully regenerates from the built generator)
+  util/build-ios   Build & package for iOS simulator (generateDialect -> buildIOS -> packageIOS; buildIOS uses `swift build --triple arm64-apple-ios15.0-simulator --sdk $(xcrun --sdk iphonesimulator --show-sdk-path)`, artifact at `.build/arm64-apple-ios-simulator/debug/HelloWorld`; packageIOS codesigns with ad-hoc identity)
+  util/run-ios     Install & launch on an iOS simulator (boots device, installs `.build/HelloWorld.app`, launches with `--console-pty` so the ИГР k/v logging appears; pick a device via `IOS_DEVICE`, e.g. `IOS_DEVICE="iPhone 15 Pro"`, default `iPhone 16`)
 ref/               Reference to original Kotlin Dialect (symlink -> ../../kotlin-dialect)
   kom/             Newer Kotlin Multiplatform reference (symlink -> ../../kom)
 ```
@@ -55,8 +59,12 @@ util/build-generator
 # Generator tool (embeds core, builds, parses a YAML file & prints it)
 util/run-generator <file.yaml>
 
-# Example app
+# Example app (macOS)
 example/util/run-mac
+
+# Example app (iOS simulator; defaults to iPhone 16, override via IOS_DEVICE)
+example/util/build-ios
+example/util/run-ios
 ```
 
 **Steps**: `util/run-generator` and `util/build-generator` source `util/paths` (CORE_SWIFT, GENERATOR_COMPONENTS) and run `util/step/*` scripts in order: `embedCoreSwift` (Step 1: regenerates `components/swift/swiftConstEmb64.swift` = `let SWIFT_EMB64_CORE = base64` of core/swift + DialectController + registerOneliners), `buildGenerator` (Step 2: `swift build -c release`), `runGenerator` (Step 3, run-generator only). `build-generator` also sets `STEP=0` first.
