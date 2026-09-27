@@ -8,7 +8,7 @@ RootComponent:
     type: component
     oneliners:
         - countText: print(c.countText)
-        - countText: RootVM.shared?.countText = c.countText
+        - countText: RootVM.shared!.countText = c.countText
     shoulds:
         count:
             1. Upon hitting 10 the first time:
