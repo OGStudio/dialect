@@ -8,6 +8,7 @@ struct HelloWorldApp: App {
     var body: some Scene {
         WindowGroup {
             RootView(appDelegate.rootVM)
+                .defaultSize(width: 640, height: 480)
         }
     }
 }

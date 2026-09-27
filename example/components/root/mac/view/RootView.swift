@@ -20,6 +20,5 @@ struct RootView: View {
             }
         }
         .padding(40)
-        // .frame(minWidth: 400, minHeight: 300)
     }
 }
