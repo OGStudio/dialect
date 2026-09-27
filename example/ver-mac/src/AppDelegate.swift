@@ -8,7 +8,7 @@ final class AppDelegate:
     let rootVM = RootVM()
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        // Bring the app to foreground
+        // Bring the app to the foreground
         NSApp.setActivationPolicy(.regular)
         NSApp.activate(ignoringOtherApps: true)
 
