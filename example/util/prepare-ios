@@ -5,4 +5,5 @@ T=$SDIR/step
 source $SDIR/paths
 
 STEP=0
-source $T/runIOS
+source $T/generateDialect
+source $T/prepareIOS

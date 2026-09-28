@@ -1,9 +1,0 @@
-#!/bin/bash -e
-
-STEP=$((STEP+1))
-echo -e "\n> > > > Step №$STEP. Build for iOS simulator"
-
-SDK=$(xcrun --sdk iphonesimulator --show-sdk-path)
-
-cd $SDIR/../ver-ios
-swift build --triple arm64-apple-ios15.0-simulator --sdk $SDK
