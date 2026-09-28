@@ -40,8 +40,6 @@ KERN=$(( -20 * S / 1024 ))
 HALF=$(( S / 2 ))
 QUARTER=$(( S / 4 ))
 TEXT_X=$(( QUARTER - 72 * S / 1024 ))
-INSET=$(( 20 * S / 1000 ))
-RADIUS=$(( 224 * ( S - 2 * INSET ) / 1000 ))
 
 KERN_ARGS=()
 if "$IM" xc: -kerning 1 info: >/dev/null 2>&1; then
@@ -56,9 +54,6 @@ fi
        -gravity northwest -geometry '+0+0' -composite \
        -gravity center ${FONT_ARGS[@]+"${FONT_ARGS[@]}"} ${KERN_ARGS[@]+"${KERN_ARGS[@]}"} \
        -fill white -pointsize "$PS" -annotate "-${TEXT_X}+0" "$TEXT" \) \
-    \( -size "${S}x${S}" xc:none -fill white \
-       -draw "roundrectangle $INSET,$INSET $(( S - INSET - 1 )),$(( S - INSET - 1 )) $RADIUS,$RADIUS" \) \
-    -compose DstIn -composite \
     -depth 8 -strip \
     "$OUT"
 
