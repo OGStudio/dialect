@@ -3,3 +3,5 @@
 STEP=$((STEP+1))
 echo -e "\n> > > > Step №$STEP. Generate Xcode project for iOS"
 
+cd $SDIR/../ver-ios
+xcodegen
