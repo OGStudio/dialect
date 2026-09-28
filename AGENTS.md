@@ -28,13 +28,17 @@ generator/         The Swift port of the Klin code generator (tool)
   dialect.yml       v4 dialect: CLIComponent, CLIContext, SwiftComponent, SwiftContext, OutputPath, RootContext, ShouldBranch, YMLComponent, YMLContext
   util/run-generator    Build & run generator binary (utility scripts live at the repo root)
 example/           Sample SwiftUI app + its own dialect.yml (a self-contained 2nd generation target); rebuilt & runnable on both macOS and iOS simulator
-  ver-mac/         SPM-based SwiftUI app (macOS 11+); fully regenerated `src/dialect.swift` (the engine is inline Swift source here — NOT a base64-embedded core)
-  ver-ios/         SPM-based SwiftUI app (iOS 15+); `src/dialect.swift`, `other/`, `root/`, `rootVM` are SYMLINKS to ver-mac/components — only the view (`root/ios/`) and app entry (UIKit AppDelegate/HWApp) are iOS-specific
+  ver-mac/         SPM-based SwiftUI app (macOS 13+); fully regenerated `src/dialect.swift` (the engine is inline Swift source here — NOT a base64-embedded core); `Info.plist` + `Resources/AppIcon.icns` live at ver-mac/ top level (NOT under src/ — SPM target excludes nothing)
+  ver-ios/         xcodegen-based SwiftUI app (iOS 15+, no SPM — `project.yml` -> `HelloWorld.xcodeproj`); `src/dialect.swift`, `other/`, `root/`, `rootVM` are SYMLINKS to the shared components — only `src/AppDelegate.swift` and `src/HWApp.swift` (UIKit) are iOS-specific; `Info.plist` at ver-ios/ top level; app icon via `Assets.xcassets/AppIcon.appiconset` (single 1024png)
   components/      Root component source-of-truth (see SYMLINK PARITY RULE below): `other/`, `root/` (shared); `root/mac/view/RootView.swift` is the single per-platform view — `root/ios/view/RootView.swift` is a SYMLINK to it (both platforms share the identical view)
   dialect.yml      Example dialect definition: one component (HelloWorldComponent) + one context (HelloWorldContext: count/didClickCount/didLaunch/didSetup) — no cross-component bridging needed (single context, single component)
-  util/run-mac     Build & launch the example app on macOS (steps: generateDialect -> buildMac -> packageMac -> runMac; generateDialect runs `../../util/run-generator --file=dialect.yml` so the app fully regenerates from the built generator)
-  util/build-ios   Build & package for iOS simulator (generateDialect -> buildIOS -> packageIOS; buildIOS uses `swift build --triple arm64-apple-ios15.0-simulator --sdk $(xcrun --sdk iphonesimulator --show-sdk-path)`, artifact at `.build/arm64-apple-ios-simulator/debug/HelloWorld`; packageIOS codesigns with ad-hoc identity)
-  util/run-ios     Install & launch on an iOS simulator (boots device, installs `.build/HelloWorld.app`, launches with `--console-pty` so the ИГР k/v logging appears; pick a device via `IOS_DEVICE`, e.g. `IOS_DEVICE="iPhone 15 Pro"`, default `iPhone 16`)
+  util/run-mac     Fully build & launch the example app on macOS (steps: generateDialect -> buildMac -> packageMac -> runMac; generateDialect runs `../../util/run-generator --file=dialect.yml` so the app fully regenerates from the built generator; artifact at `.build/HelloWorld.app`)
+  util/build-mac   Build & package for macOS only (generateDialect -> buildMac -> packageMac; no run)
+  util/prepare-ios Generate the iOS Xcode project (generateDialect -> prepareIOS; prepareIOS runs `xcodegen` in ver-ios/ — the .xcodeproj is gitignored and rebuilt on demand). iOS building happens in Xcode/xcodebuild from the project.
+  util/calc-shared Report lines of code shared between ver-mac and ver-ios (`find -L` + `realpath` dedup of the symlinked source-of-truth; `comm` finds files reachable from both trees) — e.g. `ver-mac LOC total / shared / percent: 422 / 387 / 91%`
+  util/make-icon-png Regenerate the master app-icon 1024x1024 PNG (ImageMagick gradient+text, FULL-BLEED square — no rounding; iOS/macOS apply their own squircles on top); output default `/tmp/opencode/AppIcon-1024.png`
+  util/make-icon-mac Convert the master PNG into `ver-mac/Resources/AppIcon.icns` (iconset + iconutil)
+  util/rm-mac-geom Flush cfprefsd & delete the `~/Library/Preferences/HelloWorld.plist` + `com.example.HelloWorld.plist` (the NSWindow frame autosave caches) so window geometry resets
 ref/               Reference to original Kotlin Dialect (symlink -> ../../kotlin-dialect)
   kom/             Newer Kotlin Multiplatform reference (symlink -> ../../kom)
 ```
@@ -62,9 +66,8 @@ util/run-generator <file.yaml>
 # Example app (macOS)
 example/util/run-mac
 
-# Example app (iOS simulator; defaults to iPhone 16, override via IOS_DEVICE)
-example/util/build-ios
-example/util/run-ios
+# Example app (iOS): regenerate the Xcode project, then build in Xcode/xcodebuild
+example/util/prepare-ios
 ```
 
 **Steps**: `util/run-generator` and `util/build-generator` source `util/paths` (CORE_SWIFT, GENERATOR_COMPONENTS) and run `util/step/*` scripts in order: `embedCoreSwift` (Step 1: regenerates `components/swift/swiftConstEmb64.swift` = `let SWIFT_EMB64_CORE = base64` of core/swift + DialectController + registerOneliners), `buildGenerator` (Step 2: `swift build -c release`), `runGenerator` (Step 3, run-generator only). `build-generator` also sets `STEP=0` first.
@@ -122,7 +125,7 @@ We're porting this to Swift as dialect v4
 
 ## Conventions
 
-- macOS-only (Swift 5.9+, macOS 11+ for app, 13+ for generator)
+- macOS-only (Swift 5.9+; example app macOS 13+, generator 13+, iOS 15+)
 - No Xcode projects, SPM only (except core tests use swiftc directly)
 - Artifacts go to `.build/` (not `build/`)
 - No CI/CD
