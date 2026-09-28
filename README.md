@@ -7,3 +7,8 @@ Plan:
 1. Agent transpiles parts of the code to other languages
 1. You get native support (without KMP or similar binary approach) at no runtime cost
 
+# Example
+
+Prerequisites for iOS:
+
+* XcodeGen: `brew install xcodegen`
