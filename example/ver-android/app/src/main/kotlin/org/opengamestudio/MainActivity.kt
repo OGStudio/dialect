@@ -33,10 +33,7 @@ class MainActivity: ComponentActivity() {
                         .background(ComposeColor.White),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        "Hello, world",
-                        color = ComposeColor.Black
-                    )
+                    Text("Hello, world")
                 }
             }
         }
