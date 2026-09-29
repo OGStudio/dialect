@@ -6,7 +6,6 @@ class SwiftComponent {
         Self.singleton = self
         swiftRegisterEffects(ctrl)
         swiftRegisterShoulds(ctrl)
-        otherSetupConsoleLogging(ctrl, "Swift")
     }
 
     func setup() {

@@ -6,7 +6,6 @@ class YMLComponent {
         Self.singleton = self
         ymlRegisterEffects(ctrl)
         ymlRegisterShoulds(ctrl)
-        otherSetupConsoleLogging(ctrl, "YML")
     }
 
     func setup() {

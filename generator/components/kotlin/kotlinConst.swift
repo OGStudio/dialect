@@ -1,0 +1,6 @@
+let KOTLIN_SUFFIX_COMPONENT = "Component"
+let KOTLIN_SUFFIX_CONTEXT = "Context"
+let KOTLIN_TYPE = "kotlin"
+let KOTLIN_TYPE_COMPONENT = "component"
+let KOTLIN_TYPE_CONTEXT = "context"
+let KOTLIN_TYPE_STRUCT = "struct"
