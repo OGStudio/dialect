@@ -4,7 +4,11 @@ import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.*
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
+import androidx.compose.ui.*
+import androidx.compose.ui.graphics.Color as ComposeColor
 import org.opengamestudio.ui.theme.MyApplicationTheme
 
 class MainActivity: ComponentActivity() {
@@ -22,9 +26,18 @@ class MainActivity: ComponentActivity() {
         //RootComponent.setup()
 
         setContent {
-            MyApplicationTheme {
-                //RootView(VM)
-                Text("Hello, world")
+            MyApplicationTheme(darkTheme = false) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(ComposeColor.White),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        "Hello, world",
+                        color = ComposeColor.Black
+                    )
+                }
             }
         }
     }
