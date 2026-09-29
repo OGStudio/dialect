@@ -4,7 +4,7 @@ class KotlinComponent {
 
     init() {
         Self.singleton = self
-        kotlinRegisterEffects(ctrl)
+        //kotlinRegisterEffects(ctrl)
         kotlinRegisterShoulds(ctrl)
     }
 

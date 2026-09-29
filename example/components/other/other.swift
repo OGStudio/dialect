@@ -56,6 +56,5 @@ func otherWriteFile(
     _ path: String,
     _ content: String
 ) {
-    print("ИГР otherWF path/content: '\(path)'/'\(content)'")
     try! content.write(toFile: path, atomically: true, encoding: .utf8)
 }
