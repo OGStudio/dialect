@@ -8,7 +8,3 @@ gradle-daemon-jvm.properties
 local.properties
 Package.resolved
 *.xcodeproj
-
-
-
-
