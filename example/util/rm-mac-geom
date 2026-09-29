@@ -1,0 +1,9 @@
+#!/bin/bash -e
+
+killall cfprefsd 2>/dev/null || true
+sleep 1
+
+rm -f $HOME/Library/Preferences/HelloWorld.plist \
+      $HOME/Library/Preferences/com.example.HelloWorld.plist
+
+echo "removed example app preferences (window geometry)"

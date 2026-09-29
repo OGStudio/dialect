@@ -13,13 +13,12 @@ struct RootView: View {
                 .font(.largeTitle)
 
             Text(vm.countText)
-                .font(.title2.monospacedDigit())
+                .font(.title3.monospacedDigit())
 
             Button("Increment") {
                 rootSet(F.didClickIncrement, true)
             }
         }
         .padding(40)
-        .frame(minWidth: 400, minHeight: 300)
     }
 }

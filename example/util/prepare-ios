@@ -4,4 +4,6 @@ SDIR=$(cd "$(dirname "$0")" ; pwd -P)
 T=$SDIR/step
 source $SDIR/paths
 
-source $T/runGenerator "$@" 2>/tmp/dialect.log
+STEP=0
+source $T/generateDialect
+source $T/prepareIOS

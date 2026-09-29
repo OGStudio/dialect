@@ -4,13 +4,12 @@ import PackageDescription
 let package = Package(
     name: "HelloWorld",
     platforms: [
-        .macOS(.v11)
+        .macOS(.v13)
     ],
     targets: [
         .executableTarget(
             name: "HelloWorld",
-            path: "src",
-            exclude: ["Info.plist"]
+            path: "src"
         )
     ]
 )

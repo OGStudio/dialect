@@ -1,6 +1,5 @@
 import AppKit
 
-
 final class AppDelegate:
     NSObject,
     NSApplicationDelegate
@@ -9,6 +8,7 @@ final class AppDelegate:
     let rootVM = RootVM()
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        // Bring the app to the foreground
         NSApp.setActivationPolicy(.regular)
         NSApp.activate(ignoringOtherApps: true)
 

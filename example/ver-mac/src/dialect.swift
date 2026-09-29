@@ -271,7 +271,7 @@ func rootRegisterShoulds(_ ctrl: DialectController) {
 func rootRegisterEffects(_ ctrl: DialectController) {
     let _: RootContext? = registerOneliners(ctrl, [
         F.countText, { (c: RootContext) in print(c.countText) },
-        F.countText, { (c: RootContext) in RootVM.shared?.countText = c.countText },
+        F.countText, { (c: RootContext) in RootVM.shared!.countText = c.countText },
 
     ])
 }
