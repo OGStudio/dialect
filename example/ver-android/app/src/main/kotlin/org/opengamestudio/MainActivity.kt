@@ -26,7 +26,7 @@ class MainActivity: ComponentActivity() {
         //RootComponent.setup()
 
         setContent {
-            MyApplicationTheme(darkTheme = false) {
+            MyApplicationTheme {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
