@@ -5,4 +5,5 @@ T=$SDIR/step
 source $SDIR/paths
 
 STEP=0
-source $T/runGenerator "$@" 2>/tmp/dialect.log
+source $T/generateDialect
+#source $T/prepareAndroid
