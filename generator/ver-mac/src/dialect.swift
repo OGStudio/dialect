@@ -1349,13 +1349,6 @@ func cliRegisterEffects(_ ctrl: DialectController) {
     ])
 }
 
-func kotlinRegisterEffects(_ ctrl: DialectController) {
-    let _: KotlinContext? = registerOneliners(ctrl, [
-        F.out, { (c: KotlinContext) in otherWriteFile(c.path, c.out) },
-
-    ])
-}
-
 func swiftRegisterEffects(_ ctrl: DialectController) {
     let _: SwiftContext? = registerOneliners(ctrl, [
         F.out, { (c: SwiftContext) in otherWriteFile(c.path, c.out) },

@@ -62,8 +62,6 @@ CLIContext:
 
 KotlinComponent:
     type: component
-    oneliners:
-        - out: otherWriteFile(c.path, c.out)
     shoulds:
         didLaunch:
             1. Only once during the first setup:
