@@ -1348,6 +1348,13 @@ func cliRegisterEffects(_ ctrl: DialectController) {
     ])
 }
 
+func kotlinRegisterEffects(_ ctrl: DialectController) {
+    let _: KotlinContext? = registerOneliners(ctrl, [
+        F.out, { (c: KotlinContext) in otherWriteFile(c.path, c.out) },
+
+    ])
+}
+
 func swiftRegisterEffects(_ ctrl: DialectController) {
     let _: SwiftContext? = registerOneliners(ctrl, [
         F.out, { (c: SwiftContext) in otherWriteFile(c.path, c.out) },
@@ -1365,6 +1372,7 @@ func ymlRegisterEffects(_ ctrl: DialectController) {
         F.entityShoulds, { (c: YMLContext) in swiftSet(F.entityShoulds, c.entityShoulds) },
         F.entityTypes, { (c: YMLContext) in swiftSet(F.entityTypes, c.entityTypes) },
         F.outputPaths, { (c: YMLContext) in swiftSet(F.outputPaths, c.outputPaths) },
+        F.outputPaths, { (c: YMLContext) in kotlinSet(F.outputPaths, c.outputPaths) },
         F.parseInput, { (c: YMLContext) in ymlReadLines(c.inputContents) },
 
     ])

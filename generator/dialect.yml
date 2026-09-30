@@ -62,6 +62,8 @@ CLIContext:
 
 KotlinComponent:
     type: component
+    oneliners:
+        - out: otherWriteFile(c.path, c.out)
     shoulds:
         didLaunch:
             1. Only once during the first setup:
@@ -75,8 +77,8 @@ KotlinComponent:
                 if:
                     c.recentField == F.didLaunch
                 then:
-                    c.out =
-                        otherBase64ToString(KOTLIN_EMB64_CORE)/* +
+                    c.out = "// TODO gen" +
+                        /*otherBase64ToString(KOTLIN_EMB64_CORE) +
                         c.outFields +
                         c.outStructs +
                         c.outContexts +
@@ -253,6 +255,7 @@ YMLComponent:
         - entityShoulds: swiftSet(F.entityShoulds, c.entityShoulds)
         - entityTypes: swiftSet(F.entityTypes, c.entityTypes)
         - outputPaths: swiftSet(F.outputPaths, c.outputPaths)
+        - outputPaths: kotlinSet(F.outputPaths, c.outputPaths)
         - parseInput: ymlReadLines(c.inputContents)
     shoulds:
         chunks:
