@@ -8,13 +8,11 @@ Declarative reactive state management for macOS. This is a **new Swift port ("v4
 core/              Core runtime library
   swift/           Swift: DialectContext protocol + DialectController engine
   c/               C port of the Swift engine (dialect.h, DialectContext.c, DialectController.c, registerOneliners.c)
-  nim/             Nim port of the Swift engine (dialectContext.nim, dialectController.nim, registerOneliners.nim)
   test/swift/      8 unit tests (custom runner, no XCTest)
   test/c/          C port of the 8 unit tests
-  test/nim/        Nim port of the 8 unit tests
-  util/run-swift-test   Compile & run core Swift tests (raw swiftc)
-  util/run-c-test       Compile & run core C tests (raw cc)
-  util/run-nim-test     Compile & run core Nim tests (raw nim)
+util/              Root util dir: run-swift-test, run-c-test (core test runners) + generator build/run scripts
+  run-swift-test     Compile & run core Swift tests (raw swiftc, artifacts into root .build/)
+  run-c-test         Compile & run core C tests (raw cc, artifacts into root .build/)
 generator/         The Swift port of the Klin code generator (tool)
   ver-mac/         SPM package (macOS 13+, no external dependencies)
     src/           Source; many files are SYMLINKS per group dir -> ../../../components/...
@@ -49,13 +47,10 @@ ref/               Reference to original Kotlin Dialect (symlink -> ../../kotlin
 
 ```bash
 # Core Swift tests (raw swiftc, no SPM)
-core/util/run-swift-test
+util/run-swift-test
 
 # Core C tests (raw cc)
-core/util/run-c-test
-
-# Core Nim tests (raw nim)
-core/util/run-nim-test
+util/run-c-test
 
 # Build generator (step-based; util/paths + util/step/* sourced by both scripts)
 util/build-generator
@@ -91,8 +86,8 @@ example/util/prepare-ios
 - **Per-component helper files** (components/yml/): `ymlConst.swift` (global constants like `YML_PREFIX_VERSION`), `ymlFun.swift` (pure helpers/parsers like `ymlParseVersion`), `ymlEffect.swift` (effects that `ymlSet` results back), `ymlAux.swift` (aux/print helpers). Matching `cliConst/cliFun/cliEffect/cliAux`.
 - **YML schema parsing** (chunks): input is split into **chunks** = `[String: [String]]` keyed by the chunk's first (non-indented) line. Blank lines (`""`) delimit chunks — detected by `ymlIsLineChunkStart`/`ymlIsLineChunkEnd`. Downstream parsers consume structures: `ymlParseEntities` (top-level `Key:` lines, `hasSuffix(":")`), `ymlParseEntityTypes` (indented `type:` under each entity, `YML_PREFIX_TYPE` bakes in the 4-space indent), `ymlParseVersion` (from the chunk key prefix `YML_PREFIX_VERSION`). Should-chains cascade: `inputLines` → `chunks`/`entities`, then `chunks` → `version`, `entities` → `entityTypes`.
 - **ShouldBranch struct (renamed fields)**: dialect.yml's `ShouldBranch` struct entity has fields `about` (String), `condition` ([String]), `reaction` ([String]) — these were **renamed** from `desc`/`if`/`then` to avoid the Swift keywords `if`/`then` and match "condition/reaction" semantics. The YAML **input** markers for parsing still read `if:`/`then:` (prefixed lines), but they map into `condition`/`reaction` fields via `isParsingCondition`/`isParsingReaction` flags in `ymlParseEntityShouldBranches`. Generated code: `struct ShouldBranch` (plain struct, in `outStructs`) + the `F.about/condition/reaction` constants (hand-patched into the generated `dialect.swift`).
-- **Rename propagation (single SSOT in dialect.yml)**: when a struct *field* is renamed in dialect.yml (like `desc/if/then` → `about/condition/reaction`), update ALL of these in one pass: (1) the `ShouldBranch` struct declaration + `F` constants in the generated `ver-mac/src/dialect.swift` (hand-patch); (2) `ymlFun.swift` — field writes (`.about`), local var names, parser flags (`isParsingCondition`/`isParsingReaction`) and their comments; (3) `swiftConst.swift` `SWIFT_SHOULD_BRANCH_T` template placeholders (`%ABOUT%`/`%CONDITION%`/`%REACTION%`); (4) `swiftFun.swift` commented `swiftShould` refs (`branch.about`, `.condition`, `.reaction`); (5) C `core/c/dialect.h` `ShouldBranch` struct (`about`/`condition`/`reaction`; the `if`→`condition` change also *removes* the old `if_` C-keyword workaround); (6) Nim `core/nim/dialectContext.nim` `ShouldBranch` object (`about`/`condition`/`reaction`; backticks only remain where the field is still a Nim keyword, e.g. `OutputPath`'s `` `type` ``). After the rename, verify regen-stability: run `core/util/run-c-test`, `core/util/run-nim-test`, `util/build-generator`, then `util/run-generator --file=dialect.yml` and confirm `ver-mac/src/dialect.swift` regenerates byte-identical to the hand-patch (hash matches).
-- **Keyword collision conventions across ports**: Swift backticks Swift keywords (`` `if` ``, `` `type` ``); C appends `_` (former `if_`); Nim backticks Nim keywords (`` `type` ``). Renaming a field away from a keyword lets you drop the escape in every port. The `if`/`then` in `ymlConst.swift` prefix constants (`YML_PREFIX_SHOULD_BRANCH_IF` = `"                if:"`, then-marker) are the *input syntax*, NOT struct fields — they intentionally keep the `if:`/`then:` spelling and are NOT part of the rename.
+- **Rename propagation (single SSOT in dialect.yml)**: when a struct *field* is renamed in dialect.yml (like `desc/if/then` → `about/condition/reaction`), update ALL of these in one pass: (1) the `ShouldBranch` struct declaration + `F` constants in the generated `ver-mac/src/dialect.swift` (hand-patch); (2) `ymlFun.swift` — field writes (`.about`), local var names, parser flags (`isParsingCondition`/`isParsingReaction`) and their comments; (3) `swiftConst.swift` `SWIFT_SHOULD_BRANCH_T` template placeholders (`%ABOUT%`/`%CONDITION%`/`%REACTION%`); (4) `swiftFun.swift` commented `swiftShould` refs (`branch.about`, `.condition`, `.reaction`); (5) C `core/c/dialect.h` `ShouldBranch` struct (`about`/`condition`/`reaction`; the `if`→`condition` change also *removes* the old `if_` C-keyword workaround). After the rename, verify regen-stability: run `util/run-c-test`, `util/build-generator`, then `util/run-generator --file=dialect.yml` and confirm `ver-mac/src/dialect.swift` regenerates byte-identical to the hand-patch (hash matches).
+- **Keyword collision conventions across ports**: Swift backticks Swift keywords (`` `if` ``, `` `type` ``); C appends `_` (former `if_`). Renaming a field away from a keyword lets you drop the escape in every port. The `if`/`then` in `ymlConst.swift` prefix constants (`YML_PREFIX_SHOULD_BRANCH_IF` = `"                if:"`, then-marker) are the *input syntax*, NOT struct fields — they intentionally keep the `if:`/`then:` spelling and are NOT part of the rename.
 
 ## Swift gotchas (learned the hard way)
 
