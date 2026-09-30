@@ -1,7 +1,7 @@
 #!/bin/bash -e
 SDIR=$(cd "$(dirname "$0")" ; pwd -P)
 
-ANDROID_STUDIO=/Applications/Android\ Studio.app
+ANDROID_STUDIO=${ANDROID_STUDIO:-/Applications/Android\ Studio.app}
 JAVA_HOME=$ANDROID_STUDIO/Contents/jbr/Contents/Home
 KOTLINC=$ANDROID_STUDIO/Contents/plugins/Kotlin/kotlinc/bin/kotlinc
 export JAVA_HOME
