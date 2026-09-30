@@ -34,7 +34,7 @@ struct ExampleContext: DialectContext {
 }
 
 /// Sample function for processing context change
-func hostToDidLaunch(_ c: ExampleContext) -> ExampleContext {
+func shouldChangeDidLaunch(_ c: ExampleContext) -> ExampleContext {
     var c = c
 
     if c.recentField == "host" {
@@ -96,7 +96,7 @@ func t05_DialectController_executeFunctions_set() -> Bool {
     ctrl.set("host", "123")
 
     ctrl.registerFunction { c in
-        hostToDidLaunch(c as! ExampleContext)
+        shouldChangeDidLaunch(c as! ExampleContext)
     }
 
     // Apply `host` value
@@ -114,7 +114,7 @@ func t06_DialectController_processQueue() -> Bool {
     let ctrl = DialectController(ExampleContext())
 
     ctrl.registerFunction { c in
-        hostToDidLaunch(c as! ExampleContext)
+        shouldChangeDidLaunch(c as! ExampleContext)
     }
     ctrl.set("host", "123")
     let c = ctrl.context as! ExampleContext
