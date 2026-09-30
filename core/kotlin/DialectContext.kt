@@ -1,8 +1,7 @@
 package org.opengamestudio
 
-import kotlin.js.JsExport
+val DIALECT_CONTEXT_RECENT_FIELD_NONE = "none"
 
-@JsExport
 interface DialectContext {
     /**
      * Name of the field that has just been changed

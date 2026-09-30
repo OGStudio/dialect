@@ -13,7 +13,6 @@ public protocol DialectContext {
 
 // Default implementation of `fieldAny` method for the protocol
 public extension DialectContext {
-    /// Default implementation of `fieldAny()`
     func fieldAny(_ name: String) -> Any {
         return field(name)
     }

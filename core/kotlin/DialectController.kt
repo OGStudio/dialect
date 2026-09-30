@@ -1,10 +1,5 @@
 package org.opengamestudio
 
-import kotlin.js.JsExport
-
-val DIALECT_CONTEXT_RECENT_FIELD_NONE = "none"
-
-@JsExport
 class DialectController(
     var context: DialectContext
 ) {
