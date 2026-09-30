@@ -1332,6 +1332,7 @@ func ymlRegisterShoulds(_ ctrl: DialectController) {
 func cliRegisterEffects(_ ctrl: DialectController) {
     let _: CLIContext? = registerOneliners(ctrl, [
         F.consoleOutput, { (c: CLIContext) in print(c.consoleOutput) },
+        F.inputAbsoluteDir, { (c: CLIContext) in kotlinSet(F.inputAbsoluteDir, c.inputAbsoluteDir) },
         F.inputAbsoluteDir, { (c: CLIContext) in swiftSet(F.inputAbsoluteDir, c.inputAbsoluteDir) },
         F.inputContents, { (c: CLIContext) in ymlSet(F.inputContents, c.inputContents) },
         F.inputFileName, { (c: CLIContext) in cliResolveAbsoluteDir(c.inputFileName) },

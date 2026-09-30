@@ -8,6 +8,7 @@ CLIComponent:
     type: component
     oneliners:
         - consoleOutput: print(c.consoleOutput)
+        - inputAbsoluteDir: kotlinSet(F.inputAbsoluteDir, c.inputAbsoluteDir)
         - inputAbsoluteDir: swiftSet(F.inputAbsoluteDir, c.inputAbsoluteDir)
         - inputContents: ymlSet(F.inputContents, c.inputContents)
         - inputFileName: cliResolveAbsoluteDir(c.inputFileName)
