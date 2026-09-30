@@ -259,8 +259,8 @@ YMLComponent:
         - entityShouldBranches: swiftSet(F.entityShouldBranches, c.entityShouldBranches)
         - entityShoulds: swiftSet(F.entityShoulds, c.entityShoulds)
         - entityTypes: swiftSet(F.entityTypes, c.entityTypes)
-        - outputPaths: swiftSet(F.outputPaths, c.outputPaths)
         - outputPaths: kotlinSet(F.outputPaths, c.outputPaths)
+        - outputPaths: swiftSet(F.outputPaths, c.outputPaths)
         - parseInput: ymlReadLines(c.inputContents)
     shoulds:
         chunks:
