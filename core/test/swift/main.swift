@@ -9,6 +9,7 @@ let tests = [
     t06_DialectController_processQueue,
     t07_DialectController_registerFieldCallback_match,
     t08_DialectController_registerFieldCallback_mismatch,
+    t09_ExampleContext_registerOneliners,
 ]
 
 var okCount = 0

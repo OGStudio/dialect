@@ -154,3 +154,23 @@ func t08_DialectController_registerFieldCallback_mismatch() -> Bool {
 
     return callbackHost == ""
 }
+
+/// See if `registerOneliners()` can register several callbacks
+/// into a controller
+func t09_ExampleContext_registerOneliners() -> Bool {
+    var count = 0
+    func increaseCount(_ c: ExampleContext) {
+        count += 1
+    }
+
+    let oneliners: [Any] = [
+        "host", { (c: ExampleContext) -> Void in increaseCount(c) },
+        "host", { (c: ExampleContext) -> Void in increaseCount(c) },
+    ]
+
+    let ctrl = DialectController(ExampleContext())
+    let _: ExampleContext? = registerOneliners(ctrl, oneliners)
+    ctrl.set("host", "abc")
+
+    return count == 2
+}

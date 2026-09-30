@@ -8,6 +8,7 @@ swiftc \
     -o $BUILD/test-swift \
     $SDIR/../core/swift/DialectContext.swift \
     $SDIR/../core/swift/DialectController.swift \
+    $SDIR/../core/swift/registerOneliners.swift \
     $SDIR/../core/test/swift/tests.swift \
     $SDIR/../core/test/swift/main.swift
 
