@@ -856,8 +856,26 @@ func kotlinShouldResetOut(_ c: KotlinContext) -> KotlinContext {
             KOTLIN_OGS_PKG +
             "\n" +
             otherBase64ToString(KOTLIN_EMB64_CORE)
-                .replacingOccurrences(of: KOTLIN_OGS_PKG, with: "")
+                .replacingOccurrences(of: KOTLIN_OGS_PKG, with: "") +
+            c.outSets
         c.recentField = F.out
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func kotlinShouldResetOutSets(_ c: KotlinContext) -> KotlinContext {
+    var c = c
+
+    /* 1. When entities are ready */
+    if
+        c.recentField == F.entities
+    {
+        c.outSets = kotlinSets(c.entities)
+        c.recentField = F.outSets
         return c
     }
 
@@ -1288,6 +1306,7 @@ func kotlinRegisterShoulds(_ ctrl: DialectController) {
     [
         kotlinShouldResetDidLaunch,
         kotlinShouldResetOut,
+        kotlinShouldResetOutSets,
         kotlinShouldResetPath,
 
     ].forEach { f in
@@ -1361,6 +1380,7 @@ func swiftRegisterEffects(_ ctrl: DialectController) {
 
 func ymlRegisterEffects(_ ctrl: DialectController) {
     let _: YMLContext? = registerOneliners(ctrl, [
+        F.entities, { (c: YMLContext) in kotlinSet(F.entities, c.entities) },
         F.entities, { (c: YMLContext) in swiftSet(F.entities, c.entities) },
         F.entityFields, { (c: YMLContext) in swiftSet(F.entityFields, c.entityFields) },
         F.entityFieldTypes, { (c: YMLContext) in swiftSet(F.entityFieldTypes, c.entityFieldTypes) },

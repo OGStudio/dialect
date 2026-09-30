@@ -1,4 +1,15 @@
 let KOTLIN_OGS_PKG = "package org.opengamestudio"
+let KOTLIN_SET_SUFFIX = "Set"
+let KOTLIN_SET_T = """
+
+fun %FUNC%(
+    key: String,
+    value: Any
+) {
+    %COMPONENT%.singleton!!.ctrl.set(key, value)
+}
+
+"""
 let KOTLIN_SUFFIX_COMPONENT = "Component"
 let KOTLIN_SUFFIX_CONTEXT = "Context"
 let KOTLIN_TYPE = "kotlin"

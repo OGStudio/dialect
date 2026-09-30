@@ -82,7 +82,14 @@ KotlinComponent:
                         KOTLIN_OGS_PKG +
                         "\n" +
                         otherBase64ToString(KOTLIN_EMB64_CORE)
-                            .replacingOccurrences(of: KOTLIN_OGS_PKG, with: "")
+                            .replacingOccurrences(of: KOTLIN_OGS_PKG, with: "") +
+                        c.outSets
+        outSets:
+            1. When entities are ready:
+                if:
+                    c.recentField == F.entities
+                then:
+                    c.outSets = kotlinSets(c.entities)
         path:
             1. Extract Kotlin path if present:
                 if:
@@ -244,6 +251,7 @@ SwiftContext:
 YMLComponent:
     type: component
     oneliners:
+        - entities: kotlinSet(F.entities, c.entities)
         - entities: swiftSet(F.entities, c.entities)
         - entityFields: swiftSet(F.entityFields, c.entityFields)
         - entityFieldTypes: swiftSet(F.entityFieldTypes, c.entityFieldTypes)
