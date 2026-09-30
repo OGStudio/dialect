@@ -10,6 +10,6 @@ fun registerOneliners(
     for (i in 0..<halfCount) {
         val field = items[i * 2] as String
         val callback = items[i * 2 + 1] as (c: DialectContext) -> Unit
-        ctrl.registerFieldCallback(field, callback);
+        ctrl.registerFieldCallback(field, callback)
     }
 }

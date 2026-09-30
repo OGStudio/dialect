@@ -10,6 +10,7 @@ class DialectController(
  
     fun executeFunctions() {
         val c = queue.removeAt(0)
+        // Keep SSOT: Only allow single field change per should-function
         context.recentField = c.recentField
         context.setField(c.recentField, c.fieldAny(c.recentField))
        
