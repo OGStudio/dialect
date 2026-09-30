@@ -1,10 +1,3 @@
-/**
- * This file is a part of Kotlin dialect:
- *     https://github.com/OGStudio/kotlin-dialect
- * License: CC0
- * Version: 3.2.0
- */
-
 package org.opengamestudio
 
 import kotlin.js.JsExport
