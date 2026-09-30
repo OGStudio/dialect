@@ -1,5 +1,6 @@
 package org.opengamestudio
 
+
 val DIALECT_CONTEXT_RECENT_FIELD_NONE = "none"
 
 interface DialectContext {
@@ -34,7 +35,7 @@ interface DialectContext {
      */
     fun setField(name: String, value: Any?)
 }
-package org.opengamestudio
+
 
 class DialectController(
     var context: DialectContext
@@ -108,7 +109,7 @@ class DialectController(
         processQueue()
     }
 }
-package org.opengamestudio
+
 
 // Register several oneliner callbacks to a controller
 @Suppress("UNCHECKED_CAST")

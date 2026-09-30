@@ -853,7 +853,10 @@ func kotlinShouldResetOut(_ c: KotlinContext) -> KotlinContext {
         c.recentField == F.didLaunch
     {
         c.out =
+            KOTLIN_OGS_PKG +
+            "\n" +
             otherBase64ToString(KOTLIN_EMB64_CORE)
+                .replacingOccurrences(of: KOTLIN_OGS_PKG, with: "")
         c.recentField = F.out
         return c
     }

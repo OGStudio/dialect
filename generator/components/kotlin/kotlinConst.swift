@@ -1,3 +1,4 @@
+let KOTLIN_OGS_PKG = "package org.opengamestudio"
 let KOTLIN_SUFFIX_COMPONENT = "Component"
 let KOTLIN_SUFFIX_CONTEXT = "Context"
 let KOTLIN_TYPE = "kotlin"
