@@ -1,6 +1,7 @@
 import org.opengamestudio.*
 
 // Sample context used for testing
+@Suppress("UNCHECKED_CAST")
 data class ExampleContext(
     var didLaunch: Boolean = false,
     var host: String = "",

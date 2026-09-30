@@ -8,11 +8,14 @@ Declarative reactive state management for macOS. This is a **new Swift port ("v4
 core/              Core runtime library
   swift/           Swift: DialectContext protocol + DialectController engine
   c/               C port of the Swift engine (dialect.h, DialectContext.c, DialectController.c, registerOneliners.c)
-  test/swift/      8 unit tests (custom runner, no XCTest)
+  kotlin/          Kotlin port of the Swift engine (DialectContext.kt, DialectController.kt, registerOneliners.kt, `DIALECT_CONTEXT_RECENT_FIELD_NONE` const mirrors core/swift)
+  test/swift/      9 unit tests (custom runner, no XCTest); `registerOneliners` covered by t09
   test/c/          C port of the 8 unit tests
-util/              Root util dir: run-swift-test, run-c-test (core test runners) + generator build/run scripts
+  test/kotlin/     10 unit tests (mirror test/swift t01-t09 + `t10_ExampleContext_selfCopy` — data class copy semantics; KD had selfCopy + registerOneliners, Swift needs no selfCopy test since structs copy by value)
+util/              Root util dir: run-swift-test, run-c-test, run-kotlin-test (core test runners) + generator build/run scripts
   run-swift-test     Compile & run core Swift tests (raw swiftc, artifacts into root .build/)
   run-c-test         Compile & run core C tests (raw cc, artifacts into root .build/)
+  run-kotlin-test    Compile & run core Kotlin tests (kotlinc from Android Studio JBR, artifacts into root .build/test-kotlin.jar)
 generator/         The Swift port of the Klin code generator (tool)
   ver-mac/         SPM package (macOS 13+, no external dependencies)
     src/           Source; many files are SYMLINKS per group dir -> ../../../components/...
@@ -51,6 +54,9 @@ util/run-swift-test
 
 # Core C tests (raw cc)
 util/run-c-test
+
+# Core Kotlin tests (kotlinc via Android Studio JBR; no kotlinc-native available)
+util/run-kotlin-test
 
 # Build generator (step-based; util/paths + util/step/* sourced by both scripts)
 util/build-generator

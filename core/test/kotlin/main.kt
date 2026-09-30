@@ -1,5 +1,5 @@
 fun main() {
-    print("Testing... ")
+    println("Testing... ")
 
     val tests = arrayOf(
         ::t01_ExampleContext_field,
