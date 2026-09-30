@@ -852,7 +852,8 @@ func kotlinShouldResetOut(_ c: KotlinContext) -> KotlinContext {
     if
         c.recentField == F.didLaunch
     {
-        c.out = "// TODO gen"
+        c.out =
+            otherBase64ToString(KOTLIN_EMB64_CORE)
         c.recentField = F.out
         return c
     }

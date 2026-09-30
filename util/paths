@@ -1,2 +1,3 @@
+CORE_KOTLIN=$SDIR/../core/kotlin
 CORE_SWIFT=$SDIR/../core/swift
 GENERATOR_COMPONENTS=$SDIR/../generator/components
