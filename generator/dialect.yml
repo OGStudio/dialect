@@ -77,15 +77,7 @@ KotlinComponent:
                 if:
                     c.recentField == F.didLaunch
                 then:
-                    c.out = "// TODO gen" +
-                        /*otherBase64ToString(KOTLIN_EMB64_CORE) +
-                        c.outFields +
-                        c.outStructs +
-                        c.outContexts +
-                        c.outSets +
-                        c.outShoulds +
-                        c.outRegisterShoulds +
-                        c.outRegisterEffects*/
+                    c.out = "// TODO gen"
         path:
             1. Extract Kotlin path if present:
                 if:

@@ -57,5 +57,5 @@ func otherWriteFile(
     _ content: String
 ) {
     print("ИГР otherWF path/content.count: '\(path)'/'\(content.count)'")
-    try! content.write(toFile: path, atomically: true, encoding: .utf8)
+    try? content.write(toFile: path, atomically: true, encoding: .utf8)
 }
