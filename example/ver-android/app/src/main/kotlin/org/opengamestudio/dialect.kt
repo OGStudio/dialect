@@ -124,3 +124,10 @@ fun registerOneliners(
         ctrl.registerFieldCallback(field, callback)
     }
 }
+
+fun rootSet(
+    key: String,
+    value: Any
+) {
+    //RootComponent.singleton!!.ctrl.set(key, value)
+}
