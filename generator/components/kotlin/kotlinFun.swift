@@ -5,6 +5,27 @@ func kotlinContextName(_ entity: String) -> String {
     return entity.replacingOccurrences(of: KOTLIN_SUFFIX_COMPONENT, with: KOTLIN_SUFFIX_CONTEXT)
 }
 
+/// Generate `object F` holding one string constant per field name
+func kotlinFields(_ entityFields: [Int: [String]]) -> String {
+    var names = Set<String>()
+
+    // Collect field names
+    for fields in entityFields.values {
+        for field in fields {
+            names.insert(field)
+        }
+    }
+
+    // Construct the body of the object
+    var sitems = ""
+    for name in names.sorted() {
+        sitems += KOTLIN_FIELD_T.replacingOccurrences(of: "%NAME%", with: name)
+    }
+
+    // Construct the whole object
+    return KOTLIN_FIELDS_T.replacingOccurrences(of: "%ITEMS%", with: sitems)
+}
+
 /// Generate single component `Set` function
 func kotlinSet(_ entity: String) -> String {
     let contextName = kotlinContextName(entity)

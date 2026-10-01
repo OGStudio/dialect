@@ -6,4 +6,3 @@ source $SDIR/paths
 
 STEP=0
 source $T/generateDialect
-#source $T/prepareAndroid

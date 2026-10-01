@@ -1,3 +1,12 @@
+let KOTLIN_FIELD_T = "    const val %NAME% = \"%NAME%\"\n"
+let KOTLIN_FIELDS_T = """
+
+// Context field names for static type check
+object F {
+%ITEMS%
+}
+
+"""
 let KOTLIN_OGS_PKG = "package org.opengamestudio"
 let KOTLIN_SET_SUFFIX = "Set"
 let KOTLIN_SET_T = """

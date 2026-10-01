@@ -83,7 +83,14 @@ KotlinComponent:
                         "\n" +
                         otherBase64ToString(KOTLIN_EMB64_CORE)
                             .replacingOccurrences(of: KOTLIN_OGS_PKG, with: "") +
+                        c.outFields +
                         c.outSets
+        outFields:
+            1. When entity fields are available:
+                if:
+                    c.recentField == F.entityFields
+                then:
+                    c.outFields = kotlinFields(c.entityFields)
         outSets:
             1. When entities are ready:
                 if:
@@ -253,6 +260,7 @@ YMLComponent:
     oneliners:
         - entities: kotlinSet(F.entities, c.entities)
         - entities: swiftSet(F.entities, c.entities)
+        - entityFields: kotlinSet(F.entityFields, c.entityFields)
         - entityFields: swiftSet(F.entityFields, c.entityFields)
         - entityFieldTypes: swiftSet(F.entityFieldTypes, c.entityFieldTypes)
         - entityOneliners: swiftSet(F.entityOneliners, c.entityOneliners)
