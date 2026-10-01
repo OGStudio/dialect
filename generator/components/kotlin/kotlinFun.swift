@@ -51,3 +51,136 @@ func kotlinSets(_ entities: [String]) -> String {
 
     return out
 }
+
+/// Generate single entity `struct` declaration
+func kotlinStruct(
+    _ name: String,
+    _ fields: [String],
+    _ fieldTypes: [Int: String]
+) -> String {
+    var outFields = ""
+    var fieldId = 0
+    for field in fields {
+        let type = fieldTypes[fieldId]!
+        let defaultValue = kotlinTypeDefaultValue(type)
+        outFields +=
+            KOTLIN_STRUCT_FIELD_T
+                .replacingOccurrences(of: "%NAME%", with: field)
+                .replacingOccurrences(of: "%TYPE%", with: kotlinType(type))
+                .replacingOccurrences(of: "%DEFAULT%", with: defaultValue)
+        fieldId += 1
+    }
+    return
+        KOTLIN_STRUCT_T
+            .replacingOccurrences(of: "%NAME%", with: name)
+            .replacingOccurrences(of: "%FIELDS%", with: outFields)
+}
+
+/// Generate entities of `struct` type
+func kotlinStructs(
+    _ entities: [String],
+    _ entityTypes: [Int: String],
+    _ entityFields: [Int: [String]],
+    _ entityFieldTypes: [Int: [Int: String]]
+) -> String {
+    var out = ""
+
+    // Locate structs
+    var entityId = 0
+    var structIds = [Int]()
+    for _ in entities {
+        let type = entityTypes[entityId]
+        if type == KOTLIN_TYPE_STRUCT {
+            structIds.append(entityId)
+        }
+        entityId += 1
+    }
+
+    // Generate each struct
+    for id in structIds {
+        out +=
+            kotlinStruct(
+                entities[id],
+                entityFields[id]!,
+                entityFieldTypes[id]!
+            )
+    }
+
+    return out
+}
+
+/// Generate the Kotlin type for a dialect type
+func kotlinType(_ type: String) -> String {
+    var isCollection = false
+    var inner = type
+    if inner.hasPrefix("[") && inner.hasSuffix("]") {
+        isCollection = true
+        inner = String(inner.dropFirst().dropLast())
+    }
+
+    // Map collections
+    let parts = kotlinTypeParts(inner)
+    if parts.count == 2 {
+        return
+            KOTLIN_MAP_T
+                .replacingOccurrences(of: "%KEY%", with: kotlinType(parts[0]))
+                .replacingOccurrences(of: "%VALUE%", with: kotlinType(parts[1]))
+    }
+    if isCollection {
+        return
+            KOTLIN_LIST_T
+                .replacingOccurrences(of: "%TYPE%", with: kotlinType(parts[0]))
+    }
+
+    // Map primitives, the rest are already valid Kotlin types
+    if inner == KOTLIN_TYPE_BOOL {
+        return KOTLIN_MAPPED_BOOL
+    }
+
+    return inner
+}
+
+/// Generate the default value for a dialect type
+func kotlinTypeDefaultValue(_ type: String) -> String {
+    if type.hasPrefix("[") && type.hasSuffix("]") {
+        if type.contains(":") {
+            return KOTLIN_DEFAULT_MAP
+        }
+        return KOTLIN_DEFAULT_LIST
+    }
+    if type == KOTLIN_TYPE_BOOL {
+        return KOTLIN_DEFAULT_BOOL
+    }
+    if type == KOTLIN_TYPE_INT {
+        return KOTLIN_DEFAULT_INT
+    }
+    if type == KOTLIN_TYPE_STRING {
+        return KOTLIN_DEFAULT_STRING
+    }
+    return
+        KOTLIN_DEFAULT_NAMED_T
+            .replacingOccurrences(of: "%TYPE%", with: type)
+}
+
+/// Split a dialect type into parts, ignoring colons inside brackets
+func kotlinTypeParts(_ type: String) -> [String] {
+    var parts = [String]()
+    var current = ""
+    var depth = 0
+    for ch in type {
+        if ch == "[" {
+            depth += 1
+        }
+        if ch == "]" {
+            depth -= 1
+        }
+        if ch == ":" && depth == 0 {
+            parts.append(String(current.drop(while: { $0 == " " })))
+            current = ""
+        } else {
+            current.append(ch)
+        }
+    }
+    parts.append(String(current.drop(while: { $0 == " " })))
+    return parts
+}

@@ -858,6 +858,7 @@ func kotlinShouldResetOut(_ c: KotlinContext) -> KotlinContext {
             otherBase64ToString(KOTLIN_EMB64_CORE)
                 .replacingOccurrences(of: KOTLIN_OGS_PKG, with: "") +
             c.outFields +
+            c.outStructs +
             c.outSets
         c.recentField = F.out
         return c
@@ -894,6 +895,23 @@ func kotlinShouldResetOutSets(_ c: KotlinContext) -> KotlinContext {
     {
         c.outSets = kotlinSets(c.entities)
         c.recentField = F.outSets
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func kotlinShouldResetOutStructs(_ c: KotlinContext) -> KotlinContext {
+    var c = c
+
+    /* 1. When entity field types are available */
+    if
+        c.recentField == F.entityFieldTypes
+    {
+        c.outStructs = kotlinStructs(c.entities, c.entityTypes, c.entityFields, c.entityFieldTypes)
+        c.recentField = F.outStructs
         return c
     }
 
@@ -1326,6 +1344,7 @@ func kotlinRegisterShoulds(_ ctrl: DialectController) {
         kotlinShouldResetOut,
         kotlinShouldResetOutFields,
         kotlinShouldResetOutSets,
+        kotlinShouldResetOutStructs,
         kotlinShouldResetPath,
 
     ].forEach { f in
@@ -1403,10 +1422,12 @@ func ymlRegisterEffects(_ ctrl: DialectController) {
         F.entities, { (c: YMLContext) in swiftSet(F.entities, c.entities) },
         F.entityFields, { (c: YMLContext) in kotlinSet(F.entityFields, c.entityFields) },
         F.entityFields, { (c: YMLContext) in swiftSet(F.entityFields, c.entityFields) },
+        F.entityFieldTypes, { (c: YMLContext) in kotlinSet(F.entityFieldTypes, c.entityFieldTypes) },
         F.entityFieldTypes, { (c: YMLContext) in swiftSet(F.entityFieldTypes, c.entityFieldTypes) },
         F.entityOneliners, { (c: YMLContext) in swiftSet(F.entityOneliners, c.entityOneliners) },
         F.entityShouldBranches, { (c: YMLContext) in swiftSet(F.entityShouldBranches, c.entityShouldBranches) },
         F.entityShoulds, { (c: YMLContext) in swiftSet(F.entityShoulds, c.entityShoulds) },
+        F.entityTypes, { (c: YMLContext) in kotlinSet(F.entityTypes, c.entityTypes) },
         F.entityTypes, { (c: YMLContext) in swiftSet(F.entityTypes, c.entityTypes) },
         F.outputPaths, { (c: YMLContext) in kotlinSet(F.outputPaths, c.outputPaths) },
         F.outputPaths, { (c: YMLContext) in swiftSet(F.outputPaths, c.outputPaths) },

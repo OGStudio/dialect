@@ -84,6 +84,7 @@ KotlinComponent:
                         otherBase64ToString(KOTLIN_EMB64_CORE)
                             .replacingOccurrences(of: KOTLIN_OGS_PKG, with: "") +
                         c.outFields +
+                        c.outStructs +
                         c.outSets
         outFields:
             1. When entity fields are available:
@@ -97,6 +98,12 @@ KotlinComponent:
                     c.recentField == F.entities
                 then:
                     c.outSets = kotlinSets(c.entities)
+        outStructs:
+            1. When entity field types are available:
+                if:
+                    c.recentField == F.entityFieldTypes
+                then:
+                    c.outStructs = kotlinStructs(c.entities, c.entityTypes, c.entityFields, c.entityFieldTypes)
         path:
             1. Extract Kotlin path if present:
                 if:
@@ -262,10 +269,12 @@ YMLComponent:
         - entities: swiftSet(F.entities, c.entities)
         - entityFields: kotlinSet(F.entityFields, c.entityFields)
         - entityFields: swiftSet(F.entityFields, c.entityFields)
+        - entityFieldTypes: kotlinSet(F.entityFieldTypes, c.entityFieldTypes)
         - entityFieldTypes: swiftSet(F.entityFieldTypes, c.entityFieldTypes)
         - entityOneliners: swiftSet(F.entityOneliners, c.entityOneliners)
         - entityShouldBranches: swiftSet(F.entityShouldBranches, c.entityShouldBranches)
         - entityShoulds: swiftSet(F.entityShoulds, c.entityShoulds)
+        - entityTypes: kotlinSet(F.entityTypes, c.entityTypes)
         - entityTypes: swiftSet(F.entityTypes, c.entityTypes)
         - outputPaths: kotlinSet(F.outputPaths, c.outputPaths)
         - outputPaths: swiftSet(F.outputPaths, c.outputPaths)
