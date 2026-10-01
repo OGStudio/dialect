@@ -124,6 +124,67 @@ func kotlinSets(_ entities: [String]) -> String {
     return out
 }
 
+/// Generate single component should-function
+func kotlinShould(
+    _ name: String,
+    _ contextName: String,
+    _ branches: [ShouldBranch]
+) -> String {
+    var outBranches = ""
+    for branch in branches {
+        outBranches +=
+            KOTLIN_SHOULD_BRANCH_T
+                .replacingOccurrences(of: "%ABOUT%", with: branch.about)
+                .replacingOccurrences(of: "%FIELD%", with: name)
+                .replacingOccurrences(of: "%CONDITION%", with: kotlinFormatShould(branch.condition))
+                .replacingOccurrences(of: "%REACTION%", with: kotlinFormatShould(branch.reaction))
+    }
+
+    let prefix = String(contextName.dropLast(KOTLIN_SUFFIX_CONTEXT.count)).lowercased()
+    let funcName = prefix + KOTLIN_SHOULD_RESET + otherCapitalize(name)
+
+    return
+        KOTLIN_SHOULD_T
+            .replacingOccurrences(of: "%FUNC%", with: funcName)
+            .replacingOccurrences(of: "%CONTEXT%", with: contextName)
+            .replacingOccurrences(of: "%BRANCHES%", with: outBranches)
+}
+
+/// Generate should-functions for all components
+func kotlinShoulds(
+    _ entities: [String],
+    _ entityShoulds: [Int: [String]],
+    _ entityShouldBranches: [Int: [Int: [ShouldBranch]]]
+) -> String {
+    var out = ""
+
+    // Collect entity ids with shoulds
+    var entityIds = [Int]()
+    for entityId in entityShoulds.keys.sorted() {
+        let shoulds = entityShoulds[entityId]!
+        if !shoulds.isEmpty {
+            entityIds.append(entityId)
+        }
+    }
+
+    // Generate should-functions for each component
+    for entityId in entityIds {
+        let contextName = kotlinContextName(entities[entityId])
+
+        let shoulds = entityShoulds[entityId] ?? []
+        var shouldId = 0
+        for should in shoulds {
+            let branches = entityShouldBranches[entityId]?[shouldId] ?? []
+            if !branches.isEmpty {
+                out += kotlinShould(should, contextName, branches)
+            }
+            shouldId += 1
+        }
+    }
+
+    return out
+}
+
 /// Generate single entity `struct` declaration
 func kotlinStruct(
     _ name: String,
@@ -232,6 +293,11 @@ func kotlinTypeDefaultValue(_ type: String) -> String {
     return
         KOTLIN_DEFAULT_NAMED_T
             .replacingOccurrences(of: "%TYPE%", with: type)
+}
+
+/// Join branch lines, indenting each by 8 spaces while keeping relative indent
+func kotlinFormatShould(_ lines: [String]) -> String {
+    return lines.map { KOTLIN_SHOULD_INDENTATION + $0 }.joined(separator: "\n")
 }
 
 /// Split a dialect type into parts, ignoring colons inside brackets
