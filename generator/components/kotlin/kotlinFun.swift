@@ -98,6 +98,114 @@ func kotlinFields(_ entityFields: [Int: [String]]) -> String {
     return KOTLIN_FIELDS_T.replacingOccurrences(of: "%ITEMS%", with: sitems)
 }
 
+/// Join branch lines, indenting each by 8 spaces while keeping relative indent
+func kotlinFormatShould(_ lines: [String]) -> String {
+    return lines.map { KOTLIN_SHOULD_INDENTATION + $0 }.joined(separator: "\n")
+}
+
+/// Generate single component `RegisterEffects` function
+func kotlinRegisterEffect(
+    _ contextName: String,
+    _ oneliners: [Oneliner]
+) -> String {
+    let prefix = String(contextName.dropLast(KOTLIN_SUFFIX_CONTEXT.count)).lowercased()
+    let funcName = prefix + KOTLIN_REGISTER_EFFECTS_SUFFIX
+
+    var outItems = ""
+    for oneliner in oneliners {
+        outItems +=
+            KOTLIN_REGISTER_EFFECT_ITEM_T
+                .replacingOccurrences(of: "%FIELD%", with: oneliner.field)
+                .replacingOccurrences(of: "%REACTION%", with: kotlinFormatShould([oneliner.reaction]))
+    }
+
+    return
+        KOTLIN_REGISTER_EFFECTS_T
+            .replacingOccurrences(of: "%FUNC%", with: funcName)
+            .replacingOccurrences(of: "%ITEMS%", with: outItems)
+}
+
+/// Generate `RegisterEffects` functions for all components
+func kotlinRegisterEffects(
+    _ entities: [String],
+    _ entityOneliners: [Int: [Oneliner]]
+) -> String {
+    var out = ""
+
+    // Collect entity ids with oneliners
+    var entityIds = [Int]()
+    for entityId in entityOneliners.keys.sorted() {
+        let oneliners = entityOneliners[entityId]!
+        if !oneliners.isEmpty {
+            entityIds.append(entityId)
+        }
+    }
+
+    // Generate register-effects function for each component
+    for entityId in entityIds {
+        let contextName = kotlinContextName(entities[entityId])
+
+        let oneliners = entityOneliners[entityId] ?? []
+        if !oneliners.isEmpty {
+            out += kotlinRegisterEffect(contextName, oneliners)
+        }
+    }
+
+    return out
+}
+
+/// Generate single component `RegisterShoulds` function
+func kotlinRegisterShould(
+    _ contextName: String,
+    _ shoulds: [String]
+) -> String {
+    let prefix = String(contextName.dropLast(KOTLIN_SUFFIX_CONTEXT.count)).lowercased()
+    let funcName = prefix + KOTLIN_REGISTER_SHOULDS_SUFFIX
+
+    var outItems = ""
+    for should in shoulds {
+        let shouldFuncName = prefix + KOTLIN_SHOULD_RESET + otherCapitalize(should)
+        outItems +=
+            KOTLIN_REGISTER_SHOULDS_ITEM_T
+                .replacingOccurrences(of: "%SHOULD%", with: shouldFuncName)
+    }
+
+    return
+        KOTLIN_REGISTER_SHOULDS_T
+            .replacingOccurrences(of: "%FUNC%", with: funcName)
+            .replacingOccurrences(of: "%CONTEXT%", with: contextName)
+            .replacingOccurrences(of: "%ITEMS%", with: outItems)
+}
+
+/// Generate `RegisterShoulds` functions for all components
+func kotlinRegisterShoulds(
+    _ entities: [String],
+    _ entityShoulds: [Int: [String]]
+) -> String {
+    var out = ""
+
+    // Collect entity ids with shoulds
+    var entityIds = [Int]()
+    for entityId in entityShoulds.keys.sorted() {
+        let shoulds = entityShoulds[entityId]!
+        if !shoulds.isEmpty {
+            entityIds.append(entityId)
+        }
+    }
+
+    // Generate register-shoulds function for each component
+    for entityId in entityIds {
+        let contextName = kotlinContextName(entities[entityId])
+
+        let shoulds = entityShoulds[entityId] ?? []
+        if !shoulds.isEmpty {
+            out += kotlinRegisterShould(contextName, shoulds)
+        }
+    }
+
+    return out
+}
+
 /// Generate single component `Set` function
 func kotlinSet(_ entity: String) -> String {
     let contextName = kotlinContextName(entity)
@@ -293,11 +401,6 @@ func kotlinTypeDefaultValue(_ type: String) -> String {
     return
         KOTLIN_DEFAULT_NAMED_T
             .replacingOccurrences(of: "%TYPE%", with: type)
-}
-
-/// Join branch lines, indenting each by 8 spaces while keeping relative indent
-func kotlinFormatShould(_ lines: [String]) -> String {
-    return lines.map { KOTLIN_SHOULD_INDENTATION + $0 }.joined(separator: "\n")
 }
 
 /// Split a dialect type into parts, ignoring colons inside brackets

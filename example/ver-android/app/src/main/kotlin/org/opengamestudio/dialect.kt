@@ -301,3 +301,34 @@ fun rootShouldResetDidLaunch(c: RootContext): RootContext {
     c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
     return c
 }
+
+fun rootRegisterShoulds(ctrl: DialectController) {
+    listOf(
+        ::rootShouldResetCount,
+        ::rootShouldResetCountText,
+        ::rootShouldResetDidLaunch,
+
+    ).forEach { f ->
+        ctrl.registerFunction { c -> f(c as RootContext) }
+    }
+}
+
+fun rootRegisterEffects(ctrl: DialectController) {
+    registerOneliners(ctrl, arrayOf(
+        F.countText, { c: DialectContext ->
+            if (false) {
+                /**
+        print(c.countText)
+                */
+            }
+        },
+        F.countText, { c: DialectContext ->
+            if (false) {
+                /**
+        RootVM.shared!.countText = c.countText
+                */
+            }
+        },
+
+    ))
+}

@@ -57,6 +57,39 @@ let KOTLIN_MAPPED_INT = "Int"
 let KOTLIN_MAPPED_STRING = "String"
 let KOTLIN_MAP_T = "Map<%KEY%, %VALUE%>"
 let KOTLIN_OGS_PKG = "package org.opengamestudio"
+let KOTLIN_REGISTER_EFFECTS_SUFFIX = "RegisterEffects"
+let KOTLIN_REGISTER_EFFECTS_T = """
+
+fun %FUNC%(ctrl: DialectController) {
+    registerOneliners(ctrl, arrayOf(
+%ITEMS%
+    ))
+}
+
+"""
+let KOTLIN_REGISTER_EFFECT_ITEM_T = """
+        F.%FIELD%, { c: DialectContext ->
+            if (false) {
+                /**
+%REACTION%
+                */
+            }
+        },
+
+"""
+let KOTLIN_REGISTER_SHOULDS_SUFFIX = "RegisterShoulds"
+let KOTLIN_REGISTER_SHOULDS_T = """
+
+fun %FUNC%(ctrl: DialectController) {
+    listOf(
+%ITEMS%
+    ).forEach { f ->
+        ctrl.registerFunction { c -> f(c as %CONTEXT%) }
+    }
+}
+
+"""
+let KOTLIN_REGISTER_SHOULDS_ITEM_T = "        ::%SHOULD%,\n"
 let KOTLIN_SET_SUFFIX = "Set"
 let KOTLIN_SET_T = """
 
