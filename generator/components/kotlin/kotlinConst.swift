@@ -15,7 +15,7 @@ fun %FUNC%(
     key: String,
     value: Any
 ) {
-    %COMPONENT%.singleton!!.ctrl.set(key, value)
+    //%COMPONENT%.singleton!!.ctrl.set(key, value)
 }
 
 """

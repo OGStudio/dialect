@@ -125,6 +125,16 @@ fun registerOneliners(
     }
 }
 
+// Context field names for static type check
+object F {
+    const val count = "count"
+    const val countText = "countText"
+    const val didClickIncrement = "didClickIncrement"
+    const val didLaunch = "didLaunch"
+    const val didSetup = "didSetup"
+
+}
+
 fun rootSet(
     key: String,
     value: Any

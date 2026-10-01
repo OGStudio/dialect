@@ -25,8 +25,7 @@ fun RootView() {
         )
 
         Button(
-            // F field-name constants are not generated into Kotlin yet
-            onClick = { }
+            onClick = { rootSet(F.didClickIncrement, true) }
         ) {
             Text("Increment")
         }
