@@ -132,8 +132,16 @@ object F {
     const val didClickIncrement = "didClickIncrement"
     const val didLaunch = "didLaunch"
     const val didSetup = "didSetup"
+    const val id = "id"
+    const val name = "name"
 
 }
+
+data class StructForTest(
+    var id: Int = 0,
+    var name: String = "",
+
+)
 
 fun rootSet(
     key: String,

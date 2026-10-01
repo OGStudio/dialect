@@ -51,3 +51,9 @@ RootContext:
         didClickIncrement: Bool
         didLaunch: Bool
         didSetup: Bool
+
+StructForTest:
+    type: struct
+    fields:
+        id: Int
+        name: String
