@@ -138,7 +138,13 @@ JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradle
 
 ## Code layout
 
-- **Alphabetical ordering is enforced**: F constants, struct fields, `field<T>`/`setField` branches, should-functions, and register lists are all sorted alphabetically (ASCII collation, so `entityFieldTypes` < `entityFields` since `T` < `s`). Same for functions in `ymlFun.swift`/`ymlConst.swift`/`kotlinFun.swift`, and for the named arguments of EVERY composable call in the Kotlin views (`Column(horizontalAlignment = …, modifier = …, verticalArrangement = …)`, `Text(fontSize = …, text = …)`). Constants group by suffix-family then alphabetical, with the underscore ignored in collation (so `SWIFT_FIELD_T` precedes `SWIFT_FIELDS_T`).
+- **Alphabetical ordering is enforced** — this is not a suggestion, new code that violates it is a bug. ASCII collation is the tiebreaker, so case matters: `entityFieldTypes` precedes `entityFields` because `T` (0x54) < `s` (0x73). The following are all sorted:
+  - `F` constants, context struct fields, `field<T>`/`setField` branches, generated should-functions, and the items inside the RegisterShoulds/RegisterEffects lists
+  - functions *within* a component file (`kotlinFun.swift` runs `kotlinContextName` -> `kotlinFields` -> `kotlinSet` -> `kotlinSets`; `ymlFun.swift`/`ymlConst.swift`/`swiftFun.swift`/`swiftConst.swift` likewise)
+  - constants, which group by suffix-family first (`FIELD*`, `SET*`, `SUFFIX_*`, `TYPE*`) and are alphabetical inside the family with the UNDERSCORE IGNORED — hence `KOTLIN_FIELD_T` before `KOTLIN_FIELDS_T` and `SWIFT_SET_SUFFIX` before `SWIFT_SET_T`
+  - the named arguments of EVERY call that takes named arguments, composable or not, across the Kotlin sources — `Box(contentAlignment = …, modifier = …)`, `Column(horizontalAlignment = …, modifier = …, verticalArrangement = …)`, `Text(fontSize = …, text = …)`, `enableEdgeToEdge(navigationBarStyle = …, statusBarStyle = …)`. Reordering named arguments is behaviour-preserving, so this is pure consistency; sorting `MainActivity.kt` the same way as `RootView.kt` is expected, not optional.
+  - a trailing comma rides along with its argument, so sorting may move or remove it (`Box` loses the comma on its last arg, `enableEdgeToEdge` keeps its own)
+- **The one thing that is NOT sorted**: chains of modifiers/calls read as a pipeline, so they stay in application order (`Modifier.fillMaxSize().background(ComposeColor.White)`, `super.onCreate(savedInstanceState)`) — sorting the receivers would read as a bug.
 
 ## KD (Kotlin Dialect) reference — see ref/kotlin-dialect
 
