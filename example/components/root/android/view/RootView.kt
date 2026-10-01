@@ -15,13 +15,13 @@ fun RootView() {
         modifier = Modifier.padding(40.dp)
     ) {
         Text(
-            text = "Hello, World!",
-            fontSize = 32.sp
+            fontSize = 32.sp,
+            text = "Hello, World!"
         )
 
         Text(
-            text = RootVM.countText,
-            fontFamily = FontFamily.Monospace
+            fontFamily = FontFamily.Monospace,
+            text = RootVM.countText
         )
 
         Button(
