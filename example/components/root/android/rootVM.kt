@@ -1,3 +1,5 @@
+package org.opengamestudio
+
 import androidx.compose.runtime.*
 
 object RootVM {

@@ -32,7 +32,7 @@ class MainActivity: ComponentActivity() {
                         .background(ComposeColor.White),
                     contentAlignment = Alignment.Center
                 ) {
-                    RootView(RootVM)
+                    RootView()
                 }
             }
         }

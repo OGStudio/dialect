@@ -1,3 +1,5 @@
+package org.opengamestudio
+
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -23,7 +25,8 @@ fun RootView() {
         )
 
         Button(
-            onClick = { rootSet(F.didClickIncrement, true) }
+            // F field-name constants are not generated into Kotlin yet
+            onClick = { }
         ) {
             Text("Increment")
         }
