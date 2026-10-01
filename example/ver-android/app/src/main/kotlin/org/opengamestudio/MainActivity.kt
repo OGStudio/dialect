@@ -15,8 +15,8 @@ class MainActivity: ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge(
-            statusBarStyle = SystemBarStyle.dark(Color.TRANSPARENT),
             navigationBarStyle = SystemBarStyle.dark(Color.TRANSPARENT),
+            statusBarStyle = SystemBarStyle.dark(Color.TRANSPARENT)
         )
 
         //VM.androidContext = this
@@ -27,10 +27,10 @@ class MainActivity: ComponentActivity() {
         setContent {
             MyApplicationTheme {
                 Box(
+                    contentAlignment = Alignment.Center,
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(ComposeColor.White),
-                    contentAlignment = Alignment.Center
+                        .background(ComposeColor.White)
                 ) {
                     RootView()
                 }
