@@ -10,9 +10,9 @@ import androidx.compose.ui.unit.*
 @Composable
 fun RootView() {
     Column(
-        verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.padding(40.dp)
+        modifier = Modifier.padding(40.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(
             fontSize = 32.sp,
