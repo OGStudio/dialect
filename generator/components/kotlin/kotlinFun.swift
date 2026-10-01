@@ -1,8 +1,80 @@
 import Foundation
 
+/// Generate single entity `context` declaration
+func kotlinContext(
+    _ name: String,
+    _ fields: [String],
+    _ fieldTypes: [Int: String]
+) -> String {
+    var outFields = ""
+    var outGetters = ""
+    var outSetters = ""
+    var fieldId = 0
+    for field in fields {
+        let els = (fieldId == 0) ? "" : "else "
+        let type = fieldTypes[fieldId]!
+        let defaultValue = kotlinTypeDefaultValue(type)
+        outFields +=
+            KOTLIN_CONTEXT_FIELD_T
+                .replacingOccurrences(of: "%NAME%", with: field)
+                .replacingOccurrences(of: "%TYPE%", with: kotlinType(type))
+                .replacingOccurrences(of: "%DEFAULT%", with: defaultValue)
+        outGetters +=
+            KOTLIN_CONTEXT_GETTER_T
+                .replacingOccurrences(of: "%ELSE%", with: els)
+                .replacingOccurrences(of: "%NAME%", with: field)
+        outSetters +=
+            KOTLIN_CONTEXT_SETTER_T
+                .replacingOccurrences(of: "%ELSE%", with: els)
+                .replacingOccurrences(of: "%NAME%", with: field)
+                .replacingOccurrences(of: "%TYPE%", with: kotlinType(type))
+        fieldId += 1
+    }
+
+    return
+        KOTLIN_CONTEXT_T
+            .replacingOccurrences(of: "%NAME%", with: name)
+            .replacingOccurrences(of: "%FIELDS%", with: outFields)
+            .replacingOccurrences(of: "%GETTERS%", with: outGetters)
+            .replacingOccurrences(of: "%SETTERS%", with: outSetters)
+}
+
 /// Generate the context name for a component
 func kotlinContextName(_ entity: String) -> String {
     return entity.replacingOccurrences(of: KOTLIN_SUFFIX_COMPONENT, with: KOTLIN_SUFFIX_CONTEXT)
+}
+
+/// Generate entities of `context` type
+func kotlinContexts(
+    _ entities: [String],
+    _ entityTypes: [Int: String],
+    _ entityFields: [Int: [String]],
+    _ entityFieldTypes: [Int: [Int: String]]
+) -> String {
+    var out = ""
+
+    // Locate contexts
+    var entityId = 0
+    var contextIds = [Int]()
+    for _ in entities {
+        let type = entityTypes[entityId]
+        if type == KOTLIN_TYPE_CONTEXT {
+            contextIds.append(entityId)
+        }
+        entityId += 1
+    }
+
+    // Generate each context
+    for id in contextIds {
+        out +=
+            kotlinContext(
+                entities[id],
+                entityFields[id]!,
+                entityFieldTypes[id]!
+            )
+    }
+
+    return out
 }
 
 /// Generate `object F` holding one string constant per field name

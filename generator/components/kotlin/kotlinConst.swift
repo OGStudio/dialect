@@ -1,3 +1,41 @@
+let KOTLIN_CONTEXT_FIELD_T = "    var %NAME%: %TYPE% = %DEFAULT%,\n"
+let KOTLIN_CONTEXT_GETTER_T = """
+        %ELSE%if (name == \"%NAME%\") {
+            return %NAME% as T
+        }
+
+"""
+let KOTLIN_CONTEXT_SETTER_T = """
+        %ELSE%if (name == \"%NAME%\") {
+            %NAME% = value as %TYPE%
+        }
+
+"""
+let KOTLIN_CONTEXT_T = """
+
+@Suppress("UNCHECKED_CAST")
+data class %NAME%(
+%FIELDS%
+    override var recentField: String = ""
+) : DialectContext {
+    override fun <T> field(name: String): T {
+%GETTERS%
+        return \"\" as T
+    }
+
+    override fun selfCopy(): DialectContext {
+        return this.copy()
+    }
+
+    override fun setField(
+        name: String,
+        value: Any?
+    ) {
+%SETTERS%
+    }
+}
+
+"""
 let KOTLIN_DEFAULT_BOOL = "false"
 let KOTLIN_DEFAULT_INT = "0"
 let KOTLIN_DEFAULT_LIST = "arrayOf()"

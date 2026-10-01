@@ -85,7 +85,14 @@ KotlinComponent:
                             .replacingOccurrences(of: KOTLIN_OGS_PKG, with: "") +
                         c.outFields +
                         c.outStructs +
+                        c.outContexts +
                         c.outSets
+        outContexts:
+            1. When entity field types are available:
+                if:
+                    c.recentField == F.entityFieldTypes
+                then:
+                    c.outContexts = kotlinContexts(c.entities, c.entityTypes, c.entityFields, c.entityFieldTypes)
         outFields:
             1. When entity fields are available:
                 if:

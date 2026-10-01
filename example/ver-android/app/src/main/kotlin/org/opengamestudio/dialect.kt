@@ -143,6 +143,63 @@ data class StructForTest(
 
 )
 
+@Suppress("UNCHECKED_CAST")
+data class RootContext(
+    var count: Int = 0,
+    var countText: String = "",
+    var didClickIncrement: Boolean = false,
+    var didLaunch: Boolean = false,
+    var didSetup: Boolean = false,
+
+    override var recentField: String = ""
+) : DialectContext {
+    override fun <T> field(name: String): T {
+        if (name == "count") {
+            return count as T
+        }
+        else if (name == "countText") {
+            return countText as T
+        }
+        else if (name == "didClickIncrement") {
+            return didClickIncrement as T
+        }
+        else if (name == "didLaunch") {
+            return didLaunch as T
+        }
+        else if (name == "didSetup") {
+            return didSetup as T
+        }
+
+        return "" as T
+    }
+
+    override fun selfCopy(): DialectContext {
+        return this.copy()
+    }
+
+    override fun setField(
+        name: String,
+        value: Any?
+    ) {
+        if (name == "count") {
+            count = value as Int
+        }
+        else if (name == "countText") {
+            countText = value as String
+        }
+        else if (name == "didClickIncrement") {
+            didClickIncrement = value as Boolean
+        }
+        else if (name == "didLaunch") {
+            didLaunch = value as Boolean
+        }
+        else if (name == "didSetup") {
+            didSetup = value as Boolean
+        }
+
+    }
+}
+
 fun rootSet(
     key: String,
     value: Any

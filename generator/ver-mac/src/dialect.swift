@@ -859,8 +859,26 @@ func kotlinShouldResetOut(_ c: KotlinContext) -> KotlinContext {
                 .replacingOccurrences(of: KOTLIN_OGS_PKG, with: "") +
             c.outFields +
             c.outStructs +
+            c.outContexts +
             c.outSets
         c.recentField = F.out
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func kotlinShouldResetOutContexts(_ c: KotlinContext) -> KotlinContext {
+    var c = c
+
+    /* 1. When entity field types are available */
+    if
+        c.recentField == F.entityFieldTypes
+    {
+        c.outContexts = kotlinContexts(c.entities, c.entityTypes, c.entityFields, c.entityFieldTypes)
+        c.recentField = F.outContexts
         return c
     }
 
@@ -1342,6 +1360,7 @@ func kotlinRegisterShoulds(_ ctrl: DialectController) {
     [
         kotlinShouldResetDidLaunch,
         kotlinShouldResetOut,
+        kotlinShouldResetOutContexts,
         kotlinShouldResetOutFields,
         kotlinShouldResetOutSets,
         kotlinShouldResetOutStructs,
