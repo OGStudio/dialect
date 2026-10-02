@@ -165,6 +165,25 @@ KotlinContext:
         outShoulds: String
         outStructs: String
 
+LLMComponent:
+    type: component
+    shoulds:
+        didLaunch:
+            1. Only once during the first setup:
+                if:
+                    c.recentField == F.didSetup &&
+                    c.didLaunch == false
+                then:
+                    c.didLaunch = true
+
+LLMContext:
+    type: context
+    fields:
+        didLaunch: Bool
+        didSetup: Bool
+        input: String
+        output: String
+
 Oneliner:
     type: struct
     fields:

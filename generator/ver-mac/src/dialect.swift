@@ -134,6 +134,7 @@ struct F {
     static let entityShoulds = "entityShoulds"
     static let entityTypes = "entityTypes"
     static let field = "field"
+    static let input = "input"
     static let inputAbsoluteDir = "inputAbsoluteDir"
     static let inputContents = "inputContents"
     static let inputError = "inputError"
@@ -147,6 +148,7 @@ struct F {
     static let outSets = "outSets"
     static let outShoulds = "outShoulds"
     static let outStructs = "outStructs"
+    static let output = "output"
     static let outputPaths = "outputPaths"
     static let parseInput = "parseInput"
     static let path = "path"
@@ -410,6 +412,51 @@ struct KotlinContext: DialectContext {
         }
         else if (name == "outStructs") {
             outStructs = value as! String
+        }
+
+    }
+}
+
+struct LLMContext: DialectContext {
+    var didLaunch = Bool()
+    var didSetup = Bool()
+    var input = String()
+    var output = String()
+
+    var recentField = ""
+
+    func field<T>(_ name: String) -> T {
+        if (name == "didLaunch") {
+            return didLaunch as! T
+        }
+        else if (name == "didSetup") {
+            return didSetup as! T
+        }
+        else if (name == "input") {
+            return input as! T
+        }
+        else if (name == "output") {
+            return output as! T
+        }
+
+        return "unknown-field-name" as! T
+    }
+
+    mutating func setField(
+        _ name: String,
+        _ value: Any
+    ) {
+        if (name == "didLaunch") {
+            didLaunch = value as! Bool
+        }
+        else if (name == "didSetup") {
+            didSetup = value as! Bool
+        }
+        else if (name == "input") {
+            input = value as! String
+        }
+        else if (name == "output") {
+            output = value as! String
         }
 
     }
@@ -732,6 +779,13 @@ func kotlinSet(
     KotlinComponent.singleton!.ctrl.set(key, value)
 }
 
+func llmSet(
+    _ key: String,
+    _ value: Any
+) {
+    LLMComponent.singleton!.ctrl.set(key, value)
+}
+
 func swiftSet(
     _ key: String,
     _ value: Any
@@ -1003,6 +1057,24 @@ func kotlinShouldResetPath(_ c: KotlinContext) -> KotlinContext {
         let last = c.outputPaths.first { $0.type == KOTLIN_TYPE }?.path ?? "N/A"
         c.path = c.inputAbsoluteDir + "/" + last
         c.recentField = F.path
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func llmShouldResetDidLaunch(_ c: LLMContext) -> LLMContext {
+    var c = c
+
+    /* 1. Only once during the first setup */
+    if
+        c.recentField == F.didSetup &&
+        c.didLaunch == false
+    {
+        c.didLaunch = true
+        c.recentField = F.didLaunch
         return c
     }
 
@@ -1425,6 +1497,15 @@ func kotlinRegisterShoulds(_ ctrl: DialectController) {
 
     ].forEach { f in
         ctrl.registerFunction { c in f(c as! KotlinContext) }
+    }
+}
+
+func llmRegisterShoulds(_ ctrl: DialectController) {
+    [
+        llmShouldResetDidLaunch,
+
+    ].forEach { f in
+        ctrl.registerFunction { c in f(c as! LLMContext) }
     }
 }
 
