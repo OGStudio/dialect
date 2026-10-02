@@ -15,9 +15,12 @@ func cliReadInputFile(_ fileName: String) {
 }
 
 /// Resolve the absolute directory of an input file and push it into the context
-func cliResolveAbsoluteDir(_ fileName: String) {
+func cliResolveAbsoluteDir(
+    _ fileName: String,
+    _ keyAbsDir: String
+) {
     let cwd = FileManager.default.currentDirectoryPath
     let fullPath = fileName.hasPrefix("/") ? fileName : cwd + "/" + fileName
     let dir = URL(fileURLWithPath: fullPath).deletingLastPathComponent()
-    cliSet(F.inputAbsoluteDir, dir.standardizedFileURL.path)
+    cliSet(keyAbsDir, dir.standardizedFileURL.path)
 }

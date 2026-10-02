@@ -11,7 +11,7 @@ CLIComponent:
         - inputAbsoluteDir: kotlinSet(F.inputAbsoluteDir, c.inputAbsoluteDir)
         - inputAbsoluteDir: swiftSet(F.inputAbsoluteDir, c.inputAbsoluteDir)
         - inputContents: ymlSet(F.inputContents, c.inputContents)
-        - inputFileName: cliResolveAbsoluteDir(c.inputFileName)
+        - inputFileName: cliResolveAbsoluteDir(c.inputFileName, F.inputAbsoluteDir)
         - readFile: cliReadInputFile(c.inputFileName)
     shoulds:
         consoleOutput:

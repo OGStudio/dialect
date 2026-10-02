@@ -1448,7 +1448,7 @@ func cliRegisterEffects(_ ctrl: DialectController) {
         F.inputAbsoluteDir, { (c: CLIContext) in kotlinSet(F.inputAbsoluteDir, c.inputAbsoluteDir) },
         F.inputAbsoluteDir, { (c: CLIContext) in swiftSet(F.inputAbsoluteDir, c.inputAbsoluteDir) },
         F.inputContents, { (c: CLIContext) in ymlSet(F.inputContents, c.inputContents) },
-        F.inputFileName, { (c: CLIContext) in cliResolveAbsoluteDir(c.inputFileName) },
+        F.inputFileName, { (c: CLIContext) in cliResolveAbsoluteDir(c.inputFileName, F.inputAbsoluteDir) },
         F.readFile, { (c: CLIContext) in cliReadInputFile(c.inputFileName) },
 
     ])
