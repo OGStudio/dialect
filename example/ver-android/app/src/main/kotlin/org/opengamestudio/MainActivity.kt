@@ -11,6 +11,7 @@ import androidx.compose.ui.graphics.Color as ComposeColor
 import org.opengamestudio.ui.theme.MyApplicationTheme
 
 class MainActivity: ComponentActivity() {
+    val root = RootComponent()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,8 +20,8 @@ class MainActivity: ComponentActivity() {
             statusBarStyle = SystemBarStyle.dark(Color.TRANSPARENT)
         )
 
-        //otherSetupConsoleLogging(RootComponent.ctrl, "Root")
-        RootComponent.setup()
+        otherSetupConsoleLogging(root.ctrl, "Root")
+        root.setup()
 
         setContent {
             MyApplicationTheme {
