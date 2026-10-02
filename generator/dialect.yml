@@ -12,7 +12,7 @@ CLIComponent:
         - inputAbsoluteDir: swiftSet(F.inputAbsoluteDir, c.inputAbsoluteDir)
         - inputContents: ymlSet(F.inputContents, c.inputContents)
         - inputFileName: cliResolveAbsoluteDir(c.inputFileName, F.inputAbsoluteDir)
-        - readFile: cliReadInputFile(c.inputFileName)
+        - readFile: cliReadInputFile(c.inputFileName, F.inputContents, F.inputError)
     shoulds:
         consoleOutput:
             1. File argument was not found:
