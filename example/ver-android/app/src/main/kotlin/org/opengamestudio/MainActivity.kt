@@ -11,7 +11,7 @@ import androidx.compose.ui.graphics.Color as ComposeColor
 import org.opengamestudio.ui.theme.MyApplicationTheme
 
 class MainActivity: ComponentActivity() {
-    val root = RootComponent()
+    val root = RootComponent
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
