@@ -19,10 +19,8 @@ class MainActivity: ComponentActivity() {
             statusBarStyle = SystemBarStyle.dark(Color.TRANSPARENT)
         )
 
-        //VM.androidContext = this
-        // Launch components once VM has Android context
-        //LogComponent.setupLogging(rootCtrl(), "Root")
-        //RootComponent.setup()
+        //otherSetupConsoleLogging(RootComponent.ctrl, "Root")
+        RootComponent.setup()
 
         setContent {
             MyApplicationTheme {

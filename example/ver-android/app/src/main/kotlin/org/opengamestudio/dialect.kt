@@ -204,7 +204,7 @@ fun rootSet(
     key: String,
     value: Any
 ) {
-    //RootComponent.singleton!!.ctrl.set(key, value)
+    RootComponent.ctrl.set(key, value)
 }
 
 // Should-functions of RootContext, transcribed from the Swift dialect
