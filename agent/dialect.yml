@@ -49,7 +49,23 @@ LLMContext:
     fields:
         didLaunch: Bool
         didSetup: Bool
+        isServerAvailable: Bool
         prompt: String
-        reply: String
+        request: NetRequest
+        response: NetResponse
+        serverAddress: String
         system: String
 
+NetRequest:
+    type: struct
+    fields:
+        body: String
+        headers: [String: String]
+        method: String
+        url: String
+
+NetResponse:
+    type: struct
+    fields:
+        contents: String
+        req: NetRequest

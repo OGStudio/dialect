@@ -120,15 +120,40 @@ func registerOneliners<T>(
 // Context field names for static type check
 struct F {
     static let arguments = "arguments"
+    static let body = "body"
     static let consoleOutput = "consoleOutput"
+    static let contents = "contents"
     static let didLaunch = "didLaunch"
     static let didSetup = "didSetup"
+    static let headers = "headers"
     static let inputPrompt = "inputPrompt"
+    static let isServerAvailable = "isServerAvailable"
+    static let method = "method"
     static let prompt = "prompt"
-    static let reply = "reply"
+    static let req = "req"
+    static let request = "request"
+    static let response = "response"
+    static let serverAddress = "serverAddress"
     static let system = "system"
+    static let url = "url"
 
 }
+struct NetRequest {
+    var body = String()
+    var headers = [String: String]()
+    var method = String()
+    var url = String()
+
+}
+
+
+struct NetResponse {
+    var contents = String()
+    var req = NetRequest()
+
+}
+
+
 struct CLIContext: DialectContext {
     var arguments = [String]()
     var consoleOutput = String()
@@ -184,8 +209,11 @@ struct CLIContext: DialectContext {
 struct LLMContext: DialectContext {
     var didLaunch = Bool()
     var didSetup = Bool()
+    var isServerAvailable = Bool()
     var prompt = String()
-    var reply = String()
+    var request = NetRequest()
+    var response = NetResponse()
+    var serverAddress = String()
     var system = String()
 
     var recentField = ""
@@ -197,11 +225,20 @@ struct LLMContext: DialectContext {
         else if (name == "didSetup") {
             return didSetup as! T
         }
+        else if (name == "isServerAvailable") {
+            return isServerAvailable as! T
+        }
         else if (name == "prompt") {
             return prompt as! T
         }
-        else if (name == "reply") {
-            return reply as! T
+        else if (name == "request") {
+            return request as! T
+        }
+        else if (name == "response") {
+            return response as! T
+        }
+        else if (name == "serverAddress") {
+            return serverAddress as! T
         }
         else if (name == "system") {
             return system as! T
@@ -220,11 +257,20 @@ struct LLMContext: DialectContext {
         else if (name == "didSetup") {
             didSetup = value as! Bool
         }
+        else if (name == "isServerAvailable") {
+            isServerAvailable = value as! Bool
+        }
         else if (name == "prompt") {
             prompt = value as! String
         }
-        else if (name == "reply") {
-            reply = value as! String
+        else if (name == "request") {
+            request = value as! NetRequest
+        }
+        else if (name == "response") {
+            response = value as! NetResponse
+        }
+        else if (name == "serverAddress") {
+            serverAddress = value as! String
         }
         else if (name == "system") {
             system = value as! String
