@@ -1,0 +1,21 @@
+#!/bin/bash
+
+STEP=$((STEP+1))
+echo -e "\n> > > > Step №$STEP. Embed core/kotlin files"
+TMP=$(mktemp)
+TMP64=$(mktemp)
+trap 'rm -f "$TMP" "$TMP64"' EXIT
+EMB64=$GENERATOR_COMPONENTS/kotlin/kotlinConstEmb64.swift
+
+# Combine files
+cat $CORE_KOTLIN/DialectContext.kt > $TMP
+cat $CORE_KOTLIN/DialectController.kt >> $TMP
+cat $CORE_KOTLIN/registerOneliners.kt >> $TMP
+
+# Convert to Base64
+base64 -i $TMP -o $TMP64
+
+# Generate source code file
+echo -n "let KOTLIN_EMB64_CORE=\"" > $EMB64
+cat $TMP64 | tr -d '\n' >> $EMB64
+echo "\"" >> $EMB64

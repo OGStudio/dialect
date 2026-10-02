@@ -1,0 +1,21 @@
+#!/bin/bash -e
+SDIR=$(cd "$(dirname "$0")" ; pwd -P)
+
+ANDROID_STUDIO=${ANDROID_STUDIO:-/Applications/Android\ Studio.app}
+JAVA_HOME=$ANDROID_STUDIO/Contents/jbr/Contents/Home
+KOTLINC=$ANDROID_STUDIO/Contents/plugins/Kotlin/kotlinc/bin/kotlinc
+export JAVA_HOME
+
+BUILD=$SDIR/../.build
+mkdir -p $BUILD
+
+"$KOTLINC" \
+    $SDIR/../core/kotlin/DialectContext.kt \
+    $SDIR/../core/kotlin/DialectController.kt \
+    $SDIR/../core/kotlin/registerOneliners.kt \
+    $SDIR/../core/test/kotlin/tests.kt \
+    $SDIR/../core/test/kotlin/main.kt \
+    -include-runtime \
+    -d $BUILD/test-kotlin.jar
+
+java -jar $BUILD/test-kotlin.jar

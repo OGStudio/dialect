@@ -13,7 +13,6 @@ public protocol DialectContext {
 
 // Default implementation of `fieldAny` method for the protocol
 public extension DialectContext {
-    /// Default implementation of `fieldAny()`
     func fieldAny(_ name: String) -> Any {
         return field(name)
     }
@@ -254,6 +253,163 @@ struct CLIContext: DialectContext {
         }
         else if (name == "readFile") {
             readFile = value as! Bool
+        }
+
+    }
+}
+
+struct KotlinContext: DialectContext {
+    var didLaunch = Bool()
+    var didSetup = Bool()
+    var entities = [String]()
+    var entityFields = [Int: [String]]()
+    var entityFieldTypes = [Int: [Int: String]]()
+    var entityOneliners = [Int: [Oneliner]]()
+    var entityShouldBranches = [Int: [Int: [ShouldBranch]]]()
+    var entityShoulds = [Int: [String]]()
+    var entityTypes = [Int: String]()
+    var inputAbsoluteDir = String()
+    var path = String()
+    var out = String()
+    var outContexts = String()
+    var outFields = String()
+    var outputPaths = [OutputPath]()
+    var outRegisterEffects = String()
+    var outRegisterShoulds = String()
+    var outSets = String()
+    var outShoulds = String()
+    var outStructs = String()
+
+    var recentField = ""
+
+    func field<T>(_ name: String) -> T {
+        if (name == "didLaunch") {
+            return didLaunch as! T
+        }
+        else if (name == "didSetup") {
+            return didSetup as! T
+        }
+        else if (name == "entities") {
+            return entities as! T
+        }
+        else if (name == "entityFields") {
+            return entityFields as! T
+        }
+        else if (name == "entityFieldTypes") {
+            return entityFieldTypes as! T
+        }
+        else if (name == "entityOneliners") {
+            return entityOneliners as! T
+        }
+        else if (name == "entityShouldBranches") {
+            return entityShouldBranches as! T
+        }
+        else if (name == "entityShoulds") {
+            return entityShoulds as! T
+        }
+        else if (name == "entityTypes") {
+            return entityTypes as! T
+        }
+        else if (name == "inputAbsoluteDir") {
+            return inputAbsoluteDir as! T
+        }
+        else if (name == "path") {
+            return path as! T
+        }
+        else if (name == "out") {
+            return out as! T
+        }
+        else if (name == "outContexts") {
+            return outContexts as! T
+        }
+        else if (name == "outFields") {
+            return outFields as! T
+        }
+        else if (name == "outputPaths") {
+            return outputPaths as! T
+        }
+        else if (name == "outRegisterEffects") {
+            return outRegisterEffects as! T
+        }
+        else if (name == "outRegisterShoulds") {
+            return outRegisterShoulds as! T
+        }
+        else if (name == "outSets") {
+            return outSets as! T
+        }
+        else if (name == "outShoulds") {
+            return outShoulds as! T
+        }
+        else if (name == "outStructs") {
+            return outStructs as! T
+        }
+
+        return "unknown-field-name" as! T
+    }
+
+    mutating func setField(
+        _ name: String,
+        _ value: Any
+    ) {
+        if (name == "didLaunch") {
+            didLaunch = value as! Bool
+        }
+        else if (name == "didSetup") {
+            didSetup = value as! Bool
+        }
+        else if (name == "entities") {
+            entities = value as! [String]
+        }
+        else if (name == "entityFields") {
+            entityFields = value as! [Int: [String]]
+        }
+        else if (name == "entityFieldTypes") {
+            entityFieldTypes = value as! [Int: [Int: String]]
+        }
+        else if (name == "entityOneliners") {
+            entityOneliners = value as! [Int: [Oneliner]]
+        }
+        else if (name == "entityShouldBranches") {
+            entityShouldBranches = value as! [Int: [Int: [ShouldBranch]]]
+        }
+        else if (name == "entityShoulds") {
+            entityShoulds = value as! [Int: [String]]
+        }
+        else if (name == "entityTypes") {
+            entityTypes = value as! [Int: String]
+        }
+        else if (name == "inputAbsoluteDir") {
+            inputAbsoluteDir = value as! String
+        }
+        else if (name == "path") {
+            path = value as! String
+        }
+        else if (name == "out") {
+            out = value as! String
+        }
+        else if (name == "outContexts") {
+            outContexts = value as! String
+        }
+        else if (name == "outFields") {
+            outFields = value as! String
+        }
+        else if (name == "outputPaths") {
+            outputPaths = value as! [OutputPath]
+        }
+        else if (name == "outRegisterEffects") {
+            outRegisterEffects = value as! String
+        }
+        else if (name == "outRegisterShoulds") {
+            outRegisterShoulds = value as! String
+        }
+        else if (name == "outSets") {
+            outSets = value as! String
+        }
+        else if (name == "outShoulds") {
+            outShoulds = value as! String
+        }
+        else if (name == "outStructs") {
+            outStructs = value as! String
         }
 
     }
@@ -569,6 +725,13 @@ func cliSet(
     CLIComponent.singleton!.ctrl.set(key, value)
 }
 
+func kotlinSet(
+    _ key: String,
+    _ value: Any
+) {
+    KotlinComponent.singleton!.ctrl.set(key, value)
+}
+
 func swiftSet(
     _ key: String,
     _ value: Any
@@ -656,6 +819,190 @@ func cliShouldResetReadFile(_ c: CLIContext) -> CLIContext {
     {
         c.readFile = true
         c.recentField = F.readFile
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func kotlinShouldResetDidLaunch(_ c: KotlinContext) -> KotlinContext {
+    var c = c
+
+    /* 1. Only once during the first setup */
+    if
+        c.recentField == F.didSetup &&
+        c.didLaunch == false
+    {
+        c.didLaunch = true
+        c.recentField = F.didLaunch
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func kotlinShouldResetOut(_ c: KotlinContext) -> KotlinContext {
+    var c = c
+
+    /* 1. Upon launch */
+    if
+        c.recentField == F.didLaunch
+    {
+        c.out =
+            KOTLIN_OGS_PKG +
+            "\n" +
+            otherBase64ToString(KOTLIN_EMB64_CORE)
+                .replacingOccurrences(of: KOTLIN_OGS_PKG, with: "") +
+            c.outFields +
+            c.outStructs +
+            c.outContexts +
+            c.outSets +
+            c.outShoulds +
+            c.outRegisterShoulds +
+            c.outRegisterEffects
+        c.recentField = F.out
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func kotlinShouldResetOutContexts(_ c: KotlinContext) -> KotlinContext {
+    var c = c
+
+    /* 1. When entity field types are available */
+    if
+        c.recentField == F.entityFieldTypes
+    {
+        c.outContexts = kotlinContexts(c.entities, c.entityTypes, c.entityFields, c.entityFieldTypes)
+        c.recentField = F.outContexts
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func kotlinShouldResetOutFields(_ c: KotlinContext) -> KotlinContext {
+    var c = c
+
+    /* 1. When entity fields are available */
+    if
+        c.recentField == F.entityFields
+    {
+        c.outFields = kotlinFields(c.entityFields)
+        c.recentField = F.outFields
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func kotlinShouldResetOutSets(_ c: KotlinContext) -> KotlinContext {
+    var c = c
+
+    /* 1. When entities are ready */
+    if
+        c.recentField == F.entities
+    {
+        c.outSets = kotlinSets(c.entities)
+        c.recentField = F.outSets
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func kotlinShouldResetOutStructs(_ c: KotlinContext) -> KotlinContext {
+    var c = c
+
+    /* 1. When entity field types are available */
+    if
+        c.recentField == F.entityFieldTypes
+    {
+        c.outStructs = kotlinStructs(c.entities, c.entityTypes, c.entityFields, c.entityFieldTypes)
+        c.recentField = F.outStructs
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func kotlinShouldResetOutRegisterEffects(_ c: KotlinContext) -> KotlinContext {
+    var c = c
+
+    /* 1. When oneliners are ready */
+    if
+        c.recentField == F.entityOneliners
+    {
+        c.outRegisterEffects = kotlinRegisterEffects(c.entities, c.entityOneliners)
+        c.recentField = F.outRegisterEffects
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func kotlinShouldResetOutRegisterShoulds(_ c: KotlinContext) -> KotlinContext {
+    var c = c
+
+    /* 1. When shoulds are ready */
+    if
+        c.recentField == F.entityShoulds
+    {
+        c.outRegisterShoulds = kotlinRegisterShoulds(c.entities, c.entityShoulds)
+        c.recentField = F.outRegisterShoulds
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func kotlinShouldResetOutShoulds(_ c: KotlinContext) -> KotlinContext {
+    var c = c
+
+    /* 1. When entity should branches are available */
+    if
+        c.recentField == F.entityShouldBranches
+    {
+        c.outShoulds = kotlinShoulds(c.entities, c.entityShoulds, c.entityShouldBranches)
+        c.recentField = F.outShoulds
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func kotlinShouldResetPath(_ c: KotlinContext) -> KotlinContext {
+    var c = c
+
+    /* 1. Extract Kotlin path if present */
+    if
+        c.recentField == F.outputPaths &&
+        c.outputPaths.contains(where: { $0.type == KOTLIN_TYPE })
+    {
+        let last = c.outputPaths.first { $0.type == KOTLIN_TYPE }?.path ?? "N/A"
+        c.path = c.inputAbsoluteDir + "/" + last
+        c.recentField = F.path
         return c
     }
 
@@ -1063,6 +1410,24 @@ func cliRegisterShoulds(_ ctrl: DialectController) {
     }
 }
 
+func kotlinRegisterShoulds(_ ctrl: DialectController) {
+    [
+        kotlinShouldResetDidLaunch,
+        kotlinShouldResetOut,
+        kotlinShouldResetOutContexts,
+        kotlinShouldResetOutFields,
+        kotlinShouldResetOutSets,
+        kotlinShouldResetOutStructs,
+        kotlinShouldResetOutRegisterEffects,
+        kotlinShouldResetOutRegisterShoulds,
+        kotlinShouldResetOutShoulds,
+        kotlinShouldResetPath,
+
+    ].forEach { f in
+        ctrl.registerFunction { c in f(c as! KotlinContext) }
+    }
+}
+
 func swiftRegisterShoulds(_ ctrl: DialectController) {
     [
         swiftShouldResetDidLaunch,
@@ -1104,10 +1469,18 @@ func ymlRegisterShoulds(_ ctrl: DialectController) {
 func cliRegisterEffects(_ ctrl: DialectController) {
     let _: CLIContext? = registerOneliners(ctrl, [
         F.consoleOutput, { (c: CLIContext) in print(c.consoleOutput) },
+        F.inputAbsoluteDir, { (c: CLIContext) in kotlinSet(F.inputAbsoluteDir, c.inputAbsoluteDir) },
         F.inputAbsoluteDir, { (c: CLIContext) in swiftSet(F.inputAbsoluteDir, c.inputAbsoluteDir) },
         F.inputContents, { (c: CLIContext) in ymlSet(F.inputContents, c.inputContents) },
         F.inputFileName, { (c: CLIContext) in cliResolveAbsoluteDir(c.inputFileName) },
         F.readFile, { (c: CLIContext) in cliReadInputFile(c.inputFileName) },
+
+    ])
+}
+
+func kotlinRegisterEffects(_ ctrl: DialectController) {
+    let _: KotlinContext? = registerOneliners(ctrl, [
+        F.out, { (c: KotlinContext) in otherWriteFile(c.path, c.out) },
 
     ])
 }
@@ -1121,13 +1494,21 @@ func swiftRegisterEffects(_ ctrl: DialectController) {
 
 func ymlRegisterEffects(_ ctrl: DialectController) {
     let _: YMLContext? = registerOneliners(ctrl, [
+        F.entities, { (c: YMLContext) in kotlinSet(F.entities, c.entities) },
         F.entities, { (c: YMLContext) in swiftSet(F.entities, c.entities) },
+        F.entityFields, { (c: YMLContext) in kotlinSet(F.entityFields, c.entityFields) },
         F.entityFields, { (c: YMLContext) in swiftSet(F.entityFields, c.entityFields) },
+        F.entityFieldTypes, { (c: YMLContext) in kotlinSet(F.entityFieldTypes, c.entityFieldTypes) },
         F.entityFieldTypes, { (c: YMLContext) in swiftSet(F.entityFieldTypes, c.entityFieldTypes) },
+        F.entityOneliners, { (c: YMLContext) in kotlinSet(F.entityOneliners, c.entityOneliners) },
         F.entityOneliners, { (c: YMLContext) in swiftSet(F.entityOneliners, c.entityOneliners) },
+        F.entityShouldBranches, { (c: YMLContext) in kotlinSet(F.entityShouldBranches, c.entityShouldBranches) },
         F.entityShouldBranches, { (c: YMLContext) in swiftSet(F.entityShouldBranches, c.entityShouldBranches) },
+        F.entityShoulds, { (c: YMLContext) in kotlinSet(F.entityShoulds, c.entityShoulds) },
         F.entityShoulds, { (c: YMLContext) in swiftSet(F.entityShoulds, c.entityShoulds) },
+        F.entityTypes, { (c: YMLContext) in kotlinSet(F.entityTypes, c.entityTypes) },
         F.entityTypes, { (c: YMLContext) in swiftSet(F.entityTypes, c.entityTypes) },
+        F.outputPaths, { (c: YMLContext) in kotlinSet(F.outputPaths, c.outputPaths) },
         F.outputPaths, { (c: YMLContext) in swiftSet(F.outputPaths, c.outputPaths) },
         F.parseInput, { (c: YMLContext) in ymlReadLines(c.inputContents) },
 
