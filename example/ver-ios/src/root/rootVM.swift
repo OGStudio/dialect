@@ -1,1 +1,1 @@
-../../../components/root/rootVM.swift
+../../../../components/root/rootVM.swift

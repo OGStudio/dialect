@@ -1,1 +1,1 @@
-../../../../components/root/mac/view/RootView.swift
+../../../../../components/root/mac/view/RootView.swift

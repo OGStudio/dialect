@@ -1,1 +1,1 @@
-../../../components/cli/cliFun.swift
+../../../../components/cli/cliFun.swift

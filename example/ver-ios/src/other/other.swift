@@ -1,1 +1,1 @@
-../../../components/other/other.swift
+../../../../components/other/other.swift

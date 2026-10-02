@@ -1,1 +1,1 @@
-../../../components/swift/swiftFun.swift
+../../../../components/swift/swiftFun.swift

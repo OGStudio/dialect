@@ -1,1 +1,1 @@
-../../../components/cli/cliEffect.swift
+../../../../components/cli/cliEffect.swift
