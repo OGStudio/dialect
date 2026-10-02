@@ -1,0 +1,55 @@
+version: 4
+
+output:
+    ver-mac/src/dialect.swift:
+        type: swift
+
+CLIComponent:
+    type: component
+    oneliners:
+        - consoleOutput: print(c.consoleOutput)
+    shoulds:
+        consoleOutput:
+            1. File argument was not found:
+                if:
+                    c.recentField == F.didLaunch &&
+                    cliArgumentValue(c.arguments, CLI_ARG_PROMPT).isEmpty
+                then:
+                    c.consoleOutput = CLI_CONSOLE_USAGE_AGENT
+        didLaunch:
+            1. Only once during the first setup:
+                if:
+                    c.recentField == F.didSetup &&
+                    c.didLaunch == false
+                then:
+                    c.didLaunch = true
+
+CLIContext:
+    type: context
+    fields:
+        arguments: [String]
+        consoleOutput: String
+        didLaunch: Bool
+        didSetup: Bool
+        inputPrompt: String
+
+LLMComponent:
+    type: component
+    shoulds:
+        didLaunch:
+            1. Only once during the first setup:
+                if:
+                    c.recentField == F.didSetup &&
+                    c.didLaunch == false
+                then:
+                    c.didLaunch = true
+
+LLMContext:
+    type: context
+    fields:
+        didLaunch: Bool
+        didSetup: Bool
+        prompt: String
+        reply: String
+        system: String
+
