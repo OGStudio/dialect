@@ -1,0 +1,71 @@
+version: 4
+
+output:
+    ver-mac/src/dialect.swift:
+        type: swift
+
+CLIComponent:
+    type: component
+    oneliners:
+        - consoleOutput: print(c.consoleOutput)
+    shoulds:
+        consoleOutput:
+            1. File argument was not found:
+                if:
+                    c.recentField == F.didLaunch &&
+                    cliArgumentValue(c.arguments, CLI_ARG_PROMPT).isEmpty
+                then:
+                    c.consoleOutput = CLI_CONSOLE_USAGE_AGENT
+        didLaunch:
+            1. Only once during the first setup:
+                if:
+                    c.recentField == F.didSetup &&
+                    c.didLaunch == false
+                then:
+                    c.didLaunch = true
+
+CLIContext:
+    type: context
+    fields:
+        arguments: [String]
+        consoleOutput: String
+        didLaunch: Bool
+        didSetup: Bool
+        inputPrompt: String
+
+LLMComponent:
+    type: component
+    shoulds:
+        didLaunch:
+            1. Only once during the first setup:
+                if:
+                    c.recentField == F.didSetup &&
+                    c.didLaunch == false
+                then:
+                    c.didLaunch = true
+
+LLMContext:
+    type: context
+    fields:
+        didLaunch: Bool
+        didSetup: Bool
+        isServerAvailable: Bool
+        prompt: String
+        request: NetRequest
+        response: NetResponse
+        serverAddress: String
+        system: String
+
+NetRequest:
+    type: struct
+    fields:
+        body: String
+        headers: [String: String]
+        method: String
+        url: String
+
+NetResponse:
+    type: struct
+    fields:
+        contents: String
+        req: NetRequest

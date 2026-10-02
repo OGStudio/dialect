@@ -11,8 +11,8 @@ CLIComponent:
         - inputAbsoluteDir: kotlinSet(F.inputAbsoluteDir, c.inputAbsoluteDir)
         - inputAbsoluteDir: swiftSet(F.inputAbsoluteDir, c.inputAbsoluteDir)
         - inputContents: ymlSet(F.inputContents, c.inputContents)
-        - inputFileName: cliResolveAbsoluteDir(c.inputFileName)
-        - readFile: cliReadInputFile(c.inputFileName)
+        - inputFileName: cliResolveAbsoluteDir(c.inputFileName, F.inputAbsoluteDir)
+        - readFile: cliReadInputFile(c.inputFileName, F.inputContents, F.inputError)
     shoulds:
         consoleOutput:
             1. File argument was not found:
@@ -176,11 +176,6 @@ OutputPath:
     fields:
         path: String
         type: String
-
-RootContext:
-    type: context
-    fields:
-        didLaunch: Bool
 
 ShouldBranch:
     type: struct

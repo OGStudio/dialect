@@ -1,1 +1,1 @@
-../../../components/swift/swiftConst.swift
+../../../../components/swift/swiftConst.swift

@@ -415,30 +415,6 @@ struct KotlinContext: DialectContext {
     }
 }
 
-struct RootContext: DialectContext {
-    var didLaunch = Bool()
-
-    var recentField = ""
-
-    func field<T>(_ name: String) -> T {
-        if (name == "didLaunch") {
-            return didLaunch as! T
-        }
-
-        return "unknown-field-name" as! T
-    }
-
-    mutating func setField(
-        _ name: String,
-        _ value: Any
-    ) {
-        if (name == "didLaunch") {
-            didLaunch = value as! Bool
-        }
-
-    }
-}
-
 struct SwiftContext: DialectContext {
     var didLaunch = Bool()
     var didSetup = Bool()
@@ -1472,8 +1448,8 @@ func cliRegisterEffects(_ ctrl: DialectController) {
         F.inputAbsoluteDir, { (c: CLIContext) in kotlinSet(F.inputAbsoluteDir, c.inputAbsoluteDir) },
         F.inputAbsoluteDir, { (c: CLIContext) in swiftSet(F.inputAbsoluteDir, c.inputAbsoluteDir) },
         F.inputContents, { (c: CLIContext) in ymlSet(F.inputContents, c.inputContents) },
-        F.inputFileName, { (c: CLIContext) in cliResolveAbsoluteDir(c.inputFileName) },
-        F.readFile, { (c: CLIContext) in cliReadInputFile(c.inputFileName) },
+        F.inputFileName, { (c: CLIContext) in cliResolveAbsoluteDir(c.inputFileName, F.inputAbsoluteDir) },
+        F.readFile, { (c: CLIContext) in cliReadInputFile(c.inputFileName, F.inputContents, F.inputError) },
 
     ])
 }

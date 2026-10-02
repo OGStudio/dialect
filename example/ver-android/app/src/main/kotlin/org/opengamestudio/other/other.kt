@@ -1,1 +1,1 @@
-../../../../../../../../components/other/other.kt
+../../../../../../../../../components/other/other.kt
