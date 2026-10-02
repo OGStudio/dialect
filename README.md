@@ -9,6 +9,10 @@ Plan:
 
 # Example
 
+Prerequisites for Android:
+
+* Android Studio for macOS
+
 Prerequisites for iOS:
 
 * XcodeGen: `brew install xcodegen`
