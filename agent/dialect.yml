@@ -8,6 +8,7 @@ CLIComponent:
     type: component
     oneliners:
         - consoleOutput: print(c.consoleOutput)
+        - prompt: llmSet(F.prompt, c.prompt)
     shoulds:
         consoleOutput:
             1. File argument was not found:
@@ -23,6 +24,13 @@ CLIComponent:
                     c.didLaunch == false
                 then:
                     c.didLaunch = true
+        prompt:
+            1. Report prompt after launching
+                if:
+                    c.recentField == F.didLaunch &&
+                    !c.inputPrompt.isEmpty
+                then:
+                    c.prompt = c.inputPrompt
 
 CLIContext:
     type: context
@@ -32,9 +40,12 @@ CLIContext:
         didLaunch: Bool
         didSetup: Bool
         inputPrompt: String
+        prompt: String
 
 LLMComponent:
     type: component
+    oneliners:
+        - request: print("ИГР LC.request: '\(c.request)'")
     shoulds:
         didLaunch:
             1. Only once during the first setup:
@@ -43,6 +54,12 @@ LLMComponent:
                     c.didLaunch == false
                 then:
                     c.didLaunch = true
+        request:
+            1. See if server is available upon receiving prompt
+                if:
+                    c.recentField == F.prompt
+                then:
+                    c.request = llmRequestServerAvailability(c.serverHost, c.serverPort)
 
 LLMContext:
     type: context
@@ -53,7 +70,8 @@ LLMContext:
         prompt: String
         request: NetRequest
         response: NetResponse
-        serverAddress: String
+        serverHost: String
+        serverPort: String
         system: String
 
 NetRequest:

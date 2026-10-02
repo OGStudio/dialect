@@ -133,7 +133,8 @@ struct F {
     static let req = "req"
     static let request = "request"
     static let response = "response"
-    static let serverAddress = "serverAddress"
+    static let serverHost = "serverHost"
+    static let serverPort = "serverPort"
     static let system = "system"
     static let url = "url"
 
@@ -160,6 +161,7 @@ struct CLIContext: DialectContext {
     var didLaunch = Bool()
     var didSetup = Bool()
     var inputPrompt = String()
+    var prompt = String()
 
     var recentField = ""
 
@@ -178,6 +180,9 @@ struct CLIContext: DialectContext {
         }
         else if (name == "inputPrompt") {
             return inputPrompt as! T
+        }
+        else if (name == "prompt") {
+            return prompt as! T
         }
 
         return "unknown-field-name" as! T
@@ -202,6 +207,9 @@ struct CLIContext: DialectContext {
         else if (name == "inputPrompt") {
             inputPrompt = value as! String
         }
+        else if (name == "prompt") {
+            prompt = value as! String
+        }
 
     }
 }
@@ -213,7 +221,8 @@ struct LLMContext: DialectContext {
     var prompt = String()
     var request = NetRequest()
     var response = NetResponse()
-    var serverAddress = String()
+    var serverHost = String()
+    var serverPort = String()
     var system = String()
 
     var recentField = ""
@@ -237,8 +246,11 @@ struct LLMContext: DialectContext {
         else if (name == "response") {
             return response as! T
         }
-        else if (name == "serverAddress") {
-            return serverAddress as! T
+        else if (name == "serverHost") {
+            return serverHost as! T
+        }
+        else if (name == "serverPort") {
+            return serverPort as! T
         }
         else if (name == "system") {
             return system as! T
@@ -269,8 +281,11 @@ struct LLMContext: DialectContext {
         else if (name == "response") {
             response = value as! NetResponse
         }
-        else if (name == "serverAddress") {
-            serverAddress = value as! String
+        else if (name == "serverHost") {
+            serverHost = value as! String
+        }
+        else if (name == "serverPort") {
+            serverPort = value as! String
         }
         else if (name == "system") {
             system = value as! String
@@ -329,6 +344,24 @@ func cliShouldResetDidLaunch(_ c: CLIContext) -> CLIContext {
     return c
 }
 
+func cliShouldResetPrompt(_ c: CLIContext) -> CLIContext {
+    var c = c
+
+    /* 1. Report prompt after launchin */
+    if
+        c.recentField == F.didLaunch &&
+        !c.inputPrompt.isEmpty
+    {
+        c.prompt = c.inputPrompt
+        c.recentField = F.prompt
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
 func llmShouldResetDidLaunch(_ c: LLMContext) -> LLMContext {
     var c = c
 
@@ -347,10 +380,28 @@ func llmShouldResetDidLaunch(_ c: LLMContext) -> LLMContext {
     return c
 }
 
+func llmShouldResetRequest(_ c: LLMContext) -> LLMContext {
+    var c = c
+
+    /* 1. See if server is available upon receiving promp */
+    if
+        c.recentField == F.prompt
+    {
+        c.request = llmRequestServerAvailability(c.serverHost, c.serverPort)
+        c.recentField = F.request
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
 func cliRegisterShoulds(_ ctrl: DialectController) {
     [
         cliShouldResetConsoleOutput,
         cliShouldResetDidLaunch,
+        cliShouldResetPrompt,
 
     ].forEach { f in
         ctrl.registerFunction { c in f(c as! CLIContext) }
@@ -360,6 +411,7 @@ func cliRegisterShoulds(_ ctrl: DialectController) {
 func llmRegisterShoulds(_ ctrl: DialectController) {
     [
         llmShouldResetDidLaunch,
+        llmShouldResetRequest,
 
     ].forEach { f in
         ctrl.registerFunction { c in f(c as! LLMContext) }
@@ -369,6 +421,14 @@ func llmRegisterShoulds(_ ctrl: DialectController) {
 func cliRegisterEffects(_ ctrl: DialectController) {
     let _: CLIContext? = registerOneliners(ctrl, [
         F.consoleOutput, { (c: CLIContext) in print(c.consoleOutput) },
+        F.prompt, { (c: CLIContext) in llmSet(F.prompt, c.prompt) },
+
+    ])
+}
+
+func llmRegisterEffects(_ ctrl: DialectController) {
+    let _: LLMContext? = registerOneliners(ctrl, [
+        F.request, { (c: LLMContext) in print("ИГР LC.request: '\(c.request)'") },
 
     ])
 }
