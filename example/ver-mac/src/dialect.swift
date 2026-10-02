@@ -124,17 +124,8 @@ struct F {
     static let didClickIncrement = "didClickIncrement"
     static let didLaunch = "didLaunch"
     static let didSetup = "didSetup"
-    static let id = "id"
-    static let name = "name"
 
 }
-struct StructForTest {
-    var id = Int()
-    var name = String()
-
-}
-
-
 struct RootContext: DialectContext {
     var count = Int()
     var countText = String()
