@@ -1,0 +1,6 @@
+#!/bin/bash
+
+STEP=$((STEP+1))
+echo -e "\n> > > > Step №$STEP. Run agent"
+
+$SDIR/../agent/ver-mac/.build/release/agent "$@"
