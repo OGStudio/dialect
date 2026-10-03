@@ -26,7 +26,7 @@ func llmLoad(
     }
 
     let session = URLSession(configuration: .ephemeral)
-    session.dataTask(with: urlReq) { data, _, error in
+    session.dataTask(with: r) { data, _, error in
         if let error = error {
             res.contents = "\(error)"
             llmSetAsync(keyResponseError, res)
