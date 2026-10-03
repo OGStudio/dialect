@@ -18,13 +18,11 @@ func llmLoad(
         return
     }
 
-    var urlReq = URLRequest(url: url)
-    urlReq.httpMethod = req.method
-    urlReq.httpBody = req.body.isEmpty
-        ? nil
-        : req.body.data(using: .utf8)
-    for (key, value) in req.headers.sorted(by: { $0.key < $1.key }) {
-        urlReq.setValue(value, forHTTPHeaderField: key)
+    var r = URLRequest(url: url)
+    r.httpMethod = req.method
+    r.httpBody = req.body.isEmpty ? nil : req.body.data(using: .utf8)
+    for (key, value) in req.headers {
+        r.setValue(value, forHTTPHeaderField: key)
     }
 
     let session = URLSession(configuration: .ephemeral)
