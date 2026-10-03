@@ -3,8 +3,8 @@ func llmBuildServerAvailabilityReq(
     _ port: Int
 ) -> NetRequest {
     var req = NetRequest()
-    req.headers = ["Accept": "application/json"]
-    req.method = "GET"
+    req.headers = [LLM_ACCEPT: LLM_APP_JSON]
+    req.method = LLM_GET
     req.url = "http://\(host):\(port)/api/tags"
 
     return req

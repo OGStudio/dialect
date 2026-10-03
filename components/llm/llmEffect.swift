@@ -25,7 +25,7 @@ func llmIsReachable(_ req: NetRequest) -> Bool {
         semaphore.signal()
     }.resume()
 
-    _ = semaphore.wait(timeout: .now() + LLM_REQUEST_DEFAULT_TIMEOUT)
+    _ = semaphore.wait(timeout: .now() + LLM_DEFAULT_TIMEOUT)
 
     return isOk
 }
