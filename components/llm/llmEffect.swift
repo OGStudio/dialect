@@ -1,9 +1,21 @@
 import Foundation
 
-/// Perform a blocking request and tell whether the server answered
-func llmIsReachable(_ req: NetRequest) -> Bool {
+/// Kick off a request for any URL and push what comes back into the context,
+/// or the reason it failed into the error field. Does not block: the push
+/// happens later, on the main queue.
+func llmLoad(
+    _ req: NetRequest,
+    _ keyResponse: String,
+    _ keyResponseError: String
+) {
+    var res = NetResponse()
+    res.req = req
+
     guard let url = URL(string: req.url) else {
-        return false
+        res.contents = LLM_INVALID_URL
+        llmSet(keyResponseError, res)
+
+        return
     }
 
     var urlReq = URLRequest(url: url)
@@ -15,17 +27,14 @@ func llmIsReachable(_ req: NetRequest) -> Bool {
         urlReq.setValue(value, forHTTPHeaderField: key)
     }
 
-    let semaphore = DispatchSemaphore(value: 0)
     let session = URLSession(configuration: .ephemeral)
-    var isOk = false
-    session.dataTask(with: urlReq) { _, response, _ in
-        if let http = response as? HTTPURLResponse {
-            isOk = (200 ..< 300).contains(http.statusCode)
+    session.dataTask(with: urlReq) { data, _, error in
+        if let error = error {
+            res.contents = "\(error)"
+            llmSetAsync(keyResponseError, res)
+        } else if let data = data {
+            res.contents = String(data: data, encoding: .utf8) ?? ""
+            llmSetAsync(keyResponse, res)
         }
-        semaphore.signal()
     }.resume()
-
-    _ = semaphore.wait(timeout: .now() + LLM_DEFAULT_TIMEOUT)
-
-    return isOk
 }
