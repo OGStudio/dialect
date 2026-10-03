@@ -1,6 +1,6 @@
 import Foundation
 
-func llmBuildServerAvailabilityReq(
+func llmBuildReqServerAvailability(
     _ host: String,
     _ port: Int
 ) -> NetRequest {
