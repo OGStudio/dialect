@@ -1,3 +1,5 @@
+import Foundation
+
 func llmBuildServerAvailabilityReq(
     _ host: String,
     _ port: Int
@@ -5,7 +7,9 @@ func llmBuildServerAvailabilityReq(
     var req = NetRequest()
     req.headers = [LLM_ACCEPT: LLM_APP_JSON]
     req.method = LLM_GET
-    req.url = "http://\(host):\(port)/api/tags"
+    req.url = LLM_URL_AVAILABILITY_T
+        .replacingOccurrences(of: "%HOST%", with: host)
+        .replacingOccurrences(of: "%PORT%", with: "\(port)")
 
     return req
 }
