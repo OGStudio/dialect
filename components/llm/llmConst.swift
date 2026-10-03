@@ -1,0 +1,1 @@
+let LLM_REQUEST_DEFAULT_TIMEOUT: Double = 5.0

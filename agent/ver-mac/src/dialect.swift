@@ -222,7 +222,7 @@ struct LLMContext: DialectContext {
     var request = NetRequest()
     var response = NetResponse()
     var serverHost = String()
-    var serverPort = String()
+    var serverPort = Int()
     var system = String()
 
     var recentField = ""
@@ -285,7 +285,7 @@ struct LLMContext: DialectContext {
             serverHost = value as! String
         }
         else if (name == "serverPort") {
-            serverPort = value as! String
+            serverPort = value as! Int
         }
         else if (name == "system") {
             system = value as! String
@@ -387,7 +387,7 @@ func llmShouldResetRequest(_ c: LLMContext) -> LLMContext {
     if
         c.recentField == F.prompt
     {
-        c.request = llmRequestServerAvailability(c.serverHost, c.serverPort)
+        c.request = llmBuildServerAvailabilityReq(c.serverHost, c.serverPort)
         c.recentField = F.request
         return c
     }

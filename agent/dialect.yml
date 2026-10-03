@@ -59,7 +59,7 @@ LLMComponent:
                 if:
                     c.recentField == F.prompt
                 then:
-                    c.request = llmRequestServerAvailability(c.serverHost, c.serverPort)
+                    c.request = llmBuildServerAvailabilityReq(c.serverHost, c.serverPort)
 
 LLMContext:
     type: context
@@ -71,7 +71,7 @@ LLMContext:
         request: NetRequest
         response: NetResponse
         serverHost: String
-        serverPort: String
+        serverPort: Int
         system: String
 
 NetRequest:
