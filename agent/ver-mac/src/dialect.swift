@@ -344,12 +344,29 @@ func cliShouldResetDidLaunch(_ c: CLIContext) -> CLIContext {
     return c
 }
 
+func cliShouldResetInputPrompt(_ c: CLIContext) -> CLIContext {
+    var c = c
+
+    /* 1. Parse prompt at launc */
+    if
+        c.recentField == F.didLaunch
+    {
+        c.inputPrompt = cliArgumentValue(c.arguments, CLI_ARG_PROMPT)
+        c.recentField = F.inputPrompt
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
 func cliShouldResetPrompt(_ c: CLIContext) -> CLIContext {
     var c = c
 
-    /* 1. Report prompt after launchin */
+    /* 1. Report prompt if vali */
     if
-        c.recentField == F.didLaunch &&
+        c.recentField == F.inputPrompt &&
         !c.inputPrompt.isEmpty
     {
         c.prompt = c.inputPrompt
@@ -401,6 +418,7 @@ func cliRegisterShoulds(_ ctrl: DialectController) {
     [
         cliShouldResetConsoleOutput,
         cliShouldResetDidLaunch,
+        cliShouldResetInputPrompt,
         cliShouldResetPrompt,
 
     ].forEach { f in

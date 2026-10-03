@@ -24,10 +24,16 @@ CLIComponent:
                     c.didLaunch == false
                 then:
                     c.didLaunch = true
-        prompt:
-            1. Report prompt after launching
+        inputPrompt:
+            1. Parse prompt at launch
                 if:
-                    c.recentField == F.didLaunch &&
+                    c.recentField == F.didLaunch
+                then:
+                    c.inputPrompt = cliArgumentValue(c.arguments, CLI_ARG_PROMPT)
+        prompt:
+            1. Report prompt if valid
+                if:
+                    c.recentField == F.inputPrompt &&
                     !c.inputPrompt.isEmpty
                 then:
                     c.prompt = c.inputPrompt
