@@ -4,6 +4,7 @@ class LLMComponent {
 
     init() {
         Self.singleton = self
+        llmRegisterEffects(ctrl)
         llmRegisterShoulds(ctrl)
     }
 

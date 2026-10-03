@@ -12,6 +12,8 @@ Plan:
 Prerequisites for Android:
 
 * Android Studio for macOS
+* `ollama serve`
+* `ollama run qwen2.5-coder:3b` (2 GB disk, 2 GB VRAM)
 
 Prerequisites for iOS:
 

@@ -51,7 +51,7 @@ CLIContext:
 LLMComponent:
     type: component
     oneliners:
-        - request: print("ИГР LC.request: '\(c.request)'")
+        - request: llmLoad(c.request, F.response, F.responseError)
     shoulds:
         didLaunch:
             1. Only once during the first setup:
@@ -76,6 +76,7 @@ LLMContext:
         prompt: String
         request: NetRequest
         response: NetResponse
+        responseError: NetResponse
         system: String
 
 NetRequest:

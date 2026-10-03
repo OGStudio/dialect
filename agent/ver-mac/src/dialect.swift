@@ -133,6 +133,7 @@ struct F {
     static let req = "req"
     static let request = "request"
     static let response = "response"
+    static let responseError = "responseError"
     static let system = "system"
     static let url = "url"
 
@@ -219,6 +220,7 @@ struct LLMContext: DialectContext {
     var prompt = String()
     var request = NetRequest()
     var response = NetResponse()
+    var responseError = NetResponse()
     var system = String()
 
     var recentField = ""
@@ -241,6 +243,9 @@ struct LLMContext: DialectContext {
         }
         else if (name == "response") {
             return response as! T
+        }
+        else if (name == "responseError") {
+            return responseError as! T
         }
         else if (name == "system") {
             return system as! T
@@ -270,6 +275,9 @@ struct LLMContext: DialectContext {
         }
         else if (name == "response") {
             response = value as! NetResponse
+        }
+        else if (name == "responseError") {
+            responseError = value as! NetResponse
         }
         else if (name == "system") {
             system = value as! String
@@ -430,7 +438,7 @@ func cliRegisterEffects(_ ctrl: DialectController) {
 
 func llmRegisterEffects(_ ctrl: DialectController) {
     let _: LLMContext? = registerOneliners(ctrl, [
-        F.request, { (c: LLMContext) in print("ИГР LC.request: '\(c.request)'") },
+        F.request, { (c: LLMContext) in llmLoad(c.request, F.response, F.responseError) },
 
     ])
 }
