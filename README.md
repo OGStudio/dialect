@@ -12,8 +12,8 @@ Plan:
 Prerequisites for Android:
 
 * Android Studio for macOS
-* `ollama serve`
-* `ollama run qwen2.5-coder:3b` (2 GB disk, 2 GB VRAM)
+* `ollama serve` everytime you plan to transpile
+* `ollama run qwen2.5-coder:3b` (2 GB disk, 2 GB VRAM) only once to install, for later runs ollama loads requested models itself, ollama serve is enough
 
 Prerequisites for iOS:
 

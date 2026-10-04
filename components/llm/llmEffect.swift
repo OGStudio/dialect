@@ -32,20 +32,12 @@ func llmLoad(
             llmSetAsync(keyResponseError, res)
         } else if let http = response as? HTTPURLResponse,
             !(200 ..< 300).contains(http.statusCode) {
-            res.contents = llmStatus(http.statusCode, data)
+            let body = data.flatMap { String(data: $0, encoding: .utf8) } ?? ""
+            res.contents = "\(http.statusCode) \(body)"
             llmSetAsync(keyResponseError, res)
         } else if let data = data {
             res.contents = String(data: data, encoding: .utf8) ?? ""
             llmSetAsync(keyResponse, res)
         }
     }.resume()
-}
-
-/// Keep the server's own explanation when it sends one: Ollama answers a bad
-/// model with 404 plus `{"error":"model 'x' not found"}`, and that body is far
-/// more useful than the bare status code
-func llmStatus(_ status: Int, _ data: Data?) -> String {
-    let body = data.flatMap { String(data: $0, encoding: .utf8) } ?? ""
-
-    return body.isEmpty ? "HTTP \(status)" : "HTTP \(status): \(body)"
 }
