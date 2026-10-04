@@ -6,13 +6,14 @@ func llmBody(_ prompt: String) -> String {
         "prompt": prompt,
         "stream": false
     ]
+
     guard
-        let dat = try? JSONSerialization.data(withJSONObject: payload)
+        let data = try? JSONSerialization.data(withJSONObject: payload)
     else {
         return ""
     }
 
-    return String(data: dat, encoding: .utf8) ?? ""
+    return String(data: data, encoding: .utf8) ?? ""
 }
 
 func llmReqPrompt(
@@ -21,8 +22,8 @@ func llmReqPrompt(
     _ prompt: String
 ) -> NetRequest {
     var req = NetRequest()
-    req.headers = [LLM_CONTENT_TYPE: LLM_APP_JSON]
-    req.method = LLM_POST
+    req.headers = [NET_CONTENT_TYPE: NET_APP_JSON]
+    req.method = NET_POST
     req.url = LLM_URL_GENERATE_T
         .replacingOccurrences(of: "%HOST%", with: host)
         .replacingOccurrences(of: "%PORT%", with: "\(port)")

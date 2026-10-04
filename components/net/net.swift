@@ -8,10 +8,11 @@ func netLoad(
     var res = NetResponse()
     res.req = req
 
-    guard let url = URL(string: req.url) else {
+    guard
+        let url = URL(string: req.url)
+    else {
         res.contents = NET_INVALID_URL
         reportError(res)
-
         return
     }
 

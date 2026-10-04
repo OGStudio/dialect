@@ -1,3 +1,5 @@
+import Foundation
+
 func llmLoad(
     _ req: NetRequest,
     _ keyResponse: String,
@@ -6,6 +8,6 @@ func llmLoad(
     netLoad(
         req,
         { res in llmSetAsync(keyResponse, res) },
-        { err in llmSetAsync(keyResponseError, err) }
+        { res in llmSetAsync(keyResponseError, res) }
     )
 }
