@@ -65,7 +65,7 @@ LLMComponent:
                 if:
                     c.recentField == F.prompt
                 then:
-                    c.request = llmBuildReqServerAvailability(LLM_DEFAULT_HOST, LLM_DEFAULT_PORT)
+                    c.request = llmBuildReqPrompt(LLM_DEFAULT_HOST, LLM_DEFAULT_PORT, c.prompt)
 
 LLMContext:
     type: context

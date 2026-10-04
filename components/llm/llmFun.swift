@@ -1,8 +1,9 @@
 import Foundation
 
-func llmBuildReqServerAvailability(
+func llmBuildReqPrompt(
     _ host: String,
-    _ port: Int
+    _ port: Int,
+    _ prompt: String
 ) -> NetRequest {
     var req = NetRequest()
     req.headers = [LLM_ACCEPT: LLM_APP_JSON]
