@@ -12,16 +12,18 @@ core/              Core runtime library
   test/swift/      9 unit tests (custom runner, no XCTest); `registerOneliners` covered by t09
   test/c/          C port of the 8 unit tests
   test/kotlin/     10 unit tests (mirror test/swift t01-t09 + `t10_ExampleContext_selfCopy` — data class copy semantics; KD had selfCopy + registerOneliners, Swift needs no selfCopy test since structs copy by value)
-util/              Root util dir: run-swift-test, run-c-test, run-kotlin-test (core test runners) + generator build/run scripts
+util/              Root util dir: run-swift-test, run-c-test, run-kotlin-test (core test runners) + generator build/run scripts + agent build/run scripts
   run-swift-test     Compile & run core Swift tests (raw swiftc, artifacts into root .build/)
   run-c-test         Compile & run core C tests (raw cc, artifacts into root .build/)
   run-kotlin-test    Compile & run core Kotlin tests (kotlinc from Android Studio JBR, artifacts into root .build/test-kotlin.jar)
+  build-agent        Build the agent. Leaner than build-generator: it sources util/paths and runs ONLY `util/step/buildAgent` — no embedCoreSwift/embedCoreKotlin, because the agent consumes no `swift/` or `kotlin/` components and its generated `dialect.swift` embeds nothing
+  run-agent          Run the agent binary FOREGROUND, no `2>/tmp/dialect.log` redirection (unlike run-generator) — so console logging interleaves with your terminal
 components/         SHARED source-of-truth for ALL components — the generator's (cli/, yml/, swift/, kotlin/, llm/, other/) AND the example's (root/, other/) live here, symlinked into every consuming tree (see SYMLINK PARITY RULE below)
   cli/             cli.swift (CLIComponent), cliConst, cliFun, cliEffect, cliAux (symlinked into generator/ver-mac/src/cli/)
   yml/             yml.swift (YMLComponent), ymlConst (YML_PREFIX_* / YML_TYPE_*), ymlFun (ymlParseEntities/ymlParseEntityTypes/ymlParseVersion/ymlIsLineChunkStart/ymlIsLineChunkEnd), ymlEffect (ymlSet results back), ymlAux
   swift/           swift.swift (SwiftComponent), swiftConst (SWIFT_* templates), swiftFun (swiftFields/swiftStructs/swiftContexts/swiftSets/swiftShoulds/swiftFormatShould/swiftRegisterShoulds/swiftRegisterEffects codegen), swiftConstEmb64.swift (GENERATED `SWIFT_EMB64_CORE` = base64 of core/swift, built by util/step/embedCoreSwift)
   kotlin/          kotlin.swift (KotlinComponent), kotlinConst (KOTLIN_* templates), kotlinFun (kotlinFields/kotlinSet/kotlinSets/kotlinStructs/kotlinContexts/kotlinShoulds/kotlinFormatShould/kotlinRegisterShoulds/kotlinRegisterEffects + kotlinType/kotlinType/kotlinTypeParts/kotlinTypeDefaultValue codegen), kotlinConstEmb64.swift (GENERATED `KOTLIN_EMB64_CORE` = base64 of core/kotlin, built by util/step/embedCoreKotlin)
-  llm/             llm.swift (LLMComponent: `ctrl`, `singleton`, init registers llmRegisterShoulds, setup() pushes F.didSetup) — the scaffold for talking to a local LLM server
+  llm/             llm.swift (LLMComponent: `ctrl`, `singleton`, init registers llmRegisterShoulds, setup() pushes F.didSetup) + llmConst (LLM_ACCEPT / LLM_APP_JSON / LLM_DEFAULT_HOST / LLM_DEFAULT_PORT / LLM_GET / LLM_INVALID_URL / LLM_URL_AVAILABILITY_T) + llmFun (`llmBuildReqServerAvailability`) + llmEffect (`llmLoad`) + llmAux (`llmSetAsync`) — the client for a local Ollama server. Symlinked into agent/ver-mac/src/llm/ ONLY (the generator does not consume it)
   other/           other.swift (otherBase64ToString/otherCapitalize/otherLineIndent/otherPrintStderr/otherSetupConsoleLogging/otherWriteFile) + other.kt (the Kotlin twin of the two logging helpers — a `package org.opengamestudio` line is REQUIRED even though the file sits in an `other/` subdir, for the same zero-import reason as `root/android/`)
   root/            Example's shared Swift component (root.swift = RootComponent, rootVM.swift = RootVM) + `root/mac/view/RootView.swift` (the single per-platform Swift view — `root/ios/view/RootView.swift` is a SYMLINK to it, both platforms share the identical view) + `root/android/` (root.kt/rootVM.kt/view/RootView.kt — the separate Kotlin Compose port, NOT a symlink)
 generator/         The Swift port of the Klin code generator (tool)
@@ -30,6 +32,11 @@ generator/         The Swift port of the Klin code generator (tool)
       dialect.swift       GENERATED (chicken-egg hand-patch of `struct F`; see below)
   dialect.yml       v4 dialect: CLIComponent, CLIContext, KotlinComponent, KotlinContext, LLMComponent, LLMContext, SwiftComponent, SwiftContext, OutputPath, RootContext, ShouldBranch, YMLComponent, YMLContext
   util/run-generator    Build & run generator binary (utility scripts live at the repo root)
+agent/                The LLM agent: its own generated `dialect.yml` target (a 2nd generation target, alongside the example) — CLI reads the prompt, LLM talks to a local Ollama server
+  ver-mac/         SPM package (macOS 13+, no external dependencies); `src/llm/` is SYMLINKED to `components/llm/`, `src/cli/` to `components/cli/`
+    src/dialect.swift  GENERATED from agent/dialect.yml (NetRequest/NetResponse structs, CLIContext/LLMContext, the Set funcs, should funcs and RegisterEffects funcs)
+    src/main.swift     The whole program: instantiate `CLIComponent()` + `LLMComponent()`, `otherSetupConsoleLogging` each, call `.setup()`, then `RunLoop.current.run()` — see the process-lifecycle gotcha below
+  dialect.yml       Agent dialect: CLIComponent (parses `--prompt`) + LLMComponent (LLMContext: didLaunch/didSetup/isServerAvailable/prompt/request/response/responseError/system). The `request` oneliner is `llmLoad(c.request, F.response, F.responseError)` and the should builds `llmBuildReqServerAvailability(LLM_DEFAULT_HOST, LLM_DEFAULT_PORT)`
 example/           Sample app + its own dialect.yml (a self-contained 2nd generation target); rebuilt & runnable on macOS, iOS simulator and Android
   ver-mac/         SPM-based SwiftUI app (macOS 13+); fully regenerated `src/dialect.swift` (the engine is inline Swift source here — NOT a base64-embedded core); `Info.plist` + `Resources/AppIcon.icns` live at ver-mac/ top level (NOT under src/ — SPM target excludes nothing)
   ver-ios/         xcodegen-based SwiftUI app (iOS 15+, no SPM — `project.yml` -> `HelloWorld.xcodeproj`); `src/dialect.swift`, `other/`, `root/`, `rootVM` are SYMLINKS to the shared components — only `src/AppDelegate.swift` and `src/HWApp.swift` (UIKit) are iOS-specific; `Info.plist` at ver-ios/ top level; app icon via `Assets.xcassets/AppIcon.appiconset` (single 1024png)
@@ -56,6 +63,7 @@ ref/               Reference implementations, all symlinks into sibling dirs of 
 | Consumer | Path prefix | `../` count | Example |
 |---|---|---|---|
 | Generator | `generator/ver-mac/src/<group>/<file>` | **4** | `ver-mac/src/yml/ymlConst.swift -> ../../../../components/yml/ymlConst.swift` |
+| Agent | `agent/ver-mac/src/<group>/<file>` | **4** | `ver-mac/src/llm/llmAux.swift -> ../../../../components/llm/llmAux.swift` |
 | Example macOS | `example/ver-mac/src/<group>/<file>` | **4** | `example/ver-mac/src/root/root.swift -> ../../../../components/root/root.swift` |
 | Example macOS view | `example/ver-mac/src/root/view/<file>` | **5** | `.../root/view/RootView.swift -> ../../../../../components/root/mac/view/RootView.swift` |
 | Example iOS | `example/ver-ios/src/<group>/<file>` | **4** | same as macOS |
@@ -85,6 +93,10 @@ util/build-generator
 # Generator tool (embeds core, builds, parses a YAML file & prints it)
 util/run-generator <file.yaml>
 
+# LLM agent (build, then run in the foreground; kill it yourself when done)
+util/build-agent
+util/run-agent --prompt="hi"
+
 # Example app (macOS)
 example/util/run-mac
 
@@ -97,7 +109,7 @@ cd example/ver-android
 JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew :app:assembleDebug --offline
 ```
 
-**Steps**: `util/run-generator` and `util/build-generator` source `util/paths` (CORE_SWIFT, GENERATOR_COMPONENTS) and run `util/step/*` scripts in order: `embedCoreSwift` + `embedCoreKotlin` (Step 1: regenerate `components/swift/swiftConstEmb64.swift` = `let SWIFT_EMB64_CORE = base64` of core/swift + DialectController + registerOneliners, and `components/kotlin/kotlinConstEmb64.swift` = `let KOTLIN_EMB64_CORE = base64` of the Kotlin core), `buildGenerator` (Step 2: `swift build -c release`), `runGenerator` (Step 3, run-generator only). `build-generator` also sets `STEP=0` first.
+**Steps**: `util/run-generator` and `util/build-generator` source `util/paths` (CORE_SWIFT, GENERATOR_COMPONENTS) and run `util/step/*` scripts in order: `embedCoreSwift` + `embedCoreKotlin` (Step 1: regenerate `components/swift/swiftConstEmb64.swift` = `let SWIFT_EMB64_CORE = base64` of core/swift + DialectController + registerOneliners, and `components/kotlin/kotlinConstEmb64.swift` = `let KOTLIN_EMB64_CORE = base64` of the Kotlin core), `buildGenerator` (Step 2: `swift build -c release`), `runGenerator` (Step 3, run-generator only). `build-generator` also sets `STEP=0` first. The agent is the exception: `util/build-agent` sources the same `util/paths` but runs ONLY `buildAgent` (a bare `swift build --package-path agent/ver-mac -c release`), because it embeds no core and consumes no `swift/`/`kotlin/` components.
 
 ## Key Concepts
 
@@ -164,6 +176,17 @@ JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradle
 - **`/tmp/dialect.log` is the inspection surface**: `util/step/runGenerator` hardcodes the generator's stderr there, and `otherSetupConsoleLogging` prints every field as `ИГР <Component> k/v: '<field>'/'<value>'`. That log is the ONLY way to see a log-only output such as the Kotlin `out` (the generator's own `dialect.yml` has no `type: kotlin` target, so nothing is written to disk).
 - **`otherWriteFile` fails silently**: it is `try? content.write(toFile:)`, so an empty path (no matching `output:` entry) or a missing parent directory means the file is never written and the run still exits 0. Always confirm the `ИГР otherWF path/content.count:` line shows a non-empty path AND a plausible char count.
 - **Compile-verify the log-only Kotlin output**: nothing writes the generator's Kotlin `out` to disk, so nothing else would catch invalid emitted Kotlin (e.g. a wrong type spelling). Extract the `ИГР Kotlin k/v: 'out'/'…'` record from `/tmp/dialect.log` — skip the value's OWN quotes as well as the field's, the payload spans many physical lines — write it to a `.kt` file and run `"/Applications/Android Studio.app/Contents/plugins/Kotlin/kotlinc/bin/kotlinc" File.kt -d out` with `JAVA_HOME` at Android Studio's JBR. To unit-test a pure codegen fun WITHOUT a regen cycle, compile its `components/*/*.swift` pair with a throwaway `main.swift` (they only reference the file's own constants).
+
+## Agent gotchas (learned the hard way)
+
+- **The process must be kept alive by hand: `RunLoop.current.run()` in `main.swift` is load-bearing.** `llmLoad` is fully async (`URLSession.dataTask(...).resume()`, no `DispatchSemaphore`), so without a running run loop `main` returns, the process exits, and the callback never fires — you get silence, not an error. Conversely, there is deliberately NO auto-exit: there is no `llmOnLoaded` hook and no `exit()` in `main.swift`, so the agent parks until you kill it (Ctrl-C => exit 130, or SIGTERM). Both halves were needed; each alone breaks the run.
+- **`llmSetAsync` is for URLSession callbacks ONLY — do not use it in a normal synchronous path.** A guard/`if` that fails on the caller's own thread (e.g. `URL(string:)` returning nil in `llmLoad`) must call plain `llmSet` directly, so the failure surfaces *before* `llmLoad` returns. Hopping to main there buys nothing and needlessly defers the error. Only the `dataTask` completion handler genuinely arrives on a foreign queue.
+- **`llmSetAsync` is deliberately `main.async`, NOT `main.sync` — and the name says so.** It was briefly called `llmSetSync`, which lied: `DispatchQueue.main.sync` from the main thread DEADLOCKS (no fast path existed), and a `sync` hop would also block the URLSession queue for the duration of the cascade. The trade-off is that "request finished => state updated" is NOT guaranteed; if you ever need that ordering, add a completion hook rather than reaching for `sync`.
+- **Serialize controller mutations onto main, and keep the expensive part off it.** An earlier version wrapped the whole completion handler in `DispatchQueue.main.async`, which meant `String(data:encoding: .utf8)` decoded every response body ON MAIN. `llmSetAsync` replaces it so decoding stays on the URLSession queue and only the `llmSet` hop crosses threads — which is why `res` is built ONCE in the `dataTask` closure and mutated in both branches instead of rebuilt per branch.
+- **A real Ollama may already own port 11434.** A "connection refused" test server can silently lose the race to a running `ollama serve`; check before assuming the stub is answering. Real answers are `{"models":[...]}` from `GET /api/tags`.
+- **No request timeout.** `LLM_DEFAULT_TIMEOUT` was removed along with the semaphore, so a hung server keeps the agent parked forever and looks identical to a healthy idle one. `URLSessionConfiguration.timeoutIntervalForRequest` is the non-blocking way to bound it if that distinction ever matters.
+- **`llmLoad` treats ANY HTTP response as success.** The status code is discarded (`data, _, error`), so a 404 body lands in `response` and only transport failures land in `responseError`. `NetResponse` has no status field to fix this; if you need one, add it to the struct in agent/dialect.yml.
+- **Smoke-test the built binary, not just a stubbed harness.** `util/build-agent` compiles cleanly long before the wiring is correct; `agent/ver-mac/.build/release/agent --prompt="hi"` in the background, `sleep 3`, confirm still alive + `ИГР LLM k/v: 'response'` present, then SIGTERM, is the only end-to-end check that exercises CLI parse -> oneliner -> async load -> main-queue push -> cascade.
 
 ## Kotlin/Compose gotchas (example/ver-android)
 
