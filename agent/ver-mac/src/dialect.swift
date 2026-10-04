@@ -396,7 +396,7 @@ func llmShouldResetRequest(_ c: LLMContext) -> LLMContext {
     if
         c.recentField == F.prompt
     {
-        c.request = llmBuildReqPrompt(LLM_DEFAULT_HOST, LLM_DEFAULT_PORT, c.prompt)
+        c.request = llmReqPrompt(LLM_DEFAULT_HOST, LLM_DEFAULT_PORT, c.prompt)
         c.recentField = F.request
         return c
     }

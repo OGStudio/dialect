@@ -1,4 +1,3 @@
-let LLM_ACCEPT = "Accept"
 let LLM_APP_JSON = "application/json"
 let LLM_CONTENT_TYPE = "Content-Type"
 let LLM_DEFAULT_HOST = "localhost"
