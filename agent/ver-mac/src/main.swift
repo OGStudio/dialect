@@ -9,5 +9,4 @@ otherSetupConsoleLogging(llm.ctrl, "LLM")
 cli.setup()
 llm.setup()
 
-agenLaunch()
-RunLoop.current.run()
+agentLaunch()
