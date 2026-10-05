@@ -60,6 +60,17 @@ LLMComponent:
                     c.didLaunch == false
                 then:
                     c.didLaunch = true
+        didReply:
+            1. Upon successful response
+                if:
+                    c.recentField == F.response
+                then:
+                    c.didReply = true
+            2. Upon error response
+                if:
+                    c.recentField == F.responseError
+                then:
+                    c.didReply = true
         request:
             1. See if server is available upon receiving prompt
                 if:
@@ -71,8 +82,8 @@ LLMContext:
     type: context
     fields:
         didLaunch: Bool
+        didReply: Bool
         didSetup: Bool
-        isServerAvailable: Bool
         prompt: String
         request: NetRequest
         response: NetResponse

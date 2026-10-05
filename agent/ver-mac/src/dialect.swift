@@ -124,10 +124,10 @@ struct F {
     static let consoleOutput = "consoleOutput"
     static let contents = "contents"
     static let didLaunch = "didLaunch"
+    static let didReply = "didReply"
     static let didSetup = "didSetup"
     static let headers = "headers"
     static let inputPrompt = "inputPrompt"
-    static let isServerAvailable = "isServerAvailable"
     static let method = "method"
     static let prompt = "prompt"
     static let req = "req"
@@ -215,8 +215,8 @@ struct CLIContext: DialectContext {
 
 struct LLMContext: DialectContext {
     var didLaunch = Bool()
+    var didReply = Bool()
     var didSetup = Bool()
-    var isServerAvailable = Bool()
     var prompt = String()
     var request = NetRequest()
     var response = NetResponse()
@@ -229,11 +229,11 @@ struct LLMContext: DialectContext {
         if (name == "didLaunch") {
             return didLaunch as! T
         }
+        else if (name == "didReply") {
+            return didReply as! T
+        }
         else if (name == "didSetup") {
             return didSetup as! T
-        }
-        else if (name == "isServerAvailable") {
-            return isServerAvailable as! T
         }
         else if (name == "prompt") {
             return prompt as! T
@@ -261,11 +261,11 @@ struct LLMContext: DialectContext {
         if (name == "didLaunch") {
             didLaunch = value as! Bool
         }
+        else if (name == "didReply") {
+            didReply = value as! Bool
+        }
         else if (name == "didSetup") {
             didSetup = value as! Bool
-        }
-        else if (name == "isServerAvailable") {
-            isServerAvailable = value as! Bool
         }
         else if (name == "prompt") {
             prompt = value as! String
@@ -389,6 +389,32 @@ func llmShouldResetDidLaunch(_ c: LLMContext) -> LLMContext {
     return c
 }
 
+func llmShouldResetDidReply(_ c: LLMContext) -> LLMContext {
+    var c = c
+
+    /* 1. Upon successful respons */
+    if
+        c.recentField == F.response
+    {
+        c.didReply = true
+        c.recentField = F.didReply
+        return c
+    }
+
+    /* 2. Upon error respons */
+    if
+        c.recentField == F.responseError
+    {
+        c.didReply = true
+        c.recentField = F.didReply
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
 func llmShouldResetRequest(_ c: LLMContext) -> LLMContext {
     var c = c
 
@@ -421,6 +447,7 @@ func cliRegisterShoulds(_ ctrl: DialectController) {
 func llmRegisterShoulds(_ ctrl: DialectController) {
     [
         llmShouldResetDidLaunch,
+        llmShouldResetDidReply,
         llmShouldResetRequest,
 
     ].forEach { f in
