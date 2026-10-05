@@ -124,18 +124,19 @@ struct F {
     static let consoleOutput = "consoleOutput"
     static let contents = "contents"
     static let didLaunch = "didLaunch"
-    static let didReply = "didReply"
     static let didSetup = "didSetup"
     static let headers = "headers"
     static let inputPrompt = "inputPrompt"
     static let method = "method"
     static let prompt = "prompt"
+    static let reply = "reply"
     static let req = "req"
     static let request = "request"
     static let response = "response"
     static let responseError = "responseError"
     static let system = "system"
     static let url = "url"
+    static let willShutdown = "willShutdown"
 
 }
 struct NetRequest {
@@ -153,6 +154,44 @@ struct NetResponse {
 
 }
 
+
+struct AgentContext: DialectContext {
+    var consoleOutput = String()
+    var reply = String()
+    var willShutdown = Bool()
+
+    var recentField = ""
+
+    func field<T>(_ name: String) -> T {
+        if (name == "consoleOutput") {
+            return consoleOutput as! T
+        }
+        else if (name == "reply") {
+            return reply as! T
+        }
+        else if (name == "willShutdown") {
+            return willShutdown as! T
+        }
+
+        return "unknown-field-name" as! T
+    }
+
+    mutating func setField(
+        _ name: String,
+        _ value: Any
+    ) {
+        if (name == "consoleOutput") {
+            consoleOutput = value as! String
+        }
+        else if (name == "reply") {
+            reply = value as! String
+        }
+        else if (name == "willShutdown") {
+            willShutdown = value as! Bool
+        }
+
+    }
+}
 
 struct CLIContext: DialectContext {
     var arguments = [String]()
@@ -215,9 +254,9 @@ struct CLIContext: DialectContext {
 
 struct LLMContext: DialectContext {
     var didLaunch = Bool()
-    var didReply = Bool()
     var didSetup = Bool()
     var prompt = String()
+    var reply = String()
     var request = NetRequest()
     var response = NetResponse()
     var responseError = NetResponse()
@@ -229,14 +268,14 @@ struct LLMContext: DialectContext {
         if (name == "didLaunch") {
             return didLaunch as! T
         }
-        else if (name == "didReply") {
-            return didReply as! T
-        }
         else if (name == "didSetup") {
             return didSetup as! T
         }
         else if (name == "prompt") {
             return prompt as! T
+        }
+        else if (name == "reply") {
+            return reply as! T
         }
         else if (name == "request") {
             return request as! T
@@ -261,14 +300,14 @@ struct LLMContext: DialectContext {
         if (name == "didLaunch") {
             didLaunch = value as! Bool
         }
-        else if (name == "didReply") {
-            didReply = value as! Bool
-        }
         else if (name == "didSetup") {
             didSetup = value as! Bool
         }
         else if (name == "prompt") {
             prompt = value as! String
+        }
+        else if (name == "reply") {
+            reply = value as! String
         }
         else if (name == "request") {
             request = value as! NetRequest
@@ -286,6 +325,13 @@ struct LLMContext: DialectContext {
     }
 }
 
+func agentSet(
+    _ key: String,
+    _ value: Any
+) {
+    AgentComponent.singleton!.ctrl.set(key, value)
+}
+
 func cliSet(
     _ key: String,
     _ value: Any
@@ -298,6 +344,40 @@ func llmSet(
     _ value: Any
 ) {
     LLMComponent.singleton!.ctrl.set(key, value)
+}
+
+func agentShouldResetConsoleOutput(_ c: AgentContext) -> AgentContext {
+    var c = c
+
+    /* 1. Upon reply */
+    if
+        c.recentField == F.reply
+    {
+        c.consoleOutput = c.reply
+        c.recentField = F.consoleOutput
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func agentShouldResetWillShutdown(_ c: AgentContext) -> AgentContext {
+    var c = c
+
+    /* 1. Upon reply */
+    if
+        c.recentField == F.reply
+    {
+        c.willShutdown = true
+        c.recentField = F.willShutdown
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
 }
 
 func cliShouldResetConsoleOutput(_ c: CLIContext) -> CLIContext {
@@ -389,24 +469,24 @@ func llmShouldResetDidLaunch(_ c: LLMContext) -> LLMContext {
     return c
 }
 
-func llmShouldResetDidReply(_ c: LLMContext) -> LLMContext {
+func llmShouldResetReply(_ c: LLMContext) -> LLMContext {
     var c = c
 
-    /* 1. Upon successful respons */
+    /* 1. Upon successful response */
     if
         c.recentField == F.response
     {
-        c.didReply = true
-        c.recentField = F.didReply
+        c.reply = c.response.contents
+        c.recentField = F.reply
         return c
     }
 
-    /* 2. Upon error respons */
+    /* 2. Upon error response */
     if
         c.recentField == F.responseError
     {
-        c.didReply = true
-        c.recentField = F.didReply
+        c.reply = c.responseError.contents
+        c.recentField = F.reply
         return c
     }
 
@@ -432,6 +512,16 @@ func llmShouldResetRequest(_ c: LLMContext) -> LLMContext {
     return c
 }
 
+func agentRegisterShoulds(_ ctrl: DialectController) {
+    [
+        agentShouldResetConsoleOutput,
+        agentShouldResetWillShutdown,
+
+    ].forEach { f in
+        ctrl.registerFunction { c in f(c as! AgentContext) }
+    }
+}
+
 func cliRegisterShoulds(_ ctrl: DialectController) {
     [
         cliShouldResetConsoleOutput,
@@ -447,12 +537,20 @@ func cliRegisterShoulds(_ ctrl: DialectController) {
 func llmRegisterShoulds(_ ctrl: DialectController) {
     [
         llmShouldResetDidLaunch,
-        llmShouldResetDidReply,
+        llmShouldResetReply,
         llmShouldResetRequest,
 
     ].forEach { f in
         ctrl.registerFunction { c in f(c as! LLMContext) }
     }
+}
+
+func agentRegisterEffects(_ ctrl: DialectController) {
+    let _: AgentContext? = registerOneliners(ctrl, [
+        F.consoleOutput, { (c: AgentContext) in print(c.consoleOutput) },
+        F.willShutdown, { (c: AgentContext) in agentShutdown() },
+
+    ])
 }
 
 func cliRegisterEffects(_ ctrl: DialectController) {
@@ -465,6 +563,7 @@ func cliRegisterEffects(_ ctrl: DialectController) {
 
 func llmRegisterEffects(_ ctrl: DialectController) {
     let _: LLMContext? = registerOneliners(ctrl, [
+        F.reply, { (c: LLMContext) in agentSet(F.reply, c.reply) },
         F.request, { (c: LLMContext) in llmLoad(c.request, F.response, F.responseError) },
 
     ])

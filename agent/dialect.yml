@@ -4,6 +4,32 @@ output:
     ver-mac/src/dialect.swift:
         type: swift
 
+AgentComponent:
+    type: component
+    oneliners:
+        - consoleOutput: print(c.consoleOutput)
+        - willShutdown: agentShutdown()
+    shoulds:
+        consoleOutput:
+            1. Upon reply:
+                if:
+                    c.recentField == F.reply
+                then:
+                    c.consoleOutput = c.reply
+        willShutdown:
+            1. Upon reply:
+                if:
+                    c.recentField == F.reply
+                then:
+                    c.willShutdown = true
+
+AgentContext:
+    type: context
+    fields:
+        consoleOutput: String
+        reply: String
+        willShutdown: Bool
+
 CLIComponent:
     type: component
     oneliners:
@@ -51,6 +77,7 @@ CLIContext:
 LLMComponent:
     type: component
     oneliners:
+        - reply: agentSet(F.reply, c.reply)
         - request: llmLoad(c.request, F.response, F.responseError)
     shoulds:
         didLaunch:
@@ -60,17 +87,17 @@ LLMComponent:
                     c.didLaunch == false
                 then:
                     c.didLaunch = true
-        didReply:
-            1. Upon successful response
+        reply:
+            1. Upon successful response:
                 if:
                     c.recentField == F.response
                 then:
-                    c.didReply = true
-            2. Upon error response
+                    c.reply = c.response.contents
+            2. Upon error response:
                 if:
                     c.recentField == F.responseError
                 then:
-                    c.didReply = true
+                    c.reply = c.responseError.contents
         request:
             1. See if server is available upon receiving prompt
                 if:
@@ -82,9 +109,9 @@ LLMContext:
     type: context
     fields:
         didLaunch: Bool
-        didReply: Bool
         didSetup: Bool
         prompt: String
+        reply: String
         request: NetRequest
         response: NetResponse
         responseError: NetResponse
