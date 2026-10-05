@@ -92,7 +92,7 @@ LLMComponent:
                 if:
                     c.recentField == F.response
                 then:
-                    c.reply = c.response.contents
+                    c.reply = llmFormatResponse(c.response.contents)
             2. Upon error response:
                 if:
                     c.recentField == F.responseError

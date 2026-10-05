@@ -476,7 +476,7 @@ func llmShouldResetReply(_ c: LLMContext) -> LLMContext {
     if
         c.recentField == F.response
     {
-        c.reply = c.response.contents
+        c.reply = llmFormatResponse(c.response.contents)
         c.recentField = F.reply
         return c
     }
