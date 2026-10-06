@@ -18,6 +18,8 @@ util/              Root util dir: run-swift-test, run-c-test, run-kotlin-test (c
   run-kotlin-test    Compile & run core Kotlin tests (kotlinc from Android Studio JBR, artifacts into root .build/test-kotlin.jar)
   build-agent        Build the agent. Leaner than build-generator: it sources util/paths and runs ONLY `util/step/buildAgent` — no embedCoreSwift/embedCoreKotlin, because the agent consumes no `swift/` or `kotlin/` components and its generated `dialect.swift` embeds nothing
   run-agent          Run the agent binary FOREGROUND, no `2>/tmp/dialect.log` redirection (unlike run-generator) — so console logging interleaves with your terminal
+  build-tran        Build tran. Same shape as build-agent: sources util/paths and runs ONLY `util/step/buildTran` (a bare `swift build --package-path tran/ver-mac -c release`) — no embedCoreSwift/embedCoreKotlin, because tran embeds no core either
+  run-tran          Run the tran binary FOREGROUND, same no-`2>/tmp/dialect.log` redirection as run-agent (`util/step/runTran`), so console logging interleaves with your terminal
 components/         SHARED source-of-truth for ALL components — the generator's (cli/, yml/, swift/, kotlin/, llm/, net/, agent/, tran/, other/) AND the example's (root/, other/) live here, symlinked into every consuming tree (see SYMLINK PARITY RULE below)
   cli/             cli.swift (CLIComponent), cliConst, cliFun, cliEffect, cliAux (symlinked into generator/ver-mac/src/cli/)
   yml/             yml.swift (YMLComponent), ymlConst (YML_PREFIX_* / YML_TYPE_*), ymlFun (ymlParseEntities/ymlParseEntityTypes/ymlParseVersion/ymlIsLineChunkStart/ymlIsLineChunkEnd), ymlEffect (ymlSet results back), ymlAux
@@ -45,7 +47,7 @@ tran/               A copy of agent/ under its own namespace — same 2nd-genera
     src/dialect.swift  GENERATED from tran/dialect.yml (TranContext, tranSet, tranShouldReset*, tranRegisterShoulds, tranRegisterEffects)
     src/main.swift     `TranComponent()` + CLIComponent() + LLMComponent(); the three `otherSetupConsoleLogging` calls are COMMENTED OUT, then `.setup()` both and `tranLaunch()`
   dialect.yml       Same shape as agent/dialect.yml with TranComponent/TranContext, `tranShutdown()` and `tranSet(F.reply, c.reply)` — but `CLI_CONSOLE_USAGE_AGENT` is deliberately KEPT (see gotcha below)
-  build/run         `swift build --package-path tran/ver-mac -c release`, then `tran/ver-mac/.build/release/tran --prompt=...` (binary is `tran`, NOT `agent`)
+  build/run         `util/build-tran` then `util/run-tran --prompt=...`; artifact is `tran/ver-mac/.build/release/tran` (binary is `tran`, NOT `agent`)
 example/           Sample app + its own dialect.yml (a self-contained 2nd generation target); rebuilt & runnable on macOS, iOS simulator and Android
   ver-mac/         SPM-based SwiftUI app (macOS 13+); fully regenerated `src/dialect.swift` (the engine is inline Swift source here — NOT a base64-embedded core); `Info.plist` + `Resources/AppIcon.icns` live at ver-mac/ top level (NOT under src/ — SPM target excludes nothing)
   ver-ios/         xcodegen-based SwiftUI app (iOS 15+, no SPM — `project.yml` -> `HelloWorld.xcodeproj`); `src/dialect.swift`, `other/`, `root/`, `rootVM` are SYMLINKS to the shared components — only `src/AppDelegate.swift` and `src/HWApp.swift` (UIKit) are iOS-specific; `Info.plist` at ver-ios/ top level; app icon via `Assets.xcassets/AppIcon.appiconset` (single 1024png)

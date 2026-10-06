@@ -1,0 +1,8 @@
+#!/bin/bash -e
+SDIR=$(cd "$(dirname "$0")" ; pwd -P)
+
+T=$SDIR/step
+source $SDIR/paths
+
+STEP=0
+source $T/buildTran
