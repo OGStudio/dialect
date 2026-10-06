@@ -22,10 +22,16 @@ TranComponent:
                     c.recentField == F.reply
                 then:
                     c.willShutdown = true
+            2. Upon CLI console output
+                if:
+                    c.recentField == F.cliDidConsoleOutput
+                then:
+                    c.willShutdown = true
 
 TranContext:
     type: context
     fields:
+        cliDidConsoleOutput: Bool
         consoleOutput: String
         reply: String
         willShutdown: Bool
@@ -34,6 +40,7 @@ CLIComponent:
     type: component
     oneliners:
         - consoleOutput: print(c.consoleOutput)
+        - consoleOutput: tranSet(F.cliDidConsoleOutput, true)
     shoulds:
         consoleOutput:
             1. File argument was not found:
