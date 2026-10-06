@@ -1,0 +1,1 @@
+../../../../components/tran/tranEffect.swift
