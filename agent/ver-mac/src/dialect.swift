@@ -121,6 +121,7 @@ func registerOneliners<T>(
 struct F {
     static let arguments = "arguments"
     static let body = "body"
+    static let cliDidConsoleOutput = "cliDidConsoleOutput"
     static let consoleOutput = "consoleOutput"
     static let contents = "contents"
     static let didLaunch = "didLaunch"
@@ -156,6 +157,7 @@ struct NetResponse {
 
 
 struct AgentContext: DialectContext {
+    var cliDidConsoleOutput = Bool()
     var consoleOutput = String()
     var reply = String()
     var willShutdown = Bool()
@@ -163,7 +165,10 @@ struct AgentContext: DialectContext {
     var recentField = ""
 
     func field<T>(_ name: String) -> T {
-        if (name == "consoleOutput") {
+        if (name == "cliDidConsoleOutput") {
+            return cliDidConsoleOutput as! T
+        }
+        else if (name == "consoleOutput") {
             return consoleOutput as! T
         }
         else if (name == "reply") {
@@ -180,7 +185,10 @@ struct AgentContext: DialectContext {
         _ name: String,
         _ value: Any
     ) {
-        if (name == "consoleOutput") {
+        if (name == "cliDidConsoleOutput") {
+            cliDidConsoleOutput = value as! Bool
+        }
+        else if (name == "consoleOutput") {
             consoleOutput = value as! String
         }
         else if (name == "reply") {
@@ -375,6 +383,15 @@ func agentShouldResetWillShutdown(_ c: AgentContext) -> AgentContext {
         return c
     }
 
+    /* 2. Upon CLI console outpu */
+    if
+        c.recentField == F.cliDidConsoleOutput
+    {
+        c.willShutdown = true
+        c.recentField = F.willShutdown
+        return c
+    }
+
 
     c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
     return c
@@ -556,6 +573,7 @@ func agentRegisterEffects(_ ctrl: DialectController) {
 func cliRegisterEffects(_ ctrl: DialectController) {
     let _: CLIContext? = registerOneliners(ctrl, [
         F.consoleOutput, { (c: CLIContext) in print(c.consoleOutput) },
+        F.consoleOutput, { (c: CLIContext) in agentSet(F.cliDidConsoleOutput, true) },
         F.prompt, { (c: CLIContext) in llmSet(F.prompt, c.prompt) },
 
     ])
