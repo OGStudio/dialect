@@ -34,15 +34,19 @@ CLIComponent:
     type: component
     oneliners:
         - consoleOutput: print(c.consoleOutput)
-        - prompt: llmSet(F.prompt, c.prompt)
     shoulds:
         consoleOutput:
             1. File argument was not found:
                 if:
                     c.recentField == F.didLaunch &&
-                    cliArgumentValue(c.arguments, CLI_ARG_PROMPT).isEmpty
+                    cliArgumentValue(c.arguments, CLI_ARG_FILE).isEmpty
                 then:
-                    c.consoleOutput = CLI_CONSOLE_USAGE_AGENT
+                    c.consoleOutput = CLI_CONSOLE_USAGE_TRAN
+            2. Could not open input file:
+                if:
+                    c.recentField == F.inputError
+                then:
+                    c.consoleOutput = CLI_CONSOLE_INPUT_FILE_ERROR
         didLaunch:
             1. Only once during the first setup:
                 if:
@@ -50,19 +54,20 @@ CLIComponent:
                     c.didLaunch == false
                 then:
                     c.didLaunch = true
-        inputPrompt:
-            1. Parse prompt at launch
+        inputFileName:
+            1. Get file name by parsing aguments:
                 if:
-                    c.recentField == F.didLaunch
+                    c.recentField == F.arguments &&
+                    cliArgumentValue(c.arguments, CLI_ARG_FILE) != ""
                 then:
-                    c.inputPrompt = cliArgumentValue(c.arguments, CLI_ARG_PROMPT)
-        prompt:
-            1. Report prompt if valid
+                    c.inputFileName = cliArgumentValue(c.arguments, CLI_ARG_FILE)
+        willReadFile:
+            1. File name has been specified:
                 if:
-                    c.recentField == F.inputPrompt &&
-                    !c.inputPrompt.isEmpty
+                    c.recentField == F.didLaunch &&
+                    !c.inputFileName.isEmpty
                 then:
-                    c.prompt = c.inputPrompt
+                    c.willReadFile = true
 
 CLIContext:
     type: context
@@ -71,13 +76,13 @@ CLIContext:
         consoleOutput: String
         didLaunch: Bool
         didSetup: Bool
-        inputPrompt: String
-        prompt: String
+        inputError: String
+        inputFileName: String
+        willReadFile: Bool
 
 LLMComponent:
     type: component
     oneliners:
-        - reply: tranSet(F.reply, c.reply)
         - request: llmLoad(c.request, F.response, F.responseError)
     shoulds:
         didLaunch:
