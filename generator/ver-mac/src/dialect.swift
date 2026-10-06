@@ -121,9 +121,11 @@ func registerOneliners<T>(
 struct F {
     static let about = "about"
     static let arguments = "arguments"
+    static let body = "body"
     static let chunks = "chunks"
     static let condition = "condition"
     static let consoleOutput = "consoleOutput"
+    static let contents = "contents"
     static let didLaunch = "didLaunch"
     static let didSetup = "didSetup"
     static let entities = "entities"
@@ -134,11 +136,13 @@ struct F {
     static let entityShoulds = "entityShoulds"
     static let entityTypes = "entityTypes"
     static let field = "field"
+    static let headers = "headers"
     static let inputAbsoluteDir = "inputAbsoluteDir"
     static let inputContents = "inputContents"
     static let inputError = "inputError"
     static let inputFileName = "inputFileName"
     static let inputLines = "inputLines"
+    static let method = "method"
     static let out = "out"
     static let outContexts = "outContexts"
     static let outFields = "outFields"
@@ -150,12 +154,36 @@ struct F {
     static let outputPaths = "outputPaths"
     static let parseInput = "parseInput"
     static let path = "path"
+    static let prompt = "prompt"
     static let reaction = "reaction"
     static let readFile = "readFile"
+    static let reply = "reply"
+    static let req = "req"
+    static let request = "request"
+    static let response = "response"
+    static let responseError = "responseError"
+    static let system = "system"
     static let type = "type"
+    static let url = "url"
     static let version = "version"
 
 }
+struct NetRequest {
+    var body = String()
+    var headers = [String: String]()
+    var method = String()
+    var url = String()
+
+}
+
+
+struct NetResponse {
+    var contents = String()
+    var req = NetRequest()
+
+}
+
+
 struct Oneliner {
     var field = String()
     var reaction = String()
@@ -415,14 +443,42 @@ struct KotlinContext: DialectContext {
     }
 }
 
-struct RootContext: DialectContext {
+struct LLMContext: DialectContext {
     var didLaunch = Bool()
+    var didSetup = Bool()
+    var prompt = String()
+    var reply = String()
+    var request = NetRequest()
+    var response = NetResponse()
+    var responseError = NetResponse()
+    var system = String()
 
     var recentField = ""
 
     func field<T>(_ name: String) -> T {
         if (name == "didLaunch") {
             return didLaunch as! T
+        }
+        else if (name == "didSetup") {
+            return didSetup as! T
+        }
+        else if (name == "prompt") {
+            return prompt as! T
+        }
+        else if (name == "reply") {
+            return reply as! T
+        }
+        else if (name == "request") {
+            return request as! T
+        }
+        else if (name == "response") {
+            return response as! T
+        }
+        else if (name == "responseError") {
+            return responseError as! T
+        }
+        else if (name == "system") {
+            return system as! T
         }
 
         return "unknown-field-name" as! T
@@ -434,6 +490,27 @@ struct RootContext: DialectContext {
     ) {
         if (name == "didLaunch") {
             didLaunch = value as! Bool
+        }
+        else if (name == "didSetup") {
+            didSetup = value as! Bool
+        }
+        else if (name == "prompt") {
+            prompt = value as! String
+        }
+        else if (name == "reply") {
+            reply = value as! String
+        }
+        else if (name == "request") {
+            request = value as! NetRequest
+        }
+        else if (name == "response") {
+            response = value as! NetResponse
+        }
+        else if (name == "responseError") {
+            responseError = value as! NetResponse
+        }
+        else if (name == "system") {
+            system = value as! String
         }
 
     }
@@ -732,6 +809,13 @@ func kotlinSet(
     KotlinComponent.singleton!.ctrl.set(key, value)
 }
 
+func llmSet(
+    _ key: String,
+    _ value: Any
+) {
+    LLMComponent.singleton!.ctrl.set(key, value)
+}
+
 func swiftSet(
     _ key: String,
     _ value: Any
@@ -1003,6 +1087,67 @@ func kotlinShouldResetPath(_ c: KotlinContext) -> KotlinContext {
         let last = c.outputPaths.first { $0.type == KOTLIN_TYPE }?.path ?? "N/A"
         c.path = c.inputAbsoluteDir + "/" + last
         c.recentField = F.path
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func llmShouldResetDidLaunch(_ c: LLMContext) -> LLMContext {
+    var c = c
+
+    /* 1. Only once during the first setup */
+    if
+        c.recentField == F.didSetup &&
+        c.didLaunch == false
+    {
+        c.didLaunch = true
+        c.recentField = F.didLaunch
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func llmShouldResetReply(_ c: LLMContext) -> LLMContext {
+    var c = c
+
+    /* 1. Upon successful response */
+    if
+        c.recentField == F.response
+    {
+        c.reply = llmExtractReply(c.response.contents)
+        c.recentField = F.reply
+        return c
+    }
+
+    /* 2. Upon error response */
+    if
+        c.recentField == F.responseError
+    {
+        c.reply = c.responseError.contents
+        c.recentField = F.reply
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func llmShouldResetRequest(_ c: LLMContext) -> LLMContext {
+    var c = c
+
+    /* 1. See if server is available upon receiving promp */
+    if
+        c.recentField == F.prompt
+    {
+        c.request = llmReqPrompt(LLM_DEFAULT_HOST, LLM_DEFAULT_PORT, c.prompt)
+        c.recentField = F.request
         return c
     }
 
@@ -1428,6 +1573,17 @@ func kotlinRegisterShoulds(_ ctrl: DialectController) {
     }
 }
 
+func llmRegisterShoulds(_ ctrl: DialectController) {
+    [
+        llmShouldResetDidLaunch,
+        llmShouldResetReply,
+        llmShouldResetRequest,
+
+    ].forEach { f in
+        ctrl.registerFunction { c in f(c as! LLMContext) }
+    }
+}
+
 func swiftRegisterShoulds(_ ctrl: DialectController) {
     [
         swiftShouldResetDidLaunch,
@@ -1472,8 +1628,8 @@ func cliRegisterEffects(_ ctrl: DialectController) {
         F.inputAbsoluteDir, { (c: CLIContext) in kotlinSet(F.inputAbsoluteDir, c.inputAbsoluteDir) },
         F.inputAbsoluteDir, { (c: CLIContext) in swiftSet(F.inputAbsoluteDir, c.inputAbsoluteDir) },
         F.inputContents, { (c: CLIContext) in ymlSet(F.inputContents, c.inputContents) },
-        F.inputFileName, { (c: CLIContext) in cliResolveAbsoluteDir(c.inputFileName) },
-        F.readFile, { (c: CLIContext) in cliReadInputFile(c.inputFileName) },
+        F.inputFileName, { (c: CLIContext) in cliResolveAbsoluteDir(c.inputFileName, F.inputAbsoluteDir) },
+        F.readFile, { (c: CLIContext) in cliReadInputFile(c.inputFileName, F.inputContents, F.inputError) },
 
     ])
 }
@@ -1481,6 +1637,13 @@ func cliRegisterEffects(_ ctrl: DialectController) {
 func kotlinRegisterEffects(_ ctrl: DialectController) {
     let _: KotlinContext? = registerOneliners(ctrl, [
         F.out, { (c: KotlinContext) in otherWriteFile(c.path, c.out) },
+
+    ])
+}
+
+func llmRegisterEffects(_ ctrl: DialectController) {
+    let _: LLMContext? = registerOneliners(ctrl, [
+        F.request, { (c: LLMContext) in llmLoad(c.request, F.response, F.responseError) },
 
     ])
 }

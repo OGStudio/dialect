@@ -11,8 +11,8 @@ CLIComponent:
         - inputAbsoluteDir: kotlinSet(F.inputAbsoluteDir, c.inputAbsoluteDir)
         - inputAbsoluteDir: swiftSet(F.inputAbsoluteDir, c.inputAbsoluteDir)
         - inputContents: ymlSet(F.inputContents, c.inputContents)
-        - inputFileName: cliResolveAbsoluteDir(c.inputFileName)
-        - readFile: cliReadInputFile(c.inputFileName)
+        - inputFileName: cliResolveAbsoluteDir(c.inputFileName, F.inputAbsoluteDir)
+        - readFile: cliReadInputFile(c.inputFileName, F.inputContents, F.inputError)
     shoulds:
         consoleOutput:
             1. File argument was not found:
@@ -165,6 +165,62 @@ KotlinContext:
         outShoulds: String
         outStructs: String
 
+LLMComponent:
+    type: component
+    oneliners:
+        - request: llmLoad(c.request, F.response, F.responseError)
+    shoulds:
+        didLaunch:
+            1. Only once during the first setup:
+                if:
+                    c.recentField == F.didSetup &&
+                    c.didLaunch == false
+                then:
+                    c.didLaunch = true
+        reply:
+            1. Upon successful response:
+                if:
+                    c.recentField == F.response
+                then:
+                    c.reply = llmExtractReply(c.response.contents)
+            2. Upon error response:
+                if:
+                    c.recentField == F.responseError
+                then:
+                    c.reply = c.responseError.contents
+        request:
+            1. See if server is available upon receiving prompt
+                if:
+                    c.recentField == F.prompt
+                then:
+                    c.request = llmReqPrompt(LLM_DEFAULT_HOST, LLM_DEFAULT_PORT, c.prompt)
+
+LLMContext:
+    type: context
+    fields:
+        didLaunch: Bool
+        didSetup: Bool
+        prompt: String
+        reply: String
+        request: NetRequest
+        response: NetResponse
+        responseError: NetResponse
+        system: String
+
+NetRequest:
+    type: struct
+    fields:
+        body: String
+        headers: [String: String]
+        method: String
+        url: String
+
+NetResponse:
+    type: struct
+    fields:
+        contents: String
+        req: NetRequest
+
 Oneliner:
     type: struct
     fields:
@@ -176,11 +232,6 @@ OutputPath:
     fields:
         path: String
         type: String
-
-RootContext:
-    type: context
-    fields:
-        didLaunch: Bool
 
 ShouldBranch:
     type: struct

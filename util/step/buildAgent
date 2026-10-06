@@ -1,0 +1,8 @@
+#!/bin/bash
+
+STEP=$((STEP+1))
+echo -e "\n> > > > Step №$STEP. Build agent"
+
+swift build \
+    --package-path "$SDIR/../agent/ver-mac" \
+    -c release

@@ -1,1 +1,1 @@
-../../../../../../../../components/root/android/root.kt
+../../../../../../../../../components/root/android/root.kt

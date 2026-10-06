@@ -1,0 +1,132 @@
+version: 4
+
+output:
+    ver-mac/src/dialect.swift:
+        type: swift
+
+AgentComponent:
+    type: component
+    oneliners:
+        - consoleOutput: print(c.consoleOutput)
+        - willShutdown: agentShutdown()
+    shoulds:
+        consoleOutput:
+            1. Upon reply:
+                if:
+                    c.recentField == F.reply
+                then:
+                    c.consoleOutput = c.reply
+        willShutdown:
+            1. Upon reply:
+                if:
+                    c.recentField == F.reply
+                then:
+                    c.willShutdown = true
+
+AgentContext:
+    type: context
+    fields:
+        consoleOutput: String
+        reply: String
+        willShutdown: Bool
+
+CLIComponent:
+    type: component
+    oneliners:
+        - consoleOutput: print(c.consoleOutput)
+        - prompt: llmSet(F.prompt, c.prompt)
+    shoulds:
+        consoleOutput:
+            1. File argument was not found:
+                if:
+                    c.recentField == F.didLaunch &&
+                    cliArgumentValue(c.arguments, CLI_ARG_PROMPT).isEmpty
+                then:
+                    c.consoleOutput = CLI_CONSOLE_USAGE_AGENT
+        didLaunch:
+            1. Only once during the first setup:
+                if:
+                    c.recentField == F.didSetup &&
+                    c.didLaunch == false
+                then:
+                    c.didLaunch = true
+        inputPrompt:
+            1. Parse prompt at launch
+                if:
+                    c.recentField == F.didLaunch
+                then:
+                    c.inputPrompt = cliArgumentValue(c.arguments, CLI_ARG_PROMPT)
+        prompt:
+            1. Report prompt if valid
+                if:
+                    c.recentField == F.inputPrompt &&
+                    !c.inputPrompt.isEmpty
+                then:
+                    c.prompt = c.inputPrompt
+
+CLIContext:
+    type: context
+    fields:
+        arguments: [String]
+        consoleOutput: String
+        didLaunch: Bool
+        didSetup: Bool
+        inputPrompt: String
+        prompt: String
+
+LLMComponent:
+    type: component
+    oneliners:
+        - reply: agentSet(F.reply, c.reply)
+        - request: llmLoad(c.request, F.response, F.responseError)
+    shoulds:
+        didLaunch:
+            1. Only once during the first setup:
+                if:
+                    c.recentField == F.didSetup &&
+                    c.didLaunch == false
+                then:
+                    c.didLaunch = true
+        reply:
+            1. Upon successful response:
+                if:
+                    c.recentField == F.response
+                then:
+                    c.reply = llmExtractReply(c.response.contents)
+            2. Upon error response:
+                if:
+                    c.recentField == F.responseError
+                then:
+                    c.reply = c.responseError.contents
+        request:
+            1. See if server is available upon receiving prompt
+                if:
+                    c.recentField == F.prompt
+                then:
+                    c.request = llmReqPrompt(LLM_DEFAULT_HOST, LLM_DEFAULT_PORT, c.prompt)
+
+LLMContext:
+    type: context
+    fields:
+        didLaunch: Bool
+        didSetup: Bool
+        prompt: String
+        reply: String
+        request: NetRequest
+        response: NetResponse
+        responseError: NetResponse
+        system: String
+
+NetRequest:
+    type: struct
+    fields:
+        body: String
+        headers: [String: String]
+        method: String
+        url: String
+
+NetResponse:
+    type: struct
+    fields:
+        contents: String
+        req: NetRequest
