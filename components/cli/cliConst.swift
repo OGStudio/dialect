@@ -8,3 +8,6 @@ Usage: generator --file=/path/to/dialect.yml
 let CLI_CONSOLE_USAGE_AGENT = """
 Usage: agent --prompt="text"
 """
+let CLI_CONSOLE_USAGE_TRAN = """
+Usage: tran --file=/path/to/file.swift
+"""

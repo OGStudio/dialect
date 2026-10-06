@@ -126,7 +126,8 @@ struct F {
     static let didLaunch = "didLaunch"
     static let didSetup = "didSetup"
     static let headers = "headers"
-    static let inputPrompt = "inputPrompt"
+    static let inputError = "inputError"
+    static let inputFileName = "inputFileName"
     static let method = "method"
     static let prompt = "prompt"
     static let reply = "reply"
@@ -136,6 +137,7 @@ struct F {
     static let responseError = "responseError"
     static let system = "system"
     static let url = "url"
+    static let willReadFile = "willReadFile"
     static let willShutdown = "willShutdown"
 
 }
@@ -160,8 +162,9 @@ struct CLIContext: DialectContext {
     var consoleOutput = String()
     var didLaunch = Bool()
     var didSetup = Bool()
-    var inputPrompt = String()
-    var prompt = String()
+    var inputError = String()
+    var inputFileName = String()
+    var willReadFile = Bool()
 
     var recentField = ""
 
@@ -178,11 +181,14 @@ struct CLIContext: DialectContext {
         else if (name == "didSetup") {
             return didSetup as! T
         }
-        else if (name == "inputPrompt") {
-            return inputPrompt as! T
+        else if (name == "inputError") {
+            return inputError as! T
         }
-        else if (name == "prompt") {
-            return prompt as! T
+        else if (name == "inputFileName") {
+            return inputFileName as! T
+        }
+        else if (name == "willReadFile") {
+            return willReadFile as! T
         }
 
         return "unknown-field-name" as! T
@@ -204,11 +210,14 @@ struct CLIContext: DialectContext {
         else if (name == "didSetup") {
             didSetup = value as! Bool
         }
-        else if (name == "inputPrompt") {
-            inputPrompt = value as! String
+        else if (name == "inputError") {
+            inputError = value as! String
         }
-        else if (name == "prompt") {
-            prompt = value as! String
+        else if (name == "inputFileName") {
+            inputFileName = value as! String
+        }
+        else if (name == "willReadFile") {
+            willReadFile = value as! Bool
         }
 
     }
@@ -352,9 +361,18 @@ func cliShouldResetConsoleOutput(_ c: CLIContext) -> CLIContext {
     /* 1. File argument was not found */
     if
         c.recentField == F.didLaunch &&
-        cliArgumentValue(c.arguments, CLI_ARG_PROMPT).isEmpty
+        cliArgumentValue(c.arguments, CLI_ARG_FILE).isEmpty
     {
-        c.consoleOutput = CLI_CONSOLE_USAGE_AGENT
+        c.consoleOutput = CLI_CONSOLE_USAGE_TRAN
+        c.recentField = F.consoleOutput
+        return c
+    }
+
+    /* 2. Could not open input file */
+    if
+        c.recentField == F.inputError
+    {
+        c.consoleOutput = CLI_CONSOLE_INPUT_FILE_ERROR
         c.recentField = F.consoleOutput
         return c
     }
@@ -382,15 +400,16 @@ func cliShouldResetDidLaunch(_ c: CLIContext) -> CLIContext {
     return c
 }
 
-func cliShouldResetInputPrompt(_ c: CLIContext) -> CLIContext {
+func cliShouldResetInputFileName(_ c: CLIContext) -> CLIContext {
     var c = c
 
-    /* 1. Parse prompt at launc */
+    /* 1. Get file name by parsing aguments */
     if
-        c.recentField == F.didLaunch
+        c.recentField == F.arguments &&
+        cliArgumentValue(c.arguments, CLI_ARG_FILE) != ""
     {
-        c.inputPrompt = cliArgumentValue(c.arguments, CLI_ARG_PROMPT)
-        c.recentField = F.inputPrompt
+        c.inputFileName = cliArgumentValue(c.arguments, CLI_ARG_FILE)
+        c.recentField = F.inputFileName
         return c
     }
 
@@ -399,16 +418,16 @@ func cliShouldResetInputPrompt(_ c: CLIContext) -> CLIContext {
     return c
 }
 
-func cliShouldResetPrompt(_ c: CLIContext) -> CLIContext {
+func cliShouldResetWillReadFile(_ c: CLIContext) -> CLIContext {
     var c = c
 
-    /* 1. Report prompt if vali */
+    /* 1. File name has been specified */
     if
-        c.recentField == F.inputPrompt &&
-        !c.inputPrompt.isEmpty
+        c.recentField == F.didLaunch &&
+        !c.inputFileName.isEmpty
     {
-        c.prompt = c.inputPrompt
-        c.recentField = F.prompt
+        c.willReadFile = true
+        c.recentField = F.willReadFile
         return c
     }
 
@@ -516,8 +535,8 @@ func cliRegisterShoulds(_ ctrl: DialectController) {
     [
         cliShouldResetConsoleOutput,
         cliShouldResetDidLaunch,
-        cliShouldResetInputPrompt,
-        cliShouldResetPrompt,
+        cliShouldResetInputFileName,
+        cliShouldResetWillReadFile,
 
     ].forEach { f in
         ctrl.registerFunction { c in f(c as! CLIContext) }
@@ -548,14 +567,12 @@ func tranRegisterShoulds(_ ctrl: DialectController) {
 func cliRegisterEffects(_ ctrl: DialectController) {
     let _: CLIContext? = registerOneliners(ctrl, [
         F.consoleOutput, { (c: CLIContext) in print(c.consoleOutput) },
-        F.prompt, { (c: CLIContext) in llmSet(F.prompt, c.prompt) },
 
     ])
 }
 
 func llmRegisterEffects(_ ctrl: DialectController) {
     let _: LLMContext? = registerOneliners(ctrl, [
-        F.reply, { (c: LLMContext) in tranSet(F.reply, c.reply) },
         F.request, { (c: LLMContext) in llmLoad(c.request, F.response, F.responseError) },
 
     ])
