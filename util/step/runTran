@@ -1,6 +1,0 @@
-#!/bin/bash
-
-STEP=$((STEP+1))
-echo -e "\n> > > > Step №$STEP. Run tran"
-
-$SDIR/../tran/ver-mac/.build/release/tran "$@"

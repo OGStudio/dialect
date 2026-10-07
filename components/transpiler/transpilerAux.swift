@@ -1,5 +1,5 @@
 import Foundation
 
-func tranLaunch() {
+func transpilerLaunch() {
     RunLoop.current.run()
 }

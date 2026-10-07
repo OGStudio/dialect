@@ -4,4 +4,4 @@ SDIR=$(cd "$(dirname "$0")" ; pwd -P)
 T=$SDIR/step
 source $SDIR/paths
 
-source $T/runTran "$@"
+source $T/runTranspiler "$@"

@@ -1,1 +1,0 @@
-../../../../components/tran/tranAux.swift

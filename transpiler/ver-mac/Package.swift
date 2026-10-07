@@ -2,12 +2,12 @@
 import PackageDescription
 
 let package = Package(
-    name: "DialectTran",
+    name: "DialectTranspiler",
     platforms: [.macOS(.v13)],
     dependencies: [],
     targets: [
         .executableTarget(
-            name: "tran",
+            name: "transpiler",
             path: "src"
         )
     ]

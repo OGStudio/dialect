@@ -1,12 +1,12 @@
-let tran = TranComponent()
+let transpiler = TranspilerComponent()
 let cli = CLIComponent()
 let llm = LLMComponent()
 
-otherSetupConsoleLogging(tran.ctrl, "Tran")
+otherSetupConsoleLogging(transpiler.ctrl, "Transpiler")
 otherSetupConsoleLogging(cli.ctrl, "CLI")
 //otherSetupConsoleLogging(llm.ctrl, "LLM")
 
 cli.setup()
 llm.setup()
 
-tranLaunch()
+transpilerLaunch()

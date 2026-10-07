@@ -1,8 +1,0 @@
-#!/bin/bash
-
-STEP=$((STEP+1))
-echo -e "\n> > > > Step №$STEP. Build tran"
-
-swift build \
-    --package-path "$SDIR/../tran/ver-mac" \
-    -c release

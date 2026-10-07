@@ -5,4 +5,4 @@ T=$SDIR/step
 source $SDIR/paths
 
 STEP=0
-source $T/buildTran
+source $T/buildTranspiler

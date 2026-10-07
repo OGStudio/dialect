@@ -1,5 +1,5 @@
 import Foundation
 
-func tranShutdown() {
+func transpilerShutdown() {
     exit(0)
 }

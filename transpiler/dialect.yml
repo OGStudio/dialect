@@ -4,11 +4,11 @@ output:
     ver-mac/src/dialect.swift:
         type: swift
 
-TranComponent:
+TranspilerComponent:
     type: component
     oneliners:
         - consoleOutput: print(c.consoleOutput)
-        - willShutdown: tranShutdown()
+        - willShutdown: transpilerShutdown()
     shoulds:
         consoleOutput:
             1. Upon reply:
@@ -28,7 +28,7 @@ TranComponent:
                 then:
                     c.willShutdown = true
 
-TranContext:
+TranspilerContext:
     type: context
     fields:
         cliDidConsoleOutput: Bool
@@ -40,7 +40,7 @@ CLIComponent:
     type: component
     oneliners:
         - consoleOutput: print(c.consoleOutput)
-        - consoleOutput: tranSet(F.cliDidConsoleOutput, true)
+        - consoleOutput: transpilerSet(F.cliDidConsoleOutput, true)
     shoulds:
         consoleOutput:
             1. File argument was not found:
@@ -48,7 +48,7 @@ CLIComponent:
                     c.recentField == F.didLaunch &&
                     cliArgumentValue(c.arguments, CLI_ARG_FILE).isEmpty
                 then:
-                    c.consoleOutput = CLI_CONSOLE_USAGE_TRAN
+                    c.consoleOutput = CLI_CONSOLE_USAGE_TRANSPILER
             2. Could not open input file:
                 if:
                     c.recentField == F.inputError

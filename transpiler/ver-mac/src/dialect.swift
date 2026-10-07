@@ -297,7 +297,7 @@ struct LLMContext: DialectContext {
     }
 }
 
-struct TranContext: DialectContext {
+struct TranspilerContext: DialectContext {
     var cliDidConsoleOutput = Bool()
     var consoleOutput = String()
     var reply = String()
@@ -356,11 +356,11 @@ func llmSet(
     LLMComponent.singleton!.ctrl.set(key, value)
 }
 
-func tranSet(
+func transpilerSet(
     _ key: String,
     _ value: Any
 ) {
-    TranComponent.singleton!.ctrl.set(key, value)
+    TranspilerComponent.singleton!.ctrl.set(key, value)
 }
 
 func cliShouldResetConsoleOutput(_ c: CLIContext) -> CLIContext {
@@ -371,7 +371,7 @@ func cliShouldResetConsoleOutput(_ c: CLIContext) -> CLIContext {
         c.recentField == F.didLaunch &&
         cliArgumentValue(c.arguments, CLI_ARG_FILE).isEmpty
     {
-        c.consoleOutput = CLI_CONSOLE_USAGE_TRAN
+        c.consoleOutput = CLI_CONSOLE_USAGE_TRANSPILER
         c.recentField = F.consoleOutput
         return c
     }
@@ -505,7 +505,7 @@ func llmShouldResetRequest(_ c: LLMContext) -> LLMContext {
     return c
 }
 
-func tranShouldResetConsoleOutput(_ c: TranContext) -> TranContext {
+func transpilerShouldResetConsoleOutput(_ c: TranspilerContext) -> TranspilerContext {
     var c = c
 
     /* 1. Upon reply */
@@ -522,7 +522,7 @@ func tranShouldResetConsoleOutput(_ c: TranContext) -> TranContext {
     return c
 }
 
-func tranShouldResetWillShutdown(_ c: TranContext) -> TranContext {
+func transpilerShouldResetWillShutdown(_ c: TranspilerContext) -> TranspilerContext {
     var c = c
 
     /* 1. Upon reply */
@@ -571,20 +571,20 @@ func llmRegisterShoulds(_ ctrl: DialectController) {
     }
 }
 
-func tranRegisterShoulds(_ ctrl: DialectController) {
+func transpilerRegisterShoulds(_ ctrl: DialectController) {
     [
-        tranShouldResetConsoleOutput,
-        tranShouldResetWillShutdown,
+        transpilerShouldResetConsoleOutput,
+        transpilerShouldResetWillShutdown,
 
     ].forEach { f in
-        ctrl.registerFunction { c in f(c as! TranContext) }
+        ctrl.registerFunction { c in f(c as! TranspilerContext) }
     }
 }
 
 func cliRegisterEffects(_ ctrl: DialectController) {
     let _: CLIContext? = registerOneliners(ctrl, [
         F.consoleOutput, { (c: CLIContext) in print(c.consoleOutput) },
-        F.consoleOutput, { (c: CLIContext) in tranSet(F.cliDidConsoleOutput, true) },
+        F.consoleOutput, { (c: CLIContext) in transpilerSet(F.cliDidConsoleOutput, true) },
 
     ])
 }
@@ -596,10 +596,10 @@ func llmRegisterEffects(_ ctrl: DialectController) {
     ])
 }
 
-func tranRegisterEffects(_ ctrl: DialectController) {
-    let _: TranContext? = registerOneliners(ctrl, [
-        F.consoleOutput, { (c: TranContext) in print(c.consoleOutput) },
-        F.willShutdown, { (c: TranContext) in tranShutdown() },
+func transpilerRegisterEffects(_ ctrl: DialectController) {
+    let _: TranspilerContext? = registerOneliners(ctrl, [
+        F.consoleOutput, { (c: TranspilerContext) in print(c.consoleOutput) },
+        F.willShutdown, { (c: TranspilerContext) in transpilerShutdown() },
 
     ])
 }
