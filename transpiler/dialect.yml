@@ -6,6 +6,14 @@ output:
 
 ConvComponent:
     type: component
+    shoulds:
+        didLaunch:
+            1. Only once during the first setup:
+                if:
+                    c.recentField == F.didSetup &&
+                    c.didLaunch == false
+                then:
+                    c.didLaunch = true
 
 ConvContext:
     type: context

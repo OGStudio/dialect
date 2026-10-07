@@ -482,6 +482,24 @@ func cliShouldResetWillReadFile(_ c: CLIContext) -> CLIContext {
     return c
 }
 
+func convShouldResetDidLaunch(_ c: ConvContext) -> ConvContext {
+    var c = c
+
+    /* 1. Only once during the first setup */
+    if
+        c.recentField == F.didSetup &&
+        c.didLaunch == false
+    {
+        c.didLaunch = true
+        c.recentField = F.didLaunch
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
 func llmShouldResetDidLaunch(_ c: LLMContext) -> LLMContext {
     var c = c
 
@@ -595,6 +613,15 @@ func cliRegisterShoulds(_ ctrl: DialectController) {
 
     ].forEach { f in
         ctrl.registerFunction { c in f(c as! CLIContext) }
+    }
+}
+
+func convRegisterShoulds(_ ctrl: DialectController) {
+    [
+        convShouldResetDidLaunch,
+
+    ].forEach { f in
+        ctrl.registerFunction { c in f(c as! ConvContext) }
     }
 }
 

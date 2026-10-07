@@ -4,6 +4,7 @@ class ConvComponent {
 
     init() {
         Self.singleton = self
+        convRegisterShoulds(ctrl)
     }
 
     func setup() {
