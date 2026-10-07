@@ -4,60 +4,12 @@ output:
     ver-mac/src/dialect.swift:
         type: swift
 
-ConvComponent:
-    type: component
-    shoulds:
-        didLaunch:
-            1. Only once during the first setup:
-                if:
-                    c.recentField == F.didSetup &&
-                    c.didLaunch == false
-                then:
-                    c.didLaunch = true
-
-ConvContext:
-    type: context
-    fields:
-        didLaunch: Bool
-        didSetup: Bool
-
-TranspilerComponent:
-    type: component
-    oneliners:
-        - consoleOutput: print(c.consoleOutput)
-        - willShutdown: transpilerShutdown()
-    shoulds:
-        consoleOutput:
-            1. Upon reply:
-                if:
-                    c.recentField == F.reply
-                then:
-                    c.consoleOutput = c.reply
-        willShutdown:
-            1. Upon reply:
-                if:
-                    c.recentField == F.reply
-                then:
-                    c.willShutdown = true
-            2. Upon CLI console output
-                if:
-                    c.recentField == F.cliDidConsoleOutput
-                then:
-                    c.willShutdown = true
-
-TranspilerContext:
-    type: context
-    fields:
-        cliDidConsoleOutput: Bool
-        consoleOutput: String
-        reply: String
-        willShutdown: Bool
-
 CLIComponent:
     type: component
     oneliners:
         - consoleOutput: print(c.consoleOutput)
         - consoleOutput: transpilerSet(F.cliDidConsoleOutput, true)
+        - inputContents: convSet(F.inputContents, c.inputContents)
         - willReadFile: cliReadInputFile(c.inputFileName, F.inputContents, F.inputError)
     shoulds:
         consoleOutput:
@@ -106,9 +58,38 @@ CLIContext:
         inputFileName: String
         willReadFile: Bool
 
+ConvComponent:
+    type: component
+    oneliners:
+        - prompt: llmSet(F.prompt, c.prompt)
+    shoulds:
+        didLaunch:
+            1. Only once during the first setup:
+                if:
+                    c.recentField == F.didSetup &&
+                    c.didLaunch == false
+                then:
+                    c.didLaunch = true
+        prompt:
+            1. Upon reading input file contents:
+                if:
+                    c.recentField == F.inputContents
+                then:
+                    c.prompt = CONV_PROMPT_PREFIX + c.inputContents
+
+ConvContext:
+    type: context
+    fields:
+        didLaunch: Bool
+        didSetup: Bool
+        inputContents: String
+        prompt: String
+        reply: String
+
 LLMComponent:
     type: component
     oneliners:
+        - reply: convSet(F.reply, c.reply)
         - request: llmLoad(c.request, F.response, F.responseError)
     shoulds:
         didLaunch:
@@ -161,3 +142,36 @@ NetResponse:
     fields:
         contents: String
         req: NetRequest
+
+TranspilerComponent:
+    type: component
+    oneliners:
+        - consoleOutput: print(c.consoleOutput)
+        - willShutdown: transpilerShutdown()
+    shoulds:
+        consoleOutput:
+            1. Upon reply:
+                if:
+                    c.recentField == F.reply
+                then:
+                    c.consoleOutput = c.reply
+        willShutdown:
+            1. Upon reply:
+                if:
+                    c.recentField == F.reply
+                then:
+                    c.willShutdown = true
+            2. Upon CLI console output
+                if:
+                    c.recentField == F.cliDidConsoleOutput
+                then:
+                    c.willShutdown = true
+
+TranspilerContext:
+    type: context
+    fields:
+        cliDidConsoleOutput: Bool
+        consoleOutput: String
+        reply: String
+        willShutdown: Bool
+

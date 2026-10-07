@@ -235,6 +235,9 @@ struct CLIContext: DialectContext {
 struct ConvContext: DialectContext {
     var didLaunch = Bool()
     var didSetup = Bool()
+    var inputContents = String()
+    var prompt = String()
+    var reply = String()
 
     var recentField = ""
 
@@ -244,6 +247,15 @@ struct ConvContext: DialectContext {
         }
         else if (name == "didSetup") {
             return didSetup as! T
+        }
+        else if (name == "inputContents") {
+            return inputContents as! T
+        }
+        else if (name == "prompt") {
+            return prompt as! T
+        }
+        else if (name == "reply") {
+            return reply as! T
         }
 
         return "unknown-field-name" as! T
@@ -258,6 +270,15 @@ struct ConvContext: DialectContext {
         }
         else if (name == "didSetup") {
             didSetup = value as! Bool
+        }
+        else if (name == "inputContents") {
+            inputContents = value as! String
+        }
+        else if (name == "prompt") {
+            prompt = value as! String
+        }
+        else if (name == "reply") {
+            reply = value as! String
         }
 
     }
@@ -508,6 +529,23 @@ func convShouldResetDidLaunch(_ c: ConvContext) -> ConvContext {
     return c
 }
 
+func convShouldResetPrompt(_ c: ConvContext) -> ConvContext {
+    var c = c
+
+    /* 1. Upon reading input file contents */
+    if
+        c.recentField == F.inputContents
+    {
+        c.prompt = CONV_PROMPT_PREFIX + c.inputContents
+        c.recentField = F.prompt
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
 func llmShouldResetDidLaunch(_ c: LLMContext) -> LLMContext {
     var c = c
 
@@ -627,6 +665,7 @@ func cliRegisterShoulds(_ ctrl: DialectController) {
 func convRegisterShoulds(_ ctrl: DialectController) {
     [
         convShouldResetDidLaunch,
+        convShouldResetPrompt,
 
     ].forEach { f in
         ctrl.registerFunction { c in f(c as! ConvContext) }
@@ -658,13 +697,22 @@ func cliRegisterEffects(_ ctrl: DialectController) {
     let _: CLIContext? = registerOneliners(ctrl, [
         F.consoleOutput, { (c: CLIContext) in print(c.consoleOutput) },
         F.consoleOutput, { (c: CLIContext) in transpilerSet(F.cliDidConsoleOutput, true) },
+        F.inputContents, { (c: CLIContext) in convSet(F.inputContents, c.inputContents) },
         F.willReadFile, { (c: CLIContext) in cliReadInputFile(c.inputFileName, F.inputContents, F.inputError) },
+
+    ])
+}
+
+func convRegisterEffects(_ ctrl: DialectController) {
+    let _: ConvContext? = registerOneliners(ctrl, [
+        F.prompt, { (c: ConvContext) in llmSet(F.prompt, c.prompt) },
 
     ])
 }
 
 func llmRegisterEffects(_ ctrl: DialectController) {
     let _: LLMContext? = registerOneliners(ctrl, [
+        F.reply, { (c: LLMContext) in convSet(F.reply, c.reply) },
         F.request, { (c: LLMContext) in llmLoad(c.request, F.response, F.responseError) },
 
     ])
