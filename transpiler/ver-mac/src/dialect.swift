@@ -127,6 +127,7 @@ struct F {
     static let didLaunch = "didLaunch"
     static let didSetup = "didSetup"
     static let headers = "headers"
+    static let inputContents = "inputContents"
     static let inputError = "inputError"
     static let inputFileName = "inputFileName"
     static let method = "method"
@@ -163,6 +164,7 @@ struct CLIContext: DialectContext {
     var consoleOutput = String()
     var didLaunch = Bool()
     var didSetup = Bool()
+    var inputContents = String()
     var inputError = String()
     var inputFileName = String()
     var willReadFile = Bool()
@@ -181,6 +183,9 @@ struct CLIContext: DialectContext {
         }
         else if (name == "didSetup") {
             return didSetup as! T
+        }
+        else if (name == "inputContents") {
+            return inputContents as! T
         }
         else if (name == "inputError") {
             return inputError as! T
@@ -210,6 +215,9 @@ struct CLIContext: DialectContext {
         }
         else if (name == "didSetup") {
             didSetup = value as! Bool
+        }
+        else if (name == "inputContents") {
+            inputContents = value as! String
         }
         else if (name == "inputError") {
             inputError = value as! String
@@ -650,6 +658,7 @@ func cliRegisterEffects(_ ctrl: DialectController) {
     let _: CLIContext? = registerOneliners(ctrl, [
         F.consoleOutput, { (c: CLIContext) in print(c.consoleOutput) },
         F.consoleOutput, { (c: CLIContext) in transpilerSet(F.cliDidConsoleOutput, true) },
+        F.willReadFile, { (c: CLIContext) in cliReadInputFile(c.inputFileName, F.inputContents, F.inputError) },
 
     ])
 }

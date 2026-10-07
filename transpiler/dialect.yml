@@ -58,6 +58,7 @@ CLIComponent:
     oneliners:
         - consoleOutput: print(c.consoleOutput)
         - consoleOutput: transpilerSet(F.cliDidConsoleOutput, true)
+        - willReadFile: cliReadInputFile(c.inputFileName, F.inputContents, F.inputError)
     shoulds:
         consoleOutput:
             1. File argument was not found:
@@ -100,6 +101,7 @@ CLIContext:
         consoleOutput: String
         didLaunch: Bool
         didSetup: Bool
+        inputContents: String
         inputError: String
         inputFileName: String
         willReadFile: Bool
