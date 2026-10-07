@@ -76,7 +76,7 @@ ConvComponent:
                 if:
                     c.recentField == F.inputContents
                 then:
-                    c.prompt = CONV_PROMPT_PREFIX + c.inputContents
+                    c.prompt = CONV_PROMPT_PREFIX + c.inputContents + CONV_OUTPUT_SUFFIX
 
 ConvContext:
     type: context
