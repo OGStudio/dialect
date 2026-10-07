@@ -4,6 +4,7 @@ class ConvComponent {
 
     init() {
         Self.singleton = self
+        convRegisterEffects(ctrl)
         convRegisterShoulds(ctrl)
     }
 
