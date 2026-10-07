@@ -4,6 +4,15 @@ output:
     ver-mac/src/dialect.swift:
         type: swift
 
+ConvComponent:
+    type: component
+
+ConvContext:
+    type: context
+    fields:
+        didLaunch: Bool
+        didSetup: Bool
+
 TranspilerComponent:
     type: component
     oneliners:

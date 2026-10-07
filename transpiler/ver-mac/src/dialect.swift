@@ -224,6 +224,37 @@ struct CLIContext: DialectContext {
     }
 }
 
+struct ConvContext: DialectContext {
+    var didLaunch = Bool()
+    var didSetup = Bool()
+
+    var recentField = ""
+
+    func field<T>(_ name: String) -> T {
+        if (name == "didLaunch") {
+            return didLaunch as! T
+        }
+        else if (name == "didSetup") {
+            return didSetup as! T
+        }
+
+        return "unknown-field-name" as! T
+    }
+
+    mutating func setField(
+        _ name: String,
+        _ value: Any
+    ) {
+        if (name == "didLaunch") {
+            didLaunch = value as! Bool
+        }
+        else if (name == "didSetup") {
+            didSetup = value as! Bool
+        }
+
+    }
+}
+
 struct LLMContext: DialectContext {
     var didLaunch = Bool()
     var didSetup = Bool()
@@ -347,6 +378,13 @@ func cliSet(
     _ value: Any
 ) {
     CLIComponent.singleton!.ctrl.set(key, value)
+}
+
+func convSet(
+    _ key: String,
+    _ value: Any
+) {
+    ConvComponent.singleton!.ctrl.set(key, value)
 }
 
 func llmSet(
