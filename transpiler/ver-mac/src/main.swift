@@ -8,8 +8,8 @@ otherSetupConsoleLogging(cli.ctrl, "CLI")
 otherSetupConsoleLogging(conv.ctrl, "Conv")
 //otherSetupConsoleLogging(llm.ctrl, "LLM")
 
-cli.setup()
 conv.setup()
 llm.setup()
+cli.setup()
 
 transpilerLaunch()
