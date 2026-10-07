@@ -62,6 +62,7 @@ ConvComponent:
     type: component
     oneliners:
         - prompt: llmSet(F.prompt, c.prompt)
+        - reply: transpilerSet(F.reply, c.reply)
     shoulds:
         didLaunch:
             1. Only once during the first setup:

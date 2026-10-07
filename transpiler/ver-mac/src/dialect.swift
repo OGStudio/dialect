@@ -706,6 +706,7 @@ func cliRegisterEffects(_ ctrl: DialectController) {
 func convRegisterEffects(_ ctrl: DialectController) {
     let _: ConvContext? = registerOneliners(ctrl, [
         F.prompt, { (c: ConvContext) in llmSet(F.prompt, c.prompt) },
+        F.reply, { (c: ConvContext) in transpilerSet(F.reply, c.reply) },
 
     ])
 }
