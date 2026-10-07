@@ -6,7 +6,7 @@ let llm = LLMComponent()
 otherSetupConsoleLogging(transpiler.ctrl, "Transpiler")
 otherSetupConsoleLogging(cli.ctrl, "CLI")
 otherSetupConsoleLogging(conv.ctrl, "Conv")
-//otherSetupConsoleLogging(llm.ctrl, "LLM")
+otherSetupConsoleLogging(llm.ctrl, "LLM")
 
 conv.setup()
 llm.setup()
