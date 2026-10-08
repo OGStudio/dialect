@@ -722,7 +722,7 @@ func llmRegisterEffects(_ ctrl: DialectController) {
 func transpilerRegisterEffects(_ ctrl: DialectController) {
     let _: TranspilerContext? = registerOneliners(ctrl, [
         F.consoleOutput, { (c: TranspilerContext) in print(c.consoleOutput) },
-        F.willShutdown, { (c: TranspilerContext) in transpilerShutdown() },
+        F.willShutdown, { (c: TranspilerContext) in otherShutdown() },
 
     ])
 }

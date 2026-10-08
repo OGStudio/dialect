@@ -148,7 +148,7 @@ TranspilerComponent:
     type: component
     oneliners:
         - consoleOutput: print(c.consoleOutput)
-        - willShutdown: transpilerShutdown()
+        - willShutdown: otherShutdown()
     shoulds:
         consoleOutput:
             1. Upon reply:

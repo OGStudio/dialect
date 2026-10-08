@@ -10,9 +10,9 @@ otherSetupConsoleLogging(conv.ctrl, "Conv")
 otherSetupConsoleLogging(llm.ctrl, "LLM")
 
 conv.setup()
+cli.setup()
 yml.setup()
 llm.setup()
 kotlin.setup()
 swift.setup()
 
-cli.setup()

@@ -19,6 +19,11 @@ func otherCapitalize(_ s: String) -> String {
     return String(first).uppercased() + String(s.dropFirst())
 }
 
+/// Launch to wait for asynchrnous actions
+func otherLaunch() {
+    RunLoop.current.run()
+}
+
 /// Count leading spaces in a line
 func otherLineIndent(_ line: String) -> Int {
     var count = 0
@@ -58,4 +63,9 @@ func otherWriteFile(
 ) {
     print("ИГР otherWF path/content.count: '\(path)'/'\(content.count)'")
     try? content.write(toFile: path, atomically: true, encoding: .utf8)
+}
+
+/// Terminate the main RunLoop
+func otherShutdown() {
+    exit(0)
 }

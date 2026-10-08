@@ -8,7 +8,7 @@ AgentComponent:
     type: component
     oneliners:
         - consoleOutput: print(c.consoleOutput)
-        - willShutdown: agentShutdown()
+        - willShutdown: otherShutdown()
     shoulds:
         consoleOutput:
             1. Upon reply:
