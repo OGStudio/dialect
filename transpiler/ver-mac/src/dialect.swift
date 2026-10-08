@@ -536,7 +536,7 @@ func convShouldResetPrompt(_ c: ConvContext) -> ConvContext {
     if
         c.recentField == F.inputContents
     {
-        c.prompt = CONV_PROMPT_PREFIX + c.inputContents + CONV_OUTPUT_SUFFIX
+        c.prompt = CONV_PROMPT_PREFIX + c.inputContents + CONV_PROMPT_SUFFIX
         c.recentField = F.prompt
         return c
     }

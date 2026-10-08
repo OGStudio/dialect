@@ -116,10 +116,6 @@ SWIFT-25
 SWIFT-26
         c.label = c.name + "-" + c.countText
 """
-let CONV_OUTPUT_SUFFIX = """
-
-Kotlin output:
-"""
 let CONV_PROMPT_PREFIX = """
 You are a transpiler that converts Swift source code into idiomatic Kotlin source code.
 
@@ -146,4 +142,8 @@ KOTLIN OUTPUT
 ===
 \(CONV_EXAMPLE_KOTLIN_DST)
 Transpile the following Swift input:
+"""
+let CONV_PROMPT_SUFFIX = """
+
+Kotlin output:
 """
