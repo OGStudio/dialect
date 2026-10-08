@@ -286,6 +286,58 @@ struct CLIContext: DialectContext {
     }
 }
 
+struct ConvContext: DialectContext {
+    var didLaunch = Bool()
+    var didSetup = Bool()
+    var inputContents = String()
+    var prompt = String()
+    var reply = String()
+
+    var recentField = ""
+
+    func field<T>(_ name: String) -> T {
+        if (name == "didLaunch") {
+            return didLaunch as! T
+        }
+        else if (name == "didSetup") {
+            return didSetup as! T
+        }
+        else if (name == "inputContents") {
+            return inputContents as! T
+        }
+        else if (name == "prompt") {
+            return prompt as! T
+        }
+        else if (name == "reply") {
+            return reply as! T
+        }
+
+        return "unknown-field-name" as! T
+    }
+
+    mutating func setField(
+        _ name: String,
+        _ value: Any
+    ) {
+        if (name == "didLaunch") {
+            didLaunch = value as! Bool
+        }
+        else if (name == "didSetup") {
+            didSetup = value as! Bool
+        }
+        else if (name == "inputContents") {
+            inputContents = value as! String
+        }
+        else if (name == "prompt") {
+            prompt = value as! String
+        }
+        else if (name == "reply") {
+            reply = value as! String
+        }
+
+    }
+}
+
 struct KotlinContext: DialectContext {
     var didLaunch = Bool()
     var didSetup = Bool()
@@ -802,6 +854,13 @@ func cliSet(
     CLIComponent.singleton!.ctrl.set(key, value)
 }
 
+func convSet(
+    _ key: String,
+    _ value: Any
+) {
+    ConvComponent.singleton!.ctrl.set(key, value)
+}
+
 func kotlinSet(
     _ key: String,
     _ value: Any
@@ -903,6 +962,41 @@ func cliShouldResetReadFile(_ c: CLIContext) -> CLIContext {
     {
         c.readFile = true
         c.recentField = F.readFile
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func convShouldResetDidLaunch(_ c: ConvContext) -> ConvContext {
+    var c = c
+
+    /* 1. Only once during the first setup */
+    if
+        c.recentField == F.didSetup &&
+        c.didLaunch == false
+    {
+        c.didLaunch = true
+        c.recentField = F.didLaunch
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func convShouldResetPrompt(_ c: ConvContext) -> ConvContext {
+    var c = c
+
+    /* 1. Upon reading input file contents */
+    if
+        c.recentField == F.inputContents
+    {
+        c.prompt = CONV_PROMPT_PREFIX + c.inputContents + CONV_PROMPT_SUFFIX
+        c.recentField = F.prompt
         return c
     }
 
@@ -1555,6 +1649,16 @@ func cliRegisterShoulds(_ ctrl: DialectController) {
     }
 }
 
+func convRegisterShoulds(_ ctrl: DialectController) {
+    [
+        convShouldResetDidLaunch,
+        convShouldResetPrompt,
+
+    ].forEach { f in
+        ctrl.registerFunction { c in f(c as! ConvContext) }
+    }
+}
+
 func kotlinRegisterShoulds(_ ctrl: DialectController) {
     [
         kotlinShouldResetDidLaunch,
@@ -1630,6 +1734,13 @@ func cliRegisterEffects(_ ctrl: DialectController) {
         F.inputContents, { (c: CLIContext) in ymlSet(F.inputContents, c.inputContents) },
         F.inputFileName, { (c: CLIContext) in cliResolveAbsoluteDir(c.inputFileName, F.inputAbsoluteDir) },
         F.readFile, { (c: CLIContext) in cliReadInputFile(c.inputFileName, F.inputContents, F.inputError) },
+
+    ])
+}
+
+func convRegisterEffects(_ ctrl: DialectController) {
+    let _: ConvContext? = registerOneliners(ctrl, [
+        F.prompt, { (c: ConvContext) in llmSet(F.prompt, c.prompt) },
 
     ])
 }

@@ -61,6 +61,34 @@ CLIContext:
         inputFileName: String
         readFile: Bool
 
+ConvComponent:
+    type: component
+    oneliners:
+        - prompt: llmSet(F.prompt, c.prompt)
+    shoulds:
+        didLaunch:
+            1. Only once during the first setup:
+                if:
+                    c.recentField == F.didSetup &&
+                    c.didLaunch == false
+                then:
+                    c.didLaunch = true
+        prompt:
+            1. Upon reading input file contents:
+                if:
+                    c.recentField == F.inputContents
+                then:
+                    c.prompt = CONV_PROMPT_PREFIX + c.inputContents + CONV_PROMPT_SUFFIX
+
+ConvContext:
+    type: context
+    fields:
+        didLaunch: Bool
+        didSetup: Bool
+        inputContents: String
+        prompt: String
+        reply: String
+
 KotlinComponent:
     type: component
     oneliners:
