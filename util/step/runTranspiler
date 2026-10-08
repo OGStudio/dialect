@@ -1,0 +1,6 @@
+#!/bin/bash
+
+STEP=$((STEP+1))
+echo -e "\n> > > > Step №$STEP. Run transpiler"
+
+$SDIR/../transpiler/ver-mac/.build/release/transpiler "$@"

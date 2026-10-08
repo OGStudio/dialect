@@ -1,0 +1,8 @@
+#!/bin/bash
+
+STEP=$((STEP+1))
+echo -e "\n> > > > Step №$STEP. Build transpiler"
+
+swift build \
+    --package-path "$SDIR/../transpiler/ver-mac" \
+    -c release

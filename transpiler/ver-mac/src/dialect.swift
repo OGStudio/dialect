@@ -127,7 +127,9 @@ struct F {
     static let didLaunch = "didLaunch"
     static let didSetup = "didSetup"
     static let headers = "headers"
-    static let inputPrompt = "inputPrompt"
+    static let inputContents = "inputContents"
+    static let inputError = "inputError"
+    static let inputFileName = "inputFileName"
     static let method = "method"
     static let prompt = "prompt"
     static let reply = "reply"
@@ -137,6 +139,7 @@ struct F {
     static let responseError = "responseError"
     static let system = "system"
     static let url = "url"
+    static let willReadFile = "willReadFile"
     static let willShutdown = "willShutdown"
 
 }
@@ -156,58 +159,15 @@ struct NetResponse {
 }
 
 
-struct AgentContext: DialectContext {
-    var cliDidConsoleOutput = Bool()
-    var consoleOutput = String()
-    var reply = String()
-    var willShutdown = Bool()
-
-    var recentField = ""
-
-    func field<T>(_ name: String) -> T {
-        if (name == "cliDidConsoleOutput") {
-            return cliDidConsoleOutput as! T
-        }
-        else if (name == "consoleOutput") {
-            return consoleOutput as! T
-        }
-        else if (name == "reply") {
-            return reply as! T
-        }
-        else if (name == "willShutdown") {
-            return willShutdown as! T
-        }
-
-        return "unknown-field-name" as! T
-    }
-
-    mutating func setField(
-        _ name: String,
-        _ value: Any
-    ) {
-        if (name == "cliDidConsoleOutput") {
-            cliDidConsoleOutput = value as! Bool
-        }
-        else if (name == "consoleOutput") {
-            consoleOutput = value as! String
-        }
-        else if (name == "reply") {
-            reply = value as! String
-        }
-        else if (name == "willShutdown") {
-            willShutdown = value as! Bool
-        }
-
-    }
-}
-
 struct CLIContext: DialectContext {
     var arguments = [String]()
     var consoleOutput = String()
     var didLaunch = Bool()
     var didSetup = Bool()
-    var inputPrompt = String()
-    var prompt = String()
+    var inputContents = String()
+    var inputError = String()
+    var inputFileName = String()
+    var willReadFile = Bool()
 
     var recentField = ""
 
@@ -224,11 +184,17 @@ struct CLIContext: DialectContext {
         else if (name == "didSetup") {
             return didSetup as! T
         }
-        else if (name == "inputPrompt") {
-            return inputPrompt as! T
+        else if (name == "inputContents") {
+            return inputContents as! T
         }
-        else if (name == "prompt") {
-            return prompt as! T
+        else if (name == "inputError") {
+            return inputError as! T
+        }
+        else if (name == "inputFileName") {
+            return inputFileName as! T
+        }
+        else if (name == "willReadFile") {
+            return willReadFile as! T
         }
 
         return "unknown-field-name" as! T
@@ -250,11 +216,69 @@ struct CLIContext: DialectContext {
         else if (name == "didSetup") {
             didSetup = value as! Bool
         }
-        else if (name == "inputPrompt") {
-            inputPrompt = value as! String
+        else if (name == "inputContents") {
+            inputContents = value as! String
+        }
+        else if (name == "inputError") {
+            inputError = value as! String
+        }
+        else if (name == "inputFileName") {
+            inputFileName = value as! String
+        }
+        else if (name == "willReadFile") {
+            willReadFile = value as! Bool
+        }
+
+    }
+}
+
+struct ConvContext: DialectContext {
+    var didLaunch = Bool()
+    var didSetup = Bool()
+    var inputContents = String()
+    var prompt = String()
+    var reply = String()
+
+    var recentField = ""
+
+    func field<T>(_ name: String) -> T {
+        if (name == "didLaunch") {
+            return didLaunch as! T
+        }
+        else if (name == "didSetup") {
+            return didSetup as! T
+        }
+        else if (name == "inputContents") {
+            return inputContents as! T
+        }
+        else if (name == "prompt") {
+            return prompt as! T
+        }
+        else if (name == "reply") {
+            return reply as! T
+        }
+
+        return "unknown-field-name" as! T
+    }
+
+    mutating func setField(
+        _ name: String,
+        _ value: Any
+    ) {
+        if (name == "didLaunch") {
+            didLaunch = value as! Bool
+        }
+        else if (name == "didSetup") {
+            didSetup = value as! Bool
+        }
+        else if (name == "inputContents") {
+            inputContents = value as! String
         }
         else if (name == "prompt") {
             prompt = value as! String
+        }
+        else if (name == "reply") {
+            reply = value as! String
         }
 
     }
@@ -333,11 +357,49 @@ struct LLMContext: DialectContext {
     }
 }
 
-func agentSet(
-    _ key: String,
-    _ value: Any
-) {
-    AgentComponent.singleton!.ctrl.set(key, value)
+struct TranspilerContext: DialectContext {
+    var cliDidConsoleOutput = Bool()
+    var consoleOutput = String()
+    var reply = String()
+    var willShutdown = Bool()
+
+    var recentField = ""
+
+    func field<T>(_ name: String) -> T {
+        if (name == "cliDidConsoleOutput") {
+            return cliDidConsoleOutput as! T
+        }
+        else if (name == "consoleOutput") {
+            return consoleOutput as! T
+        }
+        else if (name == "reply") {
+            return reply as! T
+        }
+        else if (name == "willShutdown") {
+            return willShutdown as! T
+        }
+
+        return "unknown-field-name" as! T
+    }
+
+    mutating func setField(
+        _ name: String,
+        _ value: Any
+    ) {
+        if (name == "cliDidConsoleOutput") {
+            cliDidConsoleOutput = value as! Bool
+        }
+        else if (name == "consoleOutput") {
+            consoleOutput = value as! String
+        }
+        else if (name == "reply") {
+            reply = value as! String
+        }
+        else if (name == "willShutdown") {
+            willShutdown = value as! Bool
+        }
+
+    }
 }
 
 func cliSet(
@@ -347,6 +409,13 @@ func cliSet(
     CLIComponent.singleton!.ctrl.set(key, value)
 }
 
+func convSet(
+    _ key: String,
+    _ value: Any
+) {
+    ConvComponent.singleton!.ctrl.set(key, value)
+}
+
 func llmSet(
     _ key: String,
     _ value: Any
@@ -354,47 +423,11 @@ func llmSet(
     LLMComponent.singleton!.ctrl.set(key, value)
 }
 
-func agentShouldResetConsoleOutput(_ c: AgentContext) -> AgentContext {
-    var c = c
-
-    /* 1. Upon reply */
-    if
-        c.recentField == F.reply
-    {
-        c.consoleOutput = c.reply
-        c.recentField = F.consoleOutput
-        return c
-    }
-
-
-    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
-    return c
-}
-
-func agentShouldResetWillShutdown(_ c: AgentContext) -> AgentContext {
-    var c = c
-
-    /* 1. Upon reply */
-    if
-        c.recentField == F.reply
-    {
-        c.willShutdown = true
-        c.recentField = F.willShutdown
-        return c
-    }
-
-    /* 2. Upon CLI console outpu */
-    if
-        c.recentField == F.cliDidConsoleOutput
-    {
-        c.willShutdown = true
-        c.recentField = F.willShutdown
-        return c
-    }
-
-
-    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
-    return c
+func transpilerSet(
+    _ key: String,
+    _ value: Any
+) {
+    TranspilerComponent.singleton!.ctrl.set(key, value)
 }
 
 func cliShouldResetConsoleOutput(_ c: CLIContext) -> CLIContext {
@@ -403,9 +436,18 @@ func cliShouldResetConsoleOutput(_ c: CLIContext) -> CLIContext {
     /* 1. File argument was not found */
     if
         c.recentField == F.didLaunch &&
-        cliArgumentValue(c.arguments, CLI_ARG_PROMPT).isEmpty
+        cliArgumentValue(c.arguments, CLI_ARG_FILE).isEmpty
     {
-        c.consoleOutput = CLI_CONSOLE_USAGE_AGENT
+        c.consoleOutput = CLI_CONSOLE_USAGE_TRANSPILER
+        c.recentField = F.consoleOutput
+        return c
+    }
+
+    /* 2. Could not open input file */
+    if
+        c.recentField == F.inputError
+    {
+        c.consoleOutput = CLI_CONSOLE_INPUT_FILE_ERROR
         c.recentField = F.consoleOutput
         return c
     }
@@ -433,15 +475,16 @@ func cliShouldResetDidLaunch(_ c: CLIContext) -> CLIContext {
     return c
 }
 
-func cliShouldResetInputPrompt(_ c: CLIContext) -> CLIContext {
+func cliShouldResetInputFileName(_ c: CLIContext) -> CLIContext {
     var c = c
 
-    /* 1. Parse prompt at launc */
+    /* 1. Get file name by parsing aguments */
     if
-        c.recentField == F.didLaunch
+        c.recentField == F.arguments &&
+        cliArgumentValue(c.arguments, CLI_ARG_FILE) != ""
     {
-        c.inputPrompt = cliArgumentValue(c.arguments, CLI_ARG_PROMPT)
-        c.recentField = F.inputPrompt
+        c.inputFileName = cliArgumentValue(c.arguments, CLI_ARG_FILE)
+        c.recentField = F.inputFileName
         return c
     }
 
@@ -450,15 +493,50 @@ func cliShouldResetInputPrompt(_ c: CLIContext) -> CLIContext {
     return c
 }
 
-func cliShouldResetPrompt(_ c: CLIContext) -> CLIContext {
+func cliShouldResetWillReadFile(_ c: CLIContext) -> CLIContext {
     var c = c
 
-    /* 1. Report prompt if vali */
+    /* 1. File name has been specified */
     if
-        c.recentField == F.inputPrompt &&
-        !c.inputPrompt.isEmpty
+        c.recentField == F.didLaunch &&
+        !c.inputFileName.isEmpty
     {
-        c.prompt = c.inputPrompt
+        c.willReadFile = true
+        c.recentField = F.willReadFile
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func convShouldResetDidLaunch(_ c: ConvContext) -> ConvContext {
+    var c = c
+
+    /* 1. Only once during the first setup */
+    if
+        c.recentField == F.didSetup &&
+        c.didLaunch == false
+    {
+        c.didLaunch = true
+        c.recentField = F.didLaunch
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func convShouldResetPrompt(_ c: ConvContext) -> ConvContext {
+    var c = c
+
+    /* 1. Upon reading input file contents */
+    if
+        c.recentField == F.inputContents
+    {
+        c.prompt = CONV_PROMPT_PREFIX + c.inputContents + CONV_OUTPUT_SUFFIX
         c.recentField = F.prompt
         return c
     }
@@ -529,25 +607,68 @@ func llmShouldResetRequest(_ c: LLMContext) -> LLMContext {
     return c
 }
 
-func agentRegisterShoulds(_ ctrl: DialectController) {
-    [
-        agentShouldResetConsoleOutput,
-        agentShouldResetWillShutdown,
+func transpilerShouldResetConsoleOutput(_ c: TranspilerContext) -> TranspilerContext {
+    var c = c
 
-    ].forEach { f in
-        ctrl.registerFunction { c in f(c as! AgentContext) }
+    /* 1. Upon reply */
+    if
+        c.recentField == F.reply
+    {
+        c.consoleOutput = c.reply
+        c.recentField = F.consoleOutput
+        return c
     }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func transpilerShouldResetWillShutdown(_ c: TranspilerContext) -> TranspilerContext {
+    var c = c
+
+    /* 1. Upon reply */
+    if
+        c.recentField == F.reply
+    {
+        c.willShutdown = true
+        c.recentField = F.willShutdown
+        return c
+    }
+
+    /* 2. Upon CLI console outpu */
+    if
+        c.recentField == F.cliDidConsoleOutput
+    {
+        c.willShutdown = true
+        c.recentField = F.willShutdown
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
 }
 
 func cliRegisterShoulds(_ ctrl: DialectController) {
     [
         cliShouldResetConsoleOutput,
         cliShouldResetDidLaunch,
-        cliShouldResetInputPrompt,
-        cliShouldResetPrompt,
+        cliShouldResetInputFileName,
+        cliShouldResetWillReadFile,
 
     ].forEach { f in
         ctrl.registerFunction { c in f(c as! CLIContext) }
+    }
+}
+
+func convRegisterShoulds(_ ctrl: DialectController) {
+    [
+        convShouldResetDidLaunch,
+        convShouldResetPrompt,
+
+    ].forEach { f in
+        ctrl.registerFunction { c in f(c as! ConvContext) }
     }
 }
 
@@ -562,27 +683,46 @@ func llmRegisterShoulds(_ ctrl: DialectController) {
     }
 }
 
-func agentRegisterEffects(_ ctrl: DialectController) {
-    let _: AgentContext? = registerOneliners(ctrl, [
-        F.consoleOutput, { (c: AgentContext) in print(c.consoleOutput) },
-        F.willShutdown, { (c: AgentContext) in agentShutdown() },
+func transpilerRegisterShoulds(_ ctrl: DialectController) {
+    [
+        transpilerShouldResetConsoleOutput,
+        transpilerShouldResetWillShutdown,
 
-    ])
+    ].forEach { f in
+        ctrl.registerFunction { c in f(c as! TranspilerContext) }
+    }
 }
 
 func cliRegisterEffects(_ ctrl: DialectController) {
     let _: CLIContext? = registerOneliners(ctrl, [
         F.consoleOutput, { (c: CLIContext) in print(c.consoleOutput) },
-        F.consoleOutput, { (c: CLIContext) in agentSet(F.cliDidConsoleOutput, true) },
-        F.prompt, { (c: CLIContext) in llmSet(F.prompt, c.prompt) },
+        F.consoleOutput, { (c: CLIContext) in transpilerSet(F.cliDidConsoleOutput, true) },
+        F.inputContents, { (c: CLIContext) in convSet(F.inputContents, c.inputContents) },
+        F.willReadFile, { (c: CLIContext) in cliReadInputFile(c.inputFileName, F.inputContents, F.inputError) },
+
+    ])
+}
+
+func convRegisterEffects(_ ctrl: DialectController) {
+    let _: ConvContext? = registerOneliners(ctrl, [
+        F.prompt, { (c: ConvContext) in llmSet(F.prompt, c.prompt) },
+        F.reply, { (c: ConvContext) in transpilerSet(F.reply, c.reply) },
 
     ])
 }
 
 func llmRegisterEffects(_ ctrl: DialectController) {
     let _: LLMContext? = registerOneliners(ctrl, [
-        F.reply, { (c: LLMContext) in agentSet(F.reply, c.reply) },
+        F.reply, { (c: LLMContext) in convSet(F.reply, c.reply) },
         F.request, { (c: LLMContext) in llmLoad(c.request, F.response, F.responseError) },
+
+    ])
+}
+
+func transpilerRegisterEffects(_ ctrl: DialectController) {
+    let _: TranspilerContext? = registerOneliners(ctrl, [
+        F.consoleOutput, { (c: TranspilerContext) in print(c.consoleOutput) },
+        F.willShutdown, { (c: TranspilerContext) in transpilerShutdown() },
 
     ])
 }

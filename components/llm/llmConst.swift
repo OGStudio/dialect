@@ -3,4 +3,7 @@ let LLM_DEFAULT_MODEL = "qwen2.5-coder:3b"
 let LLM_DEFAULT_PORT = 11434
 let LLM_LINE_DELIMITER = "\",\""
 let LLM_REPLY_PREFIX = "response\":\""
+let LLM_SEED = 42
+let LLM_TEMPERATURE = 0.0
+let LLM_TOP_K = 1
 let LLM_URL_GENERATE_T = "http://%HOST%:%PORT%/api/generate"
