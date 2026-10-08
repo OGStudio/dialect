@@ -16,3 +16,4 @@ llm.setup()
 kotlin.setup()
 swift.setup()
 
+otherLaunch()
