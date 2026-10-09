@@ -296,7 +296,6 @@ struct ConvContext: DialectContext {
     var didSetup = Bool()
     var dstQueue = [String]()
     var entityShouldBranches = [Int: [Int: [ShouldBranch]]]()
-    var inputContents = String()
     var prompt = String()
     var reply = String()
     var srcId = Int()
@@ -317,9 +316,6 @@ struct ConvContext: DialectContext {
         }
         else if (name == "entityShouldBranches") {
             return entityShouldBranches as! T
-        }
-        else if (name == "inputContents") {
-            return inputContents as! T
         }
         else if (name == "prompt") {
             return prompt as! T
@@ -355,9 +351,6 @@ struct ConvContext: DialectContext {
         }
         else if (name == "entityShouldBranches") {
             entityShouldBranches = value as! [Int: [Int: [ShouldBranch]]]
-        }
-        else if (name == "inputContents") {
-            inputContents = value as! String
         }
         else if (name == "prompt") {
             prompt = value as! String
@@ -1042,19 +1035,36 @@ func convShouldResetDidLaunch(_ c: ConvContext) -> ConvContext {
     return c
 }
 
-func convShouldResetPrompt(_ c: ConvContext) -> ConvContext {
+func convShouldResetDstQueue(_ c: ConvContext) -> ConvContext {
     var c = c
 
-    /* 1. Upon reading input file contents */
+    /* 1. Upon new queue to transpil */
     if
-        c.recentField == F.inputContents
+        c.recentField == F.srcQueue
     {
-        c.prompt = CONV_PROMPT_PREFIX + c.inputContents + CONV_PROMPT_SUFFIX
-        c.recentField = F.prompt
+        c.dstQueue = []
+        c.recentField = F.dstQueue
         return c
     }
 
-    /* 2. Upon getting new source to transpil */
+    /* 2. Upon transpiled repl */
+    if
+        c.recentField == F.reply
+    {
+        c.dstQueue.append(c.reply)
+        c.recentField = F.dstQueue
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func convShouldResetPrompt(_ c: ConvContext) -> ConvContext {
+    var c = c
+
+    /* 1. Upon getting new source to transpil */
     if
         c.recentField == F.srcId
     {
@@ -1759,6 +1769,7 @@ func cliRegisterShoulds(_ ctrl: DialectController) {
 func convRegisterShoulds(_ ctrl: DialectController) {
     [
         convShouldResetDidLaunch,
+        convShouldResetDstQueue,
         convShouldResetPrompt,
         convShouldResetSrcId,
         convShouldResetSrcQueue,

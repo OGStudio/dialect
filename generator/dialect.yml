@@ -73,13 +73,19 @@ ConvComponent:
                     c.didLaunch == false
                 then:
                     c.didLaunch = true
-        prompt:
-            1. Upon reading input file contents:
+        dstQueue:
+            1. Upon new queue to transpile
                 if:
-                    c.recentField == F.inputContents
+                    c.recentField == F.srcQueue
                 then:
-                    c.prompt = CONV_PROMPT_PREFIX + c.inputContents + CONV_PROMPT_SUFFIX
-            2. Upon getting new source to transpile
+                    c.dstQueue = []
+            2. Upon transpiled reply
+                if:
+                    c.recentField == F.reply
+                then:
+                    c.dstQueue.append(c.reply)
+        prompt:
+            1. Upon getting new source to transpile
                 if:
                     c.recentField == F.srcId
                 then:
@@ -110,7 +116,6 @@ ConvContext:
         didSetup: Bool
         dstQueue: [String]
         entityShouldBranches: [Int: [Int: [ShouldBranch]]]
-        inputContents: String
         prompt: String
         reply: String
         srcId: Int
