@@ -163,6 +163,7 @@ struct F {
     static let request = "request"
     static let response = "response"
     static let responseError = "responseError"
+    static let srcQueue = "srcQueue"
     static let system = "system"
     static let transpiledShouldBranches = "transpiledShouldBranches"
     static let type = "type"
@@ -295,6 +296,7 @@ struct ConvContext: DialectContext {
     var inputContents = String()
     var prompt = String()
     var reply = String()
+    var srcQueue = [String]()
     var transpiledShouldBranches = [Int: [Int: [ShouldBranch]]]()
 
     var recentField = ""
@@ -317,6 +319,9 @@ struct ConvContext: DialectContext {
         }
         else if (name == "reply") {
             return reply as! T
+        }
+        else if (name == "srcQueue") {
+            return srcQueue as! T
         }
         else if (name == "transpiledShouldBranches") {
             return transpiledShouldBranches as! T
@@ -346,6 +351,9 @@ struct ConvContext: DialectContext {
         }
         else if (name == "reply") {
             reply = value as! String
+        }
+        else if (name == "srcQueue") {
+            srcQueue = value as! [String]
         }
         else if (name == "transpiledShouldBranches") {
             transpiledShouldBranches = value as! [Int: [Int: [ShouldBranch]]]
@@ -1035,6 +1043,23 @@ func convShouldResetPrompt(_ c: ConvContext) -> ConvContext {
     return c
 }
 
+func convShouldResetSrcQueue(_ c: ConvContext) -> ConvContext {
+    var c = c
+
+    /* 1. Upon entity should branche */
+    if
+        c.recentField == F.entityShouldBranches
+    {
+        c.srcQueue = convSrcQueue(c.entityShouldBranches)
+        c.recentField = F.srcQueue
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
 func kotlinShouldResetDidLaunch(_ c: KotlinContext) -> KotlinContext {
     var c = c
 
@@ -1683,6 +1708,7 @@ func convRegisterShoulds(_ ctrl: DialectController) {
     [
         convShouldResetDidLaunch,
         convShouldResetPrompt,
+        convShouldResetSrcQueue,
 
     ].forEach { f in
         ctrl.registerFunction { c in f(c as! ConvContext) }

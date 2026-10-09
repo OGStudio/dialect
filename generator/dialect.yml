@@ -79,6 +79,12 @@ ConvComponent:
                     c.recentField == F.inputContents
                 then:
                     c.prompt = CONV_PROMPT_PREFIX + c.inputContents + CONV_PROMPT_SUFFIX
+        srcQueue:
+            1. Upon entity should branches
+                if:
+                    c.recentField == F.entityShouldBranches
+                then:
+                    c.srcQueue = convSrcQueue(c.entityShouldBranches)
 
 ConvContext:
     type: context
@@ -89,6 +95,7 @@ ConvContext:
         inputContents: String
         prompt: String
         reply: String
+        srcQueue: [String]
         transpiledShouldBranches: [Int: [Int: [ShouldBranch]]]
 
 KotlinComponent:
