@@ -25,23 +25,29 @@ func convSrcQueue(
 }
 
 // Construct single transpiled branch
-func convTranspiledShouldBranche(
+func convTranspiledShouldBranch(
     _ orig: ShouldBranch,
     _ cond: String,
     _ reac: String
 ) -> ShouldBranch {
     var b = orig
 
-    var linesCondition = condition.split("\n")
-    if linesCondition[0].startsWith(CONV_PREFIX_KOTLIN) {
-        linesCondition.dropFirst()
-        b.condition = linesCondition
+    var linesCondition = cond.split(separator: "\n")
+    if
+        let first = linesCondition.first,
+        first.hasPrefix(CONV_PREFIX_KOTLIN)
+    {
+        linesCondition = Array(linesCondition.dropFirst())
+        b.condition = linesCondition.map(String.init)
     }
 
-    var linesReaction = condition.split("\n")
-    if linesReaction[0].startsWith(CONV_PREFIX_KOTLIN) {
-        linesReaction.dropFirst()
-        b.reaction = linesReaction
+    var linesReaction = reac.split(separator: "\n")
+    if
+        let first = linesReaction.first,
+        first.hasPrefix(CONV_PREFIX_KOTLIN)
+    {
+        linesReaction = Array(linesReaction.dropFirst())
+        b.reaction = linesReaction.map(String.init)
     }
 
     return b
@@ -66,7 +72,7 @@ func convTranspiledShouldBranches(
                 id += 1
                 // Format the snippets
                 let item = convTranspiledShouldBranch(branch, condition, reaction)
-                items.append(item)
+                items[entityId, default: [:]][shouldId, default: []].append(item)
             }
         }
     }
