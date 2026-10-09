@@ -1,3 +1,11 @@
+func convQueuePrompt(
+    _ queue: [String],
+    _ id: Int
+) -> String {
+    let src = "SWIFT-\(id)\n" + queue[id]
+    return CONV_PROMPT_PREFIX + src + CONV_PROMPT_SUFFIX
+}
+
 func convSrcQueue(
     _ entityShouldBranches: [Int: [Int: [ShouldBranch]]]
 ) -> [String] {

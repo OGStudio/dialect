@@ -164,6 +164,7 @@ struct F {
     static let request = "request"
     static let response = "response"
     static let responseError = "responseError"
+    static let srcId = "srcId"
     static let srcQueue = "srcQueue"
     static let system = "system"
     static let transpiledShouldBranches = "transpiledShouldBranches"
@@ -298,6 +299,7 @@ struct ConvContext: DialectContext {
     var inputContents = String()
     var prompt = String()
     var reply = String()
+    var srcId = Int()
     var srcQueue = [String]()
     var transpiledShouldBranches = [Int: [Int: [ShouldBranch]]]()
 
@@ -324,6 +326,9 @@ struct ConvContext: DialectContext {
         }
         else if (name == "reply") {
             return reply as! T
+        }
+        else if (name == "srcId") {
+            return srcId as! T
         }
         else if (name == "srcQueue") {
             return srcQueue as! T
@@ -359,6 +364,9 @@ struct ConvContext: DialectContext {
         }
         else if (name == "reply") {
             reply = value as! String
+        }
+        else if (name == "srcId") {
+            srcId = value as! Int
         }
         else if (name == "srcQueue") {
             srcQueue = value as! [String]
@@ -1046,6 +1054,42 @@ func convShouldResetPrompt(_ c: ConvContext) -> ConvContext {
         return c
     }
 
+    /* 2. Upon getting new source to transpil */
+    if
+        c.recentField == F.srcId
+    {
+        c.prompt = convQueuePrompt(c.srcQueue, c.srcId)
+        c.recentField = F.prompt
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func convShouldResetSrcId(_ c: ConvContext) -> ConvContext {
+    var c = c
+
+    /* 1. Upon new queue to transpil */
+    if
+        c.recentField == F.srcQueue
+    {
+        c.srcId = 0
+        c.recentField = F.srcId
+        return c
+    }
+
+    /* 2. Upon transpiled repl */
+    if
+        c.recentField == F.reply &&
+        c.srcId + 1 < c.srcQueue.count
+    {
+        c.srcId += 1
+        c.recentField = F.srcId
+        return c
+    }
+
 
     c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
     return c
@@ -1716,6 +1760,7 @@ func convRegisterShoulds(_ ctrl: DialectController) {
     [
         convShouldResetDidLaunch,
         convShouldResetPrompt,
+        convShouldResetSrcId,
         convShouldResetSrcQueue,
 
     ].forEach { f in
@@ -1819,6 +1864,7 @@ func kotlinRegisterEffects(_ ctrl: DialectController) {
 func llmRegisterEffects(_ ctrl: DialectController) {
     let _: LLMContext? = registerOneliners(ctrl, [
         F.request, { (c: LLMContext) in llmLoad(c.request, F.response, F.responseError) },
+        F.reply, { (c: LLMContext) in convSet(F.reply, c.reply) },
 
     ])
 }

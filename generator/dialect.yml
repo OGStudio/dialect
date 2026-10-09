@@ -79,6 +79,23 @@ ConvComponent:
                     c.recentField == F.inputContents
                 then:
                     c.prompt = CONV_PROMPT_PREFIX + c.inputContents + CONV_PROMPT_SUFFIX
+            2. Upon getting new source to transpile
+                if:
+                    c.recentField == F.srcId
+                then:
+                    c.prompt = convQueuePrompt(c.srcQueue, c.srcId)
+        srcId:
+            1. Upon new queue to transpile
+                if:
+                    c.recentField == F.srcQueue
+                then:
+                    c.srcId = 0
+            2. Upon transpiled reply
+                if:
+                    c.recentField == F.reply &&
+                    c.srcId + 1 < c.srcQueue.count
+                then:
+                    c.srcId += 1
         srcQueue:
             1. Upon entity should branches
                 if:
@@ -96,6 +113,7 @@ ConvContext:
         inputContents: String
         prompt: String
         reply: String
+        srcId: Int
         srcQueue: [String]
         transpiledShouldBranches: [Int: [Int: [ShouldBranch]]]
 
@@ -209,6 +227,7 @@ LLMComponent:
     type: component
     oneliners:
         - request: llmLoad(c.request, F.response, F.responseError)
+        - reply: convSet(F.reply, c.reply)
     shoulds:
         didLaunch:
             1. Only once during the first setup:
