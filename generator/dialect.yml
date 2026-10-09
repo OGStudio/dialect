@@ -85,9 +85,13 @@ ConvContext:
     fields:
         didLaunch: Bool
         didSetup: Bool
+        entities: [String]
+        entityShouldBranches: [Int: [Int: [ShouldBranch]]]
+        entityShoulds: [Int: [String]]
         inputContents: String
         prompt: String
         reply: String
+        transpiledShouldBranches: [Int: [Int: [ShouldBranch]]]
 
 KotlinComponent:
     type: component
@@ -102,9 +106,9 @@ KotlinComponent:
                 then:
                     c.didLaunch = true
         out:
-            1. Upon launch:
+            1. Upon transpilations:
                 if:
-                    c.recentField == F.didLaunch
+                    c.recentField == F.outTranspilations
                 then:
                     c.out =
                         KOTLIN_OGS_PKG +
@@ -192,6 +196,8 @@ KotlinContext:
         outSets: String
         outShoulds: String
         outStructs: String
+        outTranspilations: String
+        transpiledShouldBranches: [Int: [Int: [ShouldBranch]]]
 
 LLMComponent:
     type: component
@@ -372,6 +378,7 @@ SwiftContext:
 YMLComponent:
     type: component
     oneliners:
+        - entities: convSet(F.entities, c.entities)
         - entities: kotlinSet(F.entities, c.entities)
         - entities: swiftSet(F.entities, c.entities)
         - entityFields: kotlinSet(F.entityFields, c.entityFields)
@@ -380,8 +387,10 @@ YMLComponent:
         - entityFieldTypes: swiftSet(F.entityFieldTypes, c.entityFieldTypes)
         - entityOneliners: kotlinSet(F.entityOneliners, c.entityOneliners)
         - entityOneliners: swiftSet(F.entityOneliners, c.entityOneliners)
+        - entityShouldBranches: convSet(F.entityShouldBranches, c.entityShouldBranches)
         - entityShouldBranches: kotlinSet(F.entityShouldBranches, c.entityShouldBranches)
         - entityShouldBranches: swiftSet(F.entityShouldBranches, c.entityShouldBranches)
+        - entityShoulds: convSet(F.entityShoulds, c.entityShoulds)
         - entityShoulds: kotlinSet(F.entityShoulds, c.entityShoulds)
         - entityShoulds: swiftSet(F.entityShoulds, c.entityShoulds)
         - entityTypes: kotlinSet(F.entityTypes, c.entityTypes)

@@ -151,6 +151,7 @@ struct F {
     static let outSets = "outSets"
     static let outShoulds = "outShoulds"
     static let outStructs = "outStructs"
+    static let outTranspilations = "outTranspilations"
     static let outputPaths = "outputPaths"
     static let parseInput = "parseInput"
     static let path = "path"
@@ -163,6 +164,7 @@ struct F {
     static let response = "response"
     static let responseError = "responseError"
     static let system = "system"
+    static let transpiledShouldBranches = "transpiledShouldBranches"
     static let type = "type"
     static let url = "url"
     static let version = "version"
@@ -289,9 +291,13 @@ struct CLIContext: DialectContext {
 struct ConvContext: DialectContext {
     var didLaunch = Bool()
     var didSetup = Bool()
+    var entities = [String]()
+    var entityShouldBranches = [Int: [Int: [ShouldBranch]]]()
+    var entityShoulds = [Int: [String]]()
     var inputContents = String()
     var prompt = String()
     var reply = String()
+    var transpiledShouldBranches = [Int: [Int: [ShouldBranch]]]()
 
     var recentField = ""
 
@@ -302,6 +308,15 @@ struct ConvContext: DialectContext {
         else if (name == "didSetup") {
             return didSetup as! T
         }
+        else if (name == "entities") {
+            return entities as! T
+        }
+        else if (name == "entityShouldBranches") {
+            return entityShouldBranches as! T
+        }
+        else if (name == "entityShoulds") {
+            return entityShoulds as! T
+        }
         else if (name == "inputContents") {
             return inputContents as! T
         }
@@ -310,6 +325,9 @@ struct ConvContext: DialectContext {
         }
         else if (name == "reply") {
             return reply as! T
+        }
+        else if (name == "transpiledShouldBranches") {
+            return transpiledShouldBranches as! T
         }
 
         return "unknown-field-name" as! T
@@ -325,6 +343,15 @@ struct ConvContext: DialectContext {
         else if (name == "didSetup") {
             didSetup = value as! Bool
         }
+        else if (name == "entities") {
+            entities = value as! [String]
+        }
+        else if (name == "entityShouldBranches") {
+            entityShouldBranches = value as! [Int: [Int: [ShouldBranch]]]
+        }
+        else if (name == "entityShoulds") {
+            entityShoulds = value as! [Int: [String]]
+        }
         else if (name == "inputContents") {
             inputContents = value as! String
         }
@@ -333,6 +360,9 @@ struct ConvContext: DialectContext {
         }
         else if (name == "reply") {
             reply = value as! String
+        }
+        else if (name == "transpiledShouldBranches") {
+            transpiledShouldBranches = value as! [Int: [Int: [ShouldBranch]]]
         }
 
     }
@@ -359,6 +389,8 @@ struct KotlinContext: DialectContext {
     var outSets = String()
     var outShoulds = String()
     var outStructs = String()
+    var outTranspilations = String()
+    var transpiledShouldBranches = [Int: [Int: [ShouldBranch]]]()
 
     var recentField = ""
 
@@ -422,6 +454,12 @@ struct KotlinContext: DialectContext {
         }
         else if (name == "outStructs") {
             return outStructs as! T
+        }
+        else if (name == "outTranspilations") {
+            return outTranspilations as! T
+        }
+        else if (name == "transpiledShouldBranches") {
+            return transpiledShouldBranches as! T
         }
 
         return "unknown-field-name" as! T
@@ -490,6 +528,12 @@ struct KotlinContext: DialectContext {
         }
         else if (name == "outStructs") {
             outStructs = value as! String
+        }
+        else if (name == "outTranspilations") {
+            outTranspilations = value as! String
+        }
+        else if (name == "transpiledShouldBranches") {
+            transpiledShouldBranches = value as! [Int: [Int: [ShouldBranch]]]
         }
 
     }
@@ -1026,9 +1070,9 @@ func kotlinShouldResetDidLaunch(_ c: KotlinContext) -> KotlinContext {
 func kotlinShouldResetOut(_ c: KotlinContext) -> KotlinContext {
     var c = c
 
-    /* 1. Upon launch */
+    /* 1. Upon transpilations */
     if
-        c.recentField == F.didLaunch
+        c.recentField == F.outTranspilations
     {
         c.out =
             KOTLIN_OGS_PKG +
@@ -1768,6 +1812,7 @@ func swiftRegisterEffects(_ ctrl: DialectController) {
 
 func ymlRegisterEffects(_ ctrl: DialectController) {
     let _: YMLContext? = registerOneliners(ctrl, [
+        F.entities, { (c: YMLContext) in convSet(F.entities, c.entities) },
         F.entities, { (c: YMLContext) in kotlinSet(F.entities, c.entities) },
         F.entities, { (c: YMLContext) in swiftSet(F.entities, c.entities) },
         F.entityFields, { (c: YMLContext) in kotlinSet(F.entityFields, c.entityFields) },
@@ -1776,8 +1821,10 @@ func ymlRegisterEffects(_ ctrl: DialectController) {
         F.entityFieldTypes, { (c: YMLContext) in swiftSet(F.entityFieldTypes, c.entityFieldTypes) },
         F.entityOneliners, { (c: YMLContext) in kotlinSet(F.entityOneliners, c.entityOneliners) },
         F.entityOneliners, { (c: YMLContext) in swiftSet(F.entityOneliners, c.entityOneliners) },
+        F.entityShouldBranches, { (c: YMLContext) in convSet(F.entityShouldBranches, c.entityShouldBranches) },
         F.entityShouldBranches, { (c: YMLContext) in kotlinSet(F.entityShouldBranches, c.entityShouldBranches) },
         F.entityShouldBranches, { (c: YMLContext) in swiftSet(F.entityShouldBranches, c.entityShouldBranches) },
+        F.entityShoulds, { (c: YMLContext) in convSet(F.entityShoulds, c.entityShoulds) },
         F.entityShoulds, { (c: YMLContext) in kotlinSet(F.entityShoulds, c.entityShoulds) },
         F.entityShoulds, { (c: YMLContext) in swiftSet(F.entityShoulds, c.entityShoulds) },
         F.entityTypes, { (c: YMLContext) in kotlinSet(F.entityTypes, c.entityTypes) },

@@ -5,8 +5,8 @@ let llm = LLMComponent()
 let swift = SwiftComponent()
 let yml = YMLComponent()
 
-otherSetupConsoleLogging(cli.ctrl, "CLI")
 otherSetupConsoleLogging(conv.ctrl, "Conv")
+otherSetupConsoleLogging(kotlin.ctrl, "Kotlin")
 otherSetupConsoleLogging(llm.ctrl, "LLM")
 
 conv.setup()
