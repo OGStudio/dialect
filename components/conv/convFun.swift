@@ -7,8 +7,8 @@ func convSrcQueue(
         for shouldId in shoulds.keys.sorted() {
             let branches = shoulds[shouldId] ?? []
             for branch in branches {
-                items.append(branch.condition)
-                items.append(branch.reaction)
+                items.append(branch.condition.joined(separator: "\n"))
+                items.append(branch.reaction.joined(separator: "\n"))
             }
         }
     }
