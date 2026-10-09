@@ -291,9 +291,7 @@ struct CLIContext: DialectContext {
 struct ConvContext: DialectContext {
     var didLaunch = Bool()
     var didSetup = Bool()
-    var entities = [String]()
     var entityShouldBranches = [Int: [Int: [ShouldBranch]]]()
-    var entityShoulds = [Int: [String]]()
     var inputContents = String()
     var prompt = String()
     var reply = String()
@@ -308,14 +306,8 @@ struct ConvContext: DialectContext {
         else if (name == "didSetup") {
             return didSetup as! T
         }
-        else if (name == "entities") {
-            return entities as! T
-        }
         else if (name == "entityShouldBranches") {
             return entityShouldBranches as! T
-        }
-        else if (name == "entityShoulds") {
-            return entityShoulds as! T
         }
         else if (name == "inputContents") {
             return inputContents as! T
@@ -343,14 +335,8 @@ struct ConvContext: DialectContext {
         else if (name == "didSetup") {
             didSetup = value as! Bool
         }
-        else if (name == "entities") {
-            entities = value as! [String]
-        }
         else if (name == "entityShouldBranches") {
             entityShouldBranches = value as! [Int: [Int: [ShouldBranch]]]
-        }
-        else if (name == "entityShoulds") {
-            entityShoulds = value as! [Int: [String]]
         }
         else if (name == "inputContents") {
             inputContents = value as! String
@@ -1812,7 +1798,6 @@ func swiftRegisterEffects(_ ctrl: DialectController) {
 
 func ymlRegisterEffects(_ ctrl: DialectController) {
     let _: YMLContext? = registerOneliners(ctrl, [
-        F.entities, { (c: YMLContext) in convSet(F.entities, c.entities) },
         F.entities, { (c: YMLContext) in kotlinSet(F.entities, c.entities) },
         F.entities, { (c: YMLContext) in swiftSet(F.entities, c.entities) },
         F.entityFields, { (c: YMLContext) in kotlinSet(F.entityFields, c.entityFields) },
@@ -1824,7 +1809,6 @@ func ymlRegisterEffects(_ ctrl: DialectController) {
         F.entityShouldBranches, { (c: YMLContext) in convSet(F.entityShouldBranches, c.entityShouldBranches) },
         F.entityShouldBranches, { (c: YMLContext) in kotlinSet(F.entityShouldBranches, c.entityShouldBranches) },
         F.entityShouldBranches, { (c: YMLContext) in swiftSet(F.entityShouldBranches, c.entityShouldBranches) },
-        F.entityShoulds, { (c: YMLContext) in convSet(F.entityShoulds, c.entityShoulds) },
         F.entityShoulds, { (c: YMLContext) in kotlinSet(F.entityShoulds, c.entityShoulds) },
         F.entityShoulds, { (c: YMLContext) in swiftSet(F.entityShoulds, c.entityShoulds) },
         F.entityTypes, { (c: YMLContext) in kotlinSet(F.entityTypes, c.entityTypes) },

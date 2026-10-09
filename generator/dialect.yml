@@ -85,9 +85,7 @@ ConvContext:
     fields:
         didLaunch: Bool
         didSetup: Bool
-        entities: [String]
         entityShouldBranches: [Int: [Int: [ShouldBranch]]]
-        entityShoulds: [Int: [String]]
         inputContents: String
         prompt: String
         reply: String
@@ -378,7 +376,6 @@ SwiftContext:
 YMLComponent:
     type: component
     oneliners:
-        - entities: convSet(F.entities, c.entities)
         - entities: kotlinSet(F.entities, c.entities)
         - entities: swiftSet(F.entities, c.entities)
         - entityFields: kotlinSet(F.entityFields, c.entityFields)
@@ -390,7 +387,6 @@ YMLComponent:
         - entityShouldBranches: convSet(F.entityShouldBranches, c.entityShouldBranches)
         - entityShouldBranches: kotlinSet(F.entityShouldBranches, c.entityShouldBranches)
         - entityShouldBranches: swiftSet(F.entityShouldBranches, c.entityShouldBranches)
-        - entityShoulds: convSet(F.entityShoulds, c.entityShoulds)
         - entityShoulds: kotlinSet(F.entityShoulds, c.entityShoulds)
         - entityShoulds: swiftSet(F.entityShoulds, c.entityShoulds)
         - entityTypes: kotlinSet(F.entityTypes, c.entityTypes)
