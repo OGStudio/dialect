@@ -74,40 +74,47 @@ ConvComponent:
                 then:
                     c.didLaunch = true
         dstQueue:
-            1. Upon new queue to transpile
+            1. Upon new queue to transpile:
                 if:
                     c.recentField == F.srcQueue
                 then:
                     c.dstQueue = []
-            2. Upon transpiled reply
+            2. Upon transpiled reply:
                 if:
                     c.recentField == F.reply
                 then:
                     c.dstQueue.append(c.reply)
         prompt:
-            1. Upon getting new source to transpile
+            1. Upon getting new source to transpile:
                 if:
                     c.recentField == F.srcId
                 then:
                     c.prompt = convQueuePrompt(c.srcQueue, c.srcId)
         srcId:
-            1. Upon new queue to transpile
+            1. Upon new queue to transpile:
                 if:
                     c.recentField == F.srcQueue
                 then:
                     c.srcId = 0
-            2. Upon transpiled reply
+            2. Upon transpiled reply:
                 if:
                     c.recentField == F.reply &&
                     c.srcId + 1 < c.srcQueue.count
                 then:
                     c.srcId += 1
         srcQueue:
-            1. Upon entity should branches
+            1. Upon entity should branches:
                 if:
                     c.recentField == F.entityShouldBranches
                 then:
                     c.srcQueue = convSrcQueue(c.entityShouldBranches)
+        transpiledShouldBranches:
+            1. Upon transpilation completion:
+                if:
+                    c.recentField == F.dstQueue &&
+                    c.dstQueue.count == c.srcQueue.count
+                then:
+                    c.transpiledShouldBranches = convTranspiledShouldBranches(c.entityShouldBranches, c.dstQueue)
 
 ConvContext:
     type: context

@@ -1038,7 +1038,7 @@ func convShouldResetDidLaunch(_ c: ConvContext) -> ConvContext {
 func convShouldResetDstQueue(_ c: ConvContext) -> ConvContext {
     var c = c
 
-    /* 1. Upon new queue to transpil */
+    /* 1. Upon new queue to transpile */
     if
         c.recentField == F.srcQueue
     {
@@ -1047,7 +1047,7 @@ func convShouldResetDstQueue(_ c: ConvContext) -> ConvContext {
         return c
     }
 
-    /* 2. Upon transpiled repl */
+    /* 2. Upon transpiled reply */
     if
         c.recentField == F.reply
     {
@@ -1064,7 +1064,7 @@ func convShouldResetDstQueue(_ c: ConvContext) -> ConvContext {
 func convShouldResetPrompt(_ c: ConvContext) -> ConvContext {
     var c = c
 
-    /* 1. Upon getting new source to transpil */
+    /* 1. Upon getting new source to transpile */
     if
         c.recentField == F.srcId
     {
@@ -1081,7 +1081,7 @@ func convShouldResetPrompt(_ c: ConvContext) -> ConvContext {
 func convShouldResetSrcId(_ c: ConvContext) -> ConvContext {
     var c = c
 
-    /* 1. Upon new queue to transpil */
+    /* 1. Upon new queue to transpile */
     if
         c.recentField == F.srcQueue
     {
@@ -1090,7 +1090,7 @@ func convShouldResetSrcId(_ c: ConvContext) -> ConvContext {
         return c
     }
 
-    /* 2. Upon transpiled repl */
+    /* 2. Upon transpiled reply */
     if
         c.recentField == F.reply &&
         c.srcId + 1 < c.srcQueue.count
@@ -1108,12 +1108,30 @@ func convShouldResetSrcId(_ c: ConvContext) -> ConvContext {
 func convShouldResetSrcQueue(_ c: ConvContext) -> ConvContext {
     var c = c
 
-    /* 1. Upon entity should branche */
+    /* 1. Upon entity should branches */
     if
         c.recentField == F.entityShouldBranches
     {
         c.srcQueue = convSrcQueue(c.entityShouldBranches)
         c.recentField = F.srcQueue
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func convShouldResetTranspiledShouldBranches(_ c: ConvContext) -> ConvContext {
+    var c = c
+
+    /* 1. Upon transpilation completion */
+    if
+        c.recentField == F.dstQueue &&
+        c.dstQueue.count == c.srcQueue.count
+    {
+        c.transpiledShouldBranches = convTranspiledShouldBranches(c.entityShouldBranches, c.dstQueue)
+        c.recentField = F.transpiledShouldBranches
         return c
     }
 
@@ -1773,6 +1791,7 @@ func convRegisterShoulds(_ ctrl: DialectController) {
         convShouldResetPrompt,
         convShouldResetSrcId,
         convShouldResetSrcQueue,
+        convShouldResetTranspiledShouldBranches,
 
     ].forEach { f in
         ctrl.registerFunction { c in f(c as! ConvContext) }

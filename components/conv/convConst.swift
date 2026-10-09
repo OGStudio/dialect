@@ -116,6 +116,8 @@ SWIFT-25
 SWIFT-26
         c.label = c.name + "-" + c.countText
 """
+let CONV_PREFIX_KOTLIN = "KOTLIN-"
+let CONV_PREFIX_SWIFT = "SWIFT-"
 let CONV_PROMPT_PREFIX = """
 You are a transpiler that converts Swift source code into idiomatic Kotlin source code.
 
