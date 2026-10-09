@@ -128,6 +128,7 @@ struct F {
     static let contents = "contents"
     static let didLaunch = "didLaunch"
     static let didSetup = "didSetup"
+    static let dstQueue = "dstQueue"
     static let entities = "entities"
     static let entityFieldTypes = "entityFieldTypes"
     static let entityFields = "entityFields"
@@ -292,6 +293,7 @@ struct CLIContext: DialectContext {
 struct ConvContext: DialectContext {
     var didLaunch = Bool()
     var didSetup = Bool()
+    var dstQueue = [String]()
     var entityShouldBranches = [Int: [Int: [ShouldBranch]]]()
     var inputContents = String()
     var prompt = String()
@@ -307,6 +309,9 @@ struct ConvContext: DialectContext {
         }
         else if (name == "didSetup") {
             return didSetup as! T
+        }
+        else if (name == "dstQueue") {
+            return dstQueue as! T
         }
         else if (name == "entityShouldBranches") {
             return entityShouldBranches as! T
@@ -339,6 +344,9 @@ struct ConvContext: DialectContext {
         }
         else if (name == "didSetup") {
             didSetup = value as! Bool
+        }
+        else if (name == "dstQueue") {
+            dstQueue = value as! [String]
         }
         else if (name == "entityShouldBranches") {
             entityShouldBranches = value as! [Int: [Int: [ShouldBranch]]]

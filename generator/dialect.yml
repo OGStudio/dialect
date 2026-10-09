@@ -91,6 +91,7 @@ ConvContext:
     fields:
         didLaunch: Bool
         didSetup: Bool
+        dstQueue: [String]
         entityShouldBranches: [Int: [Int: [ShouldBranch]]]
         inputContents: String
         prompt: String
