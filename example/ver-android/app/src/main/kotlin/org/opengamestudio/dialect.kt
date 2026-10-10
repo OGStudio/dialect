@@ -278,20 +278,8 @@ fun rootRegisterShoulds(ctrl: DialectController) {
 
 fun rootRegisterEffects(ctrl: DialectController) {
     registerOneliners(ctrl, arrayOf(
-        F.countText, { c: DialectContext ->
-            if (false) {
-                /**
-print(c.countText)
-                */
-            }
-        },
-        F.countText, { c: DialectContext ->
-            if (false) {
-                /**
-RootVM.shared!.countText = c.countText
-                */
-            }
-        },
+        F.countText, { c: DialectContext -> print(c.countText) },
+        F.countText, { c: DialectContext -> RootVM.shared!!.countText = c.countText },
 
     ))
 }

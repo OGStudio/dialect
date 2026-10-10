@@ -68,13 +68,7 @@ fun %FUNC%(ctrl: DialectController) {
 
 """
 let KOTLIN_REGISTER_EFFECT_ITEM_T = """
-        F.%FIELD%, { c: DialectContext ->
-            if (false) {
-                /**
-%REACTION%
-                */
-            }
-        },
+        F.%FIELD%, { c: DialectContext -> %REACTION% },
 
 """
 let KOTLIN_REGISTER_SHOULDS_SUFFIX = "RegisterShoulds"
