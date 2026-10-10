@@ -61,6 +61,120 @@ CLIContext:
         inputFileName: String
         readFile: Bool
 
+ConvComponent:
+    type: component
+    oneliners:
+        - prompt: llmSet(F.prompt, c.prompt)
+        - transpiledOneliners: kotlinSet(F.transpiledOneliners, c.transpiledOneliners)
+        - transpiledShouldBranches: kotlinSet(F.transpiledShouldBranches, c.transpiledShouldBranches)
+    shoulds:
+        didLaunch:
+            1. Only once during the first setup:
+                if:
+                    c.recentField == F.didSetup &&
+                    c.didLaunch == false
+                then:
+                    c.didLaunch = true
+        dstQueue:
+            1. Upon new queue to transpile:
+                if:
+                    c.recentField == F.srcQueue
+                then:
+                    c.dstQueue = []
+            2. Upon transpiled reply:
+                if:
+                    c.recentField == F.reply
+                then:
+                    c.dstQueue.append(c.reply)
+        isConvertingOneliners:
+            1. Upon transpiled shoulds:
+                if:
+                    c.recentField == F.transpiledShouldBranches
+                then:
+                    c.isConvertingOneliners = true
+            2. Upon oneliners' transpilation completion:
+                if:
+                    c.recentField == F.dstQueue &&
+                    c.isConvertingOneliners &&
+                    c.dstQueue.count == c.srcQueue.count
+                then:
+                    c.isConvertingOneliners = false
+        isConvertingShoulds:
+            1. Upon entity should branches:
+                if:
+                    c.recentField == F.entityShouldBranches
+                then:
+                    c.isConvertingShoulds = true
+            2. Upon shoulds' transpilation completion:
+                if:
+                    c.recentField == F.dstQueue &&
+                    c.isConvertingShoulds &&
+                    c.dstQueue.count == c.srcQueue.count
+                then:
+                    c.isConvertingShoulds = false
+        prompt:
+            1. Upon getting new source to transpile:
+                if:
+                    c.recentField == F.srcId
+                then:
+                    c.prompt = convQueuePrompt(c.srcQueue, c.srcId)
+        srcId:
+            1. Upon new queue to transpile:
+                if:
+                    c.recentField == F.srcQueue
+                then:
+                    c.srcId = 0
+            2. Upon transpiled reply:
+                if:
+                    c.recentField == F.reply &&
+                    c.srcId + 1 < c.srcQueue.count
+                then:
+                    c.srcId += 1
+        srcQueue:
+            1. Started transpilation of shoulds:
+                if:
+                    c.recentField == F.isConvertingShoulds &&
+                    c.isConvertingShoulds
+                then:
+                    c.srcQueue = convSrcQueueShoulds(c.entityShouldBranches)
+            2. Started transpilation of oneliners:
+                if:
+                    c.recentField == F.isConvertingOneliners &&
+                    c.isConvertingOneliners
+                then:
+                    c.srcQueue = convSrcQueueOneliners(c.entityOneliners)
+        transpiledOneliners:
+            1. Finished transpilation of oneliners:
+                if:
+                    c.recentField == F.isConvertingOneliners &&
+                    !c.isConvertingOneliners
+                then:
+                    c.transpiledOneliners = convTranspiledOneliners(c.entityOneliners, c.dstQueue)
+        transpiledShouldBranches:
+            1. Finished transpilation of shoulds:
+                if:
+                    c.recentField == F.isConvertingShoulds &&
+                    !c.isConvertingShoulds
+                then:
+                    c.transpiledShouldBranches = convTranspiledShouldBranches(c.entityShouldBranches, c.dstQueue)
+
+ConvContext:
+    type: context
+    fields:
+        didLaunch: Bool
+        didSetup: Bool
+        dstQueue: [String]
+        entityOneliners: [Int: [Oneliner]]
+        entityShouldBranches: [Int: [Int: [ShouldBranch]]]
+        isConvertingOneliners: Bool
+        isConvertingShoulds: Bool
+        prompt: String
+        reply: String
+        srcId: Int
+        srcQueue: [String]
+        transpiledOneliners: [Int: [Oneliner]]
+        transpiledShouldBranches: [Int: [Int: [ShouldBranch]]]
+
 KotlinComponent:
     type: component
     oneliners:
@@ -74,9 +188,9 @@ KotlinComponent:
                 then:
                     c.didLaunch = true
         out:
-            1. Upon launch:
+            1. When transpiled oneliners are ready:
                 if:
-                    c.recentField == F.didLaunch
+                    c.recentField == F.outRegisterEffects
                 then:
                     c.out =
                         KOTLIN_OGS_PKG +
@@ -115,11 +229,11 @@ KotlinComponent:
                 then:
                     c.outStructs = kotlinStructs(c.entities, c.entityTypes, c.entityFields, c.entityFieldTypes)
         outRegisterEffects:
-            1. When oneliners are ready:
+            1. When transpiled oneliners are ready:
                 if:
-                    c.recentField == F.entityOneliners
+                    c.recentField == F.transpiledOneliners
                 then:
-                    c.outRegisterEffects = kotlinRegisterEffects(c.entities, c.entityOneliners)
+                    c.outRegisterEffects = kotlinRegisterEffects(c.entities, c.transpiledOneliners)
         outRegisterShoulds:
             1. When shoulds are ready:
                 if:
@@ -127,11 +241,11 @@ KotlinComponent:
                 then:
                     c.outRegisterShoulds = kotlinRegisterShoulds(c.entities, c.entityShoulds)
         outShoulds:
-            1. When entity should branches are available:
+            1. When transpiled shoulds are available:
                 if:
-                    c.recentField == F.entityShouldBranches
+                    c.recentField == F.transpiledShouldBranches
                 then:
-                    c.outShoulds = kotlinShoulds(c.entities, c.entityShoulds, c.entityShouldBranches)
+                    c.outShoulds = kotlinShoulds(c.entities, c.entityShoulds, c.transpiledShouldBranches)
         path:
             1. Extract Kotlin path if present:
                 if:
@@ -164,11 +278,14 @@ KotlinContext:
         outSets: String
         outShoulds: String
         outStructs: String
+        transpiledOneliners: [Int: [Oneliner]]
+        transpiledShouldBranches: [Int: [Int: [ShouldBranch]]]
 
 LLMComponent:
     type: component
     oneliners:
         - request: llmLoad(c.request, F.response, F.responseError)
+        - reply: convSet(F.reply, c.reply)
     shoulds:
         didLaunch:
             1. Only once during the first setup:
@@ -350,8 +467,10 @@ YMLComponent:
         - entityFields: swiftSet(F.entityFields, c.entityFields)
         - entityFieldTypes: kotlinSet(F.entityFieldTypes, c.entityFieldTypes)
         - entityFieldTypes: swiftSet(F.entityFieldTypes, c.entityFieldTypes)
+        - entityOneliners: convSet(F.entityOneliners, c.entityOneliners)
         - entityOneliners: kotlinSet(F.entityOneliners, c.entityOneliners)
         - entityOneliners: swiftSet(F.entityOneliners, c.entityOneliners)
+        - entityShouldBranches: convSet(F.entityShouldBranches, c.entityShouldBranches)
         - entityShouldBranches: kotlinSet(F.entityShouldBranches, c.entityShouldBranches)
         - entityShouldBranches: swiftSet(F.entityShouldBranches, c.entityShouldBranches)
         - entityShoulds: kotlinSet(F.entityShoulds, c.entityShoulds)

@@ -199,96 +199,67 @@ fun rootSet(
     RootComponent.ctrl.set(key, value)
 }
 
-// Should-functions of RootContext, transcribed from the Swift dialect
-// The Swift source of every branch is preserved in block comments,
-// so the blocks stay inert until they are hand-ported to Kotlin
 fun rootShouldResetCount(c: RootContext): RootContext {
     val c = c
 
     // 1. Upon hitting 10 the first time
-    if (false) {
-        /**
-        c.recentField == F.didClickIncrement &&
-        c.count == 9
-        */
-        /**
-        c.count += 10
-        */
+    if (
+c.recentField == F.didClickIncrement &&
+c.count == 9
+    ) {
+c.count += 10
         c.recentField = F.count
         return c
     }
-
     // 2. Upon each button click
-    if (false) {
-        /**
-        c.recentField == F.didClickIncrement
-        */
-        /**
-        c.count += 1
-        */
+    if (
+c.recentField == F.didClickIncrement
+    ) {
+c.count += 1
         c.recentField = F.count
         return c
     }
-
 
     c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
     return c
 }
 
-// Should-functions of RootContext, transcribed from the Swift dialect
-// The Swift source of every branch is preserved in block comments,
-// so the blocks stay inert until they are hand-ported to Kotlin
 fun rootShouldResetCountText(c: RootContext): RootContext {
     val c = c
 
     // 1. Upon each count chang
-    if (false) {
-        /**
-        c.recentField == F.count
-        */
-        /**
-        c.countText = "Count: '\(c.count)'"
-        */
+    if (
+c.recentField == F.count
+    ) {
+        c.countText = "Count: '${c.count}'"
         c.recentField = F.countText
         return c
     }
-
     // 2. Upon launc
-    if (false) {
-        /**
-        c.recentField == F.didLaunch
-        */
-        /**
+    if (
+c.recentField == F.didLaunch
+    ) {
         c.countText = "Press the button to count"
-        */
         c.recentField = F.countText
         return c
     }
-
 
     c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
     return c
 }
 
-// Should-functions of RootContext, transcribed from the Swift dialect
-// The Swift source of every branch is preserved in block comments,
-// so the blocks stay inert until they are hand-ported to Kotlin
 fun rootShouldResetDidLaunch(c: RootContext): RootContext {
     val c = c
 
     // 1. Only once during the first setup
-    if (false) {
-        /**
-        c.recentField == F.didSetup &&
-        c.didLaunch == false
-        */
-        /**
-        c.didLaunch = true
-        */
+    if (
+c.recentField == F.didSetup &&
+c.didLaunch == false
+    ) {
+c.didLaunch = true
         c.recentField = F.didLaunch
         return c
     }
-
 
     c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
     return c
@@ -307,20 +278,8 @@ fun rootRegisterShoulds(ctrl: DialectController) {
 
 fun rootRegisterEffects(ctrl: DialectController) {
     registerOneliners(ctrl, arrayOf(
-        F.countText, { c: DialectContext ->
-            if (false) {
-                /**
-        print(c.countText)
-                */
-            }
-        },
-        F.countText, { c: DialectContext ->
-            if (false) {
-                /**
-        RootVM.shared!.countText = c.countText
-                */
-            }
-        },
+        F.countText, { c: DialectContext -> print(c.countText) },
+        F.countText, { c: DialectContext -> RootVM.shared!!.countText = c.countText },
 
     ))
 }

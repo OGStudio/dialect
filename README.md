@@ -20,4 +20,4 @@ Prerequisites for iOS:
 Prerequisites for transpilation:
 
 * `ollama serve` everytime you plan to transpile
-* `ollama run qwen2.5-coder:3b` (2 GB disk, 2 GB VRAM) only once to install, for later runs ollama loads requested models itself, `ollama serve` is enough after that
+* `ollama run qwen2.5-coder:1.5b` (1 GB disk, 1.2 GB VRAM) only once to install, for later runs ollama loads requested models itself, `ollama serve` is enough after that

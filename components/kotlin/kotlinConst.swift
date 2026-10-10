@@ -68,13 +68,7 @@ fun %FUNC%(ctrl: DialectController) {
 
 """
 let KOTLIN_REGISTER_EFFECT_ITEM_T = """
-        F.%FIELD%, { c: DialectContext ->
-            if (false) {
-                /**
-%REACTION%
-                */
-            }
-        },
+        F.%FIELD%, { c: DialectContext -> %REACTION% },
 
 """
 let KOTLIN_REGISTER_SHOULDS_SUFFIX = "RegisterShoulds"
@@ -103,26 +97,19 @@ fun %FUNC%(
 """
 let KOTLIN_SHOULD_BRANCH_T = """
     // %ABOUT%
-    if (false) {
-        /**
+    if (
 %CONDITION%
-        */
-        /**
+    ) {
 %REACTION%
-        */
         c.recentField = F.%FIELD%
         return c
     }
-
 
 """
 let KOTLIN_SHOULD_INDENTATION = "        "
 let KOTLIN_SHOULD_RESET = "ShouldReset"
 let KOTLIN_SHOULD_T = """
 
-// Should-functions of %CONTEXT%, transcribed from the Swift dialect
-// The Swift source of every branch is preserved in block comments,
-// so the blocks stay inert until they are hand-ported to Kotlin
 fun %FUNC%(c: %CONTEXT%): %CONTEXT% {
     val c = c
 

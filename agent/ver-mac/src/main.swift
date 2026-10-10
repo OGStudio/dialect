@@ -9,4 +9,4 @@ let llm = LLMComponent()
 cli.setup()
 llm.setup()
 
-agentLaunch()
+otherLaunch()
