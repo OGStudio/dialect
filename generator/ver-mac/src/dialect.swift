@@ -152,7 +152,6 @@ struct F {
     static let outSets = "outSets"
     static let outShoulds = "outShoulds"
     static let outStructs = "outStructs"
-    static let outTranspilations = "outTranspilations"
     static let outputPaths = "outputPaths"
     static let parseInput = "parseInput"
     static let path = "path"
@@ -392,7 +391,6 @@ struct KotlinContext: DialectContext {
     var outSets = String()
     var outShoulds = String()
     var outStructs = String()
-    var outTranspilations = String()
     var transpiledShouldBranches = [Int: [Int: [ShouldBranch]]]()
 
     var recentField = ""
@@ -457,9 +455,6 @@ struct KotlinContext: DialectContext {
         }
         else if (name == "outStructs") {
             return outStructs as! T
-        }
-        else if (name == "outTranspilations") {
-            return outTranspilations as! T
         }
         else if (name == "transpiledShouldBranches") {
             return transpiledShouldBranches as! T
@@ -531,9 +526,6 @@ struct KotlinContext: DialectContext {
         }
         else if (name == "outStructs") {
             outStructs = value as! String
-        }
-        else if (name == "outTranspilations") {
-            outTranspilations = value as! String
         }
         else if (name == "transpiledShouldBranches") {
             transpiledShouldBranches = value as! [Int: [Int: [ShouldBranch]]]
@@ -1161,9 +1153,9 @@ func kotlinShouldResetDidLaunch(_ c: KotlinContext) -> KotlinContext {
 func kotlinShouldResetOut(_ c: KotlinContext) -> KotlinContext {
     var c = c
 
-    /* 1. Upon transpilations */
+    /* 1. When transpiled shoulds are ready */
     if
-        c.recentField == F.outTranspilations
+        c.recentField == F.outShoulds
     {
         c.out =
             KOTLIN_OGS_PKG +
@@ -1291,11 +1283,11 @@ func kotlinShouldResetOutRegisterShoulds(_ c: KotlinContext) -> KotlinContext {
 func kotlinShouldResetOutShoulds(_ c: KotlinContext) -> KotlinContext {
     var c = c
 
-    /* 1. When entity should branches are available */
+    /* 1. When transpiled should branches are available */
     if
-        c.recentField == F.entityShouldBranches
+        c.recentField == F.transpiledShouldBranches
     {
-        c.outShoulds = kotlinShoulds(c.entities, c.entityShoulds, c.entityShouldBranches)
+        c.outShoulds = kotlinShoulds(c.entities, c.entityShoulds, c.transpiledShouldBranches)
         c.recentField = F.outShoulds
         return c
     }

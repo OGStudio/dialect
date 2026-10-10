@@ -142,9 +142,9 @@ KotlinComponent:
                 then:
                     c.didLaunch = true
         out:
-            1. Upon transpilations:
+            1. When transpiled shoulds are ready:
                 if:
-                    c.recentField == F.outTranspilations
+                    c.recentField == F.outShoulds
                 then:
                     c.out =
                         KOTLIN_OGS_PKG +
@@ -195,11 +195,11 @@ KotlinComponent:
                 then:
                     c.outRegisterShoulds = kotlinRegisterShoulds(c.entities, c.entityShoulds)
         outShoulds:
-            1. When entity should branches are available:
+            1. When transpiled should branches are available:
                 if:
-                    c.recentField == F.entityShouldBranches
+                    c.recentField == F.transpiledShouldBranches
                 then:
-                    c.outShoulds = kotlinShoulds(c.entities, c.entityShoulds, c.entityShouldBranches)
+                    c.outShoulds = kotlinShoulds(c.entities, c.entityShoulds, c.transpiledShouldBranches)
         path:
             1. Extract Kotlin path if present:
                 if:
@@ -232,7 +232,6 @@ KotlinContext:
         outSets: String
         outShoulds: String
         outStructs: String
-        outTranspilations: String
         transpiledShouldBranches: [Int: [Int: [ShouldBranch]]]
 
 LLMComponent:
