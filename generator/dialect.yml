@@ -65,6 +65,7 @@ ConvComponent:
     type: component
     oneliners:
         - prompt: llmSet(F.prompt, c.prompt)
+        - transpiledOneliners: kotlinSet(F.transpiledOneliners, c.transpiledOneliners)
         - transpiledShouldBranches: kotlinSet(F.transpiledShouldBranches, c.transpiledShouldBranches)
     shoulds:
         didLaunch:
@@ -85,6 +86,32 @@ ConvComponent:
                     c.recentField == F.reply
                 then:
                     c.dstQueue.append(c.reply)
+        isConvertingOneliners:
+            1. Upon transpiled shoulds:
+                if:
+                    c.recentField == F.transpiledShouldBranches
+                then:
+                    c.isConvertingOneliners = true
+            2. Upon oneliners' transpilation completion:
+                if:
+                    c.recentField == F.dstQueue &&
+                    c.isConvertingOneliners &&
+                    c.dstQueue.count == c.srcQueue.count
+                then:
+                    c.isConvertingOneliners = false
+        isConvertingShoulds:
+            1. Upon entity should branches:
+                if:
+                    c.recentField == F.entityShouldBranches
+                then:
+                    c.isConvertingShoulds = true
+            2. Upon shoulds' transpilation completion:
+                if:
+                    c.recentField == F.dstQueue &&
+                    c.isConvertingShoulds &&
+                    c.dstQueue.count == c.srcQueue.count
+                then:
+                    c.isConvertingShoulds = false
         prompt:
             1. Upon getting new source to transpile:
                 if:
@@ -104,16 +131,17 @@ ConvComponent:
                 then:
                     c.srcId += 1
         srcQueue:
-            1. Upon entity should branches:
+            1. Started transpilation of shoulds:
                 if:
-                    c.recentField == F.entityShouldBranches
+                    c.recentField == F.isConvertingShoulds &&
+                    c.isConvertingShoulds
                 then:
                     c.srcQueue = convSrcQueue(c.entityShouldBranches)
         transpiledShouldBranches:
-            1. Upon transpilation completion:
+            1. Finished transpilation of shoulds:
                 if:
-                    c.recentField == F.dstQueue &&
-                    c.dstQueue.count == c.srcQueue.count
+                    c.recentField == F.isConvertingShoulds &&
+                    !c.isConvertingShoulds
                 then:
                     c.transpiledShouldBranches = convTranspiledShouldBranches(c.entityShouldBranches, c.dstQueue)
 
@@ -124,6 +152,8 @@ ConvContext:
         didSetup: Bool
         dstQueue: [String]
         entityShouldBranches: [Int: [Int: [ShouldBranch]]]
+        isConvertingOneliners: Bool
+        isConvertingShoulds: Bool
         prompt: String
         reply: String
         srcId: Int
@@ -143,9 +173,9 @@ KotlinComponent:
                 then:
                     c.didLaunch = true
         out:
-            1. When transpiled shoulds are ready:
+            1. When transpiled oneliners are ready:
                 if:
-                    c.recentField == F.outShoulds
+                    c.recentField == F.outRegisterEffects
                 then:
                     c.out =
                         KOTLIN_OGS_PKG +
@@ -184,11 +214,11 @@ KotlinComponent:
                 then:
                     c.outStructs = kotlinStructs(c.entities, c.entityTypes, c.entityFields, c.entityFieldTypes)
         outRegisterEffects:
-            1. When oneliners are ready:
+            1. When transpiled oneliners are ready:
                 if:
-                    c.recentField == F.entityOneliners
+                    c.recentField == F.transpiledOneliners
                 then:
-                    c.outRegisterEffects = kotlinRegisterEffects(c.entities, c.entityOneliners)
+                    c.outRegisterEffects = kotlinRegisterEffects(c.entities, c.transpiledOneliners)
         outRegisterShoulds:
             1. When shoulds are ready:
                 if:
@@ -196,7 +226,7 @@ KotlinComponent:
                 then:
                     c.outRegisterShoulds = kotlinRegisterShoulds(c.entities, c.entityShoulds)
         outShoulds:
-            1. When transpiled should branches are available:
+            1. When transpiled shoulds are available:
                 if:
                     c.recentField == F.transpiledShouldBranches
                 then:
@@ -233,6 +263,7 @@ KotlinContext:
         outSets: String
         outShoulds: String
         outStructs: String
+        transpiledOneliners: [Int: [Oneliner]]
         transpiledShouldBranches: [Int: [Int: [ShouldBranch]]]
 
 LLMComponent:
