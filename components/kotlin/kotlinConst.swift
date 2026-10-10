@@ -111,7 +111,6 @@ let KOTLIN_SHOULD_BRANCH_T = """
         return c
     }
 
-
 """
 let KOTLIN_SHOULD_INDENTATION = "        "
 let KOTLIN_SHOULD_RESET = "ShouldReset"

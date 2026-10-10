@@ -211,7 +211,6 @@ c.count += 10
         c.recentField = F.count
         return c
     }
-
     // 2. Upon each button click
     if (
 c.recentField == F.didClickIncrement
@@ -220,7 +219,6 @@ c.count += 1
         c.recentField = F.count
         return c
     }
-
 
     c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
     return c
@@ -237,7 +235,6 @@ c.recentField == F.count
         c.recentField = F.countText
         return c
     }
-
     // 2. Upon launc
     if (
 c.recentField == F.didLaunch
@@ -246,7 +243,6 @@ c.recentField == F.didLaunch
         c.recentField = F.countText
         return c
     }
-
 
     c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
     return c
@@ -264,7 +260,6 @@ c.didLaunch = true
         c.recentField = F.didLaunch
         return c
     }
-
 
     c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
     return c
