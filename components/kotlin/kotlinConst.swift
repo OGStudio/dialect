@@ -117,9 +117,6 @@ let KOTLIN_SHOULD_INDENTATION = "        "
 let KOTLIN_SHOULD_RESET = "ShouldReset"
 let KOTLIN_SHOULD_T = """
 
-// Should-functions of %CONTEXT%, transcribed from the Swift dialect
-// The Swift source of every branch is preserved in block comments,
-// so the blocks stay inert until they are hand-ported to Kotlin
 fun %FUNC%(c: %CONTEXT%): %CONTEXT% {
     val c = c
 

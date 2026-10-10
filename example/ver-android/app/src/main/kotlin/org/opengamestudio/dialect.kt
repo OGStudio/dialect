@@ -199,9 +199,6 @@ fun rootSet(
     RootComponent.ctrl.set(key, value)
 }
 
-// Should-functions of RootContext, transcribed from the Swift dialect
-// The Swift source of every branch is preserved in block comments,
-// so the blocks stay inert until they are hand-ported to Kotlin
 fun rootShouldResetCount(c: RootContext): RootContext {
     val c = c
 
@@ -228,9 +225,6 @@ fun rootShouldResetCount(c: RootContext): RootContext {
     return c
 }
 
-// Should-functions of RootContext, transcribed from the Swift dialect
-// The Swift source of every branch is preserved in block comments,
-// so the blocks stay inert until they are hand-ported to Kotlin
 fun rootShouldResetCountText(c: RootContext): RootContext {
     val c = c
 
@@ -257,9 +251,6 @@ fun rootShouldResetCountText(c: RootContext): RootContext {
     return c
 }
 
-// Should-functions of RootContext, transcribed from the Swift dialect
-// The Swift source of every branch is preserved in block comments,
-// so the blocks stay inert until they are hand-ported to Kotlin
 fun rootShouldResetDidLaunch(c: RootContext): RootContext {
     val c = c
 
