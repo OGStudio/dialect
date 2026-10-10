@@ -136,7 +136,7 @@ ConvComponent:
                     c.recentField == F.isConvertingShoulds &&
                     c.isConvertingShoulds
                 then:
-                    c.srcQueue = convSrcQueue(c.entityShouldBranches)
+                    c.srcQueue = convSrcQueueShoulds(c.entityShouldBranches)
             2. Started transpilation of oneliners:
                 if:
                     c.recentField == F.isConvertingOneliners &&

@@ -6,7 +6,23 @@ func convQueuePrompt(
     return CONV_PROMPT_PREFIX + src + CONV_PROMPT_SUFFIX
 }
 
-func convSrcQueue(
+// Build a flat queue of oneliner reactions to transpile
+func convSrcQueueOneliners(
+    _ entityOneliners: [Int: [Oneliner]]
+) -> [String] {
+    var items = [String]()
+    for entityId in entityOneliners.keys.sorted() {
+        let oneliners = entityOneliners[entityId] ?? []
+        for oneliner in oneliners {
+            items.append(oneliner.reaction)
+        }
+    }
+
+    return items
+}
+
+// Build a flat queue of shoulds to transpile
+func convSrcQueueShoulds(
     _ entityShouldBranches: [Int: [Int: [ShouldBranch]]]
 ) -> [String] {
     var items = [String]()
@@ -18,21 +34,6 @@ func convSrcQueue(
                 items.append(branch.condition.joined(separator: "\n"))
                 items.append(branch.reaction.joined(separator: "\n"))
             }
-        }
-    }
-
-    return items
-}
-
-// Build a flat queue of oneliner reactions to transpile
-func convSrcQueueOneliners(
-    _ entityOneliners: [Int: [Oneliner]]
-) -> [String] {
-    var items = [String]()
-    for entityId in entityOneliners.keys.sorted() {
-        let oneliners = entityOneliners[entityId] ?? []
-        for oneliner in oneliners {
-            items.append(oneliner.reaction)
         }
     }
 

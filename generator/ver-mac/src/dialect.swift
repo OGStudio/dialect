@@ -1199,7 +1199,7 @@ func convShouldResetSrcQueue(_ c: ConvContext) -> ConvContext {
         c.recentField == F.isConvertingShoulds &&
         c.isConvertingShoulds
     {
-        c.srcQueue = convSrcQueue(c.entityShouldBranches)
+        c.srcQueue = convSrcQueueShoulds(c.entityShouldBranches)
         c.recentField = F.srcQueue
         return c
     }
