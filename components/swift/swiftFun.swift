@@ -116,8 +116,8 @@ func swiftRegisterEffect(
         let reaction = oneliner.reaction
         outItems +=
             SWIFT_REGISTER_EFFECT_ITEM_T
-                .replacingOccurrences(of: "%FIELD%", with: field)
                 .replacingOccurrences(of: "%CONTEXT%", with: contextName)
+                .replacingOccurrences(of: "%FIELD%", with: field)
                 .replacingOccurrences(of: "%REACTION%", with: reaction)
     }
 

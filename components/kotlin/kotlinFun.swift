@@ -115,6 +115,7 @@ func kotlinRegisterEffect(
     for oneliner in oneliners {
         outItems +=
             KOTLIN_REGISTER_EFFECT_ITEM_T
+                .replacingOccurrences(of: "%CONTEXT%", with: contextName)
                 .replacingOccurrences(of: "%FIELD%", with: oneliner.field)
                 .replacingOccurrences(of: "%REACTION%", with: kotlinFormatCode([oneliner.reaction]))
     }
