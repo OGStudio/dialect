@@ -65,6 +65,7 @@ ConvComponent:
     type: component
     oneliners:
         - prompt: llmSet(F.prompt, c.prompt)
+        - transpiledShouldBranches: kotlinSet(F.transpiledShouldBranches, c.transpiledShouldBranches)
     shoulds:
         didLaunch:
             1. Only once during the first setup:

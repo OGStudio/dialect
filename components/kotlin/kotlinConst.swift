@@ -103,13 +103,10 @@ fun %FUNC%(
 """
 let KOTLIN_SHOULD_BRANCH_T = """
     // %ABOUT%
-    if (false) {
-        /**
+    if (
 %CONDITION%
-        */
-        /**
+    ) {
 %REACTION%
-        */
         c.recentField = F.%FIELD%
         return c
     }
