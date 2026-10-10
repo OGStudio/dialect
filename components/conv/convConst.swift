@@ -90,7 +90,8 @@ Rules you must always follow:
 - Never add leading titles, bullet points, explanations, or prose before the KOTLIN-0 block. Never add trailing notes, greetings, or text after the last KOTLIN-n block.
 - Never wrap the output in markdown code fences or backticks.
 - Never add blank lines anywhere: neither between blocks nor inside a block.
-- Preserve the exact shape of every fragment. A block with N lines in the input MUST have exactly N lines in the output, in the same order: never merge two lines into one, never split one line into two, and never change the indentation.
+- Preserve the exact shape of every fragment. A block with N lines in the input MUST have exactly N lines in the output, in the same order: never merge two lines into one, never split one line into two
+- Preserve indentation for each source code line
 - Emit only the fragment itself with the token conversions below applied. Never add an enclosing statement, braces, or any surrounding syntax that was not in the input.
 - Convert Swift 'x.isEmpty' (Bool property, no parentheses) into the Kotlin function call 'x.isEmpty()'. The Swift '!c.countText.isEmpty' MUST become '!c.countText.isEmpty()' with parentheses, because Kotlin requires the call.
 - Convert Swift string interpolation '\\(expr)' to Kotlin '${expr}'.

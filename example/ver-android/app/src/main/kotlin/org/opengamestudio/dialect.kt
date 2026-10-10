@@ -204,18 +204,19 @@ fun rootShouldResetCount(c: RootContext): RootContext {
 
     // 1. Upon hitting 10 the first time
     if (
-        if (c.recentField == F.didClickIncrement && c.count == 9)
+c.recentField == F.didClickIncrement &&
+c.count == 9
     ) {
-        c.count += 10
+c.count += 10
         c.recentField = F.count
         return c
     }
 
     // 2. Upon each button click
     if (
-        c.recentField == F.didClickIncrement
+c.recentField == F.didClickIncrement
     ) {
-        c.count += 1
+c.count += 1
         c.recentField = F.count
         return c
     }
@@ -230,7 +231,7 @@ fun rootShouldResetCountText(c: RootContext): RootContext {
 
     // 1. Upon each count chang
     if (
-        c.recentField == F.count
+c.recentField == F.count
     ) {
         c.countText = "Count: '${c.count}'"
         c.recentField = F.countText
@@ -239,7 +240,7 @@ fun rootShouldResetCountText(c: RootContext): RootContext {
 
     // 2. Upon launc
     if (
-        if (c.recentField == F.didLaunch)
+c.recentField == F.didLaunch
     ) {
         c.countText = "Press the button to count"
         c.recentField = F.countText
@@ -256,10 +257,10 @@ fun rootShouldResetDidLaunch(c: RootContext): RootContext {
 
     // 1. Only once during the first setup
     if (
-        c.recentField == F.didSetup &&
-        c.didLaunch == false
+c.recentField == F.didSetup &&
+c.didLaunch == false
     ) {
-        c.didLaunch = true
+c.didLaunch = true
         c.recentField = F.didLaunch
         return c
     }
