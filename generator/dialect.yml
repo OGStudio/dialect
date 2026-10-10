@@ -137,6 +137,19 @@ ConvComponent:
                     c.isConvertingShoulds
                 then:
                     c.srcQueue = convSrcQueue(c.entityShouldBranches)
+            2. Started transpilation of oneliners:
+                if:
+                    c.recentField == F.isConvertingOneliners &&
+                    c.isConvertingOneliners
+                then:
+                    c.srcQueue = convSrcQueueOneliners(c.entityOneliners)
+        transpiledOneliners:
+            1. Finished transpilation of oneliners:
+                if:
+                    c.recentField == F.isConvertingOneliners &&
+                    !c.isConvertingOneliners
+                then:
+                    c.transpiledOneliners = convTranspiledOneliners(c.entityOneliners, c.dstQueue)
         transpiledShouldBranches:
             1. Finished transpilation of shoulds:
                 if:
@@ -151,6 +164,7 @@ ConvContext:
         didLaunch: Bool
         didSetup: Bool
         dstQueue: [String]
+        entityOneliners: [Int: [Oneliner]]
         entityShouldBranches: [Int: [Int: [ShouldBranch]]]
         isConvertingOneliners: Bool
         isConvertingShoulds: Bool
@@ -158,6 +172,7 @@ ConvContext:
         reply: String
         srcId: Int
         srcQueue: [String]
+        transpiledOneliners: [Int: [Oneliner]]
         transpiledShouldBranches: [Int: [Int: [ShouldBranch]]]
 
 KotlinComponent:
@@ -452,6 +467,7 @@ YMLComponent:
         - entityFields: swiftSet(F.entityFields, c.entityFields)
         - entityFieldTypes: kotlinSet(F.entityFieldTypes, c.entityFieldTypes)
         - entityFieldTypes: swiftSet(F.entityFieldTypes, c.entityFieldTypes)
+        - entityOneliners: convSet(F.entityOneliners, c.entityOneliners)
         - entityOneliners: kotlinSet(F.entityOneliners, c.entityOneliners)
         - entityOneliners: swiftSet(F.entityOneliners, c.entityOneliners)
         - entityShouldBranches: convSet(F.entityShouldBranches, c.entityShouldBranches)

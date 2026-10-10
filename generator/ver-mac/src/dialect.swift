@@ -143,6 +143,8 @@ struct F {
     static let inputError = "inputError"
     static let inputFileName = "inputFileName"
     static let inputLines = "inputLines"
+    static let isConvertingOneliners = "isConvertingOneliners"
+    static let isConvertingShoulds = "isConvertingShoulds"
     static let method = "method"
     static let out = "out"
     static let outContexts = "outContexts"
@@ -166,6 +168,7 @@ struct F {
     static let srcId = "srcId"
     static let srcQueue = "srcQueue"
     static let system = "system"
+    static let transpiledOneliners = "transpiledOneliners"
     static let transpiledShouldBranches = "transpiledShouldBranches"
     static let type = "type"
     static let url = "url"
@@ -294,11 +297,15 @@ struct ConvContext: DialectContext {
     var didLaunch = Bool()
     var didSetup = Bool()
     var dstQueue = [String]()
+    var entityOneliners = [Int: [Oneliner]]()
     var entityShouldBranches = [Int: [Int: [ShouldBranch]]]()
+    var isConvertingOneliners = Bool()
+    var isConvertingShoulds = Bool()
     var prompt = String()
     var reply = String()
     var srcId = Int()
     var srcQueue = [String]()
+    var transpiledOneliners = [Int: [Oneliner]]()
     var transpiledShouldBranches = [Int: [Int: [ShouldBranch]]]()
 
     var recentField = ""
@@ -313,8 +320,17 @@ struct ConvContext: DialectContext {
         else if (name == "dstQueue") {
             return dstQueue as! T
         }
+        else if (name == "entityOneliners") {
+            return entityOneliners as! T
+        }
         else if (name == "entityShouldBranches") {
             return entityShouldBranches as! T
+        }
+        else if (name == "isConvertingOneliners") {
+            return isConvertingOneliners as! T
+        }
+        else if (name == "isConvertingShoulds") {
+            return isConvertingShoulds as! T
         }
         else if (name == "prompt") {
             return prompt as! T
@@ -327,6 +343,9 @@ struct ConvContext: DialectContext {
         }
         else if (name == "srcQueue") {
             return srcQueue as! T
+        }
+        else if (name == "transpiledOneliners") {
+            return transpiledOneliners as! T
         }
         else if (name == "transpiledShouldBranches") {
             return transpiledShouldBranches as! T
@@ -348,8 +367,17 @@ struct ConvContext: DialectContext {
         else if (name == "dstQueue") {
             dstQueue = value as! [String]
         }
+        else if (name == "entityOneliners") {
+            entityOneliners = value as! [Int: [Oneliner]]
+        }
         else if (name == "entityShouldBranches") {
             entityShouldBranches = value as! [Int: [Int: [ShouldBranch]]]
+        }
+        else if (name == "isConvertingOneliners") {
+            isConvertingOneliners = value as! Bool
+        }
+        else if (name == "isConvertingShoulds") {
+            isConvertingShoulds = value as! Bool
         }
         else if (name == "prompt") {
             prompt = value as! String
@@ -362,6 +390,9 @@ struct ConvContext: DialectContext {
         }
         else if (name == "srcQueue") {
             srcQueue = value as! [String]
+        }
+        else if (name == "transpiledOneliners") {
+            transpiledOneliners = value as! [Int: [Oneliner]]
         }
         else if (name == "transpiledShouldBranches") {
             transpiledShouldBranches = value as! [Int: [Int: [ShouldBranch]]]
@@ -391,6 +422,7 @@ struct KotlinContext: DialectContext {
     var outSets = String()
     var outShoulds = String()
     var outStructs = String()
+    var transpiledOneliners = [Int: [Oneliner]]()
     var transpiledShouldBranches = [Int: [Int: [ShouldBranch]]]()
 
     var recentField = ""
@@ -455,6 +487,9 @@ struct KotlinContext: DialectContext {
         }
         else if (name == "outStructs") {
             return outStructs as! T
+        }
+        else if (name == "transpiledOneliners") {
+            return transpiledOneliners as! T
         }
         else if (name == "transpiledShouldBranches") {
             return transpiledShouldBranches as! T
@@ -526,6 +561,9 @@ struct KotlinContext: DialectContext {
         }
         else if (name == "outStructs") {
             outStructs = value as! String
+        }
+        else if (name == "transpiledOneliners") {
+            transpiledOneliners = value as! [Int: [Oneliner]]
         }
         else if (name == "transpiledShouldBranches") {
             transpiledShouldBranches = value as! [Int: [Int: [ShouldBranch]]]
@@ -1053,6 +1091,62 @@ func convShouldResetDstQueue(_ c: ConvContext) -> ConvContext {
     return c
 }
 
+func convShouldResetIsConvertingOneliners(_ c: ConvContext) -> ConvContext {
+    var c = c
+
+    /* 1. Upon transpiled shoulds */
+    if
+        c.recentField == F.transpiledShouldBranches
+    {
+        c.isConvertingOneliners = true
+        c.recentField = F.isConvertingOneliners
+        return c
+    }
+
+    /* 2. Upon oneliners' transpilation completion */
+    if
+        c.recentField == F.dstQueue &&
+        c.isConvertingOneliners &&
+        c.dstQueue.count == c.srcQueue.count
+    {
+        c.isConvertingOneliners = false
+        c.recentField = F.isConvertingOneliners
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func convShouldResetIsConvertingShoulds(_ c: ConvContext) -> ConvContext {
+    var c = c
+
+    /* 1. Upon entity should branches */
+    if
+        c.recentField == F.entityShouldBranches
+    {
+        c.isConvertingShoulds = true
+        c.recentField = F.isConvertingShoulds
+        return c
+    }
+
+    /* 2. Upon shoulds' transpilation completion */
+    if
+        c.recentField == F.dstQueue &&
+        c.isConvertingShoulds &&
+        c.dstQueue.count == c.srcQueue.count
+    {
+        c.isConvertingShoulds = false
+        c.recentField = F.isConvertingShoulds
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
 func convShouldResetPrompt(_ c: ConvContext) -> ConvContext {
     var c = c
 
@@ -1100,12 +1194,41 @@ func convShouldResetSrcId(_ c: ConvContext) -> ConvContext {
 func convShouldResetSrcQueue(_ c: ConvContext) -> ConvContext {
     var c = c
 
-    /* 1. Upon entity should branches */
+    /* 1. Started transpilation of shoulds */
     if
-        c.recentField == F.entityShouldBranches
+        c.recentField == F.isConvertingShoulds &&
+        c.isConvertingShoulds
     {
         c.srcQueue = convSrcQueue(c.entityShouldBranches)
         c.recentField = F.srcQueue
+        return c
+    }
+
+    /* 2. Started transpilation of oneliners */
+    if
+        c.recentField == F.isConvertingOneliners &&
+        c.isConvertingOneliners
+    {
+        c.srcQueue = convSrcQueueOneliners(c.entityOneliners)
+        c.recentField = F.srcQueue
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func convShouldResetTranspiledOneliners(_ c: ConvContext) -> ConvContext {
+    var c = c
+
+    /* 1. Finished transpilation of oneliners */
+    if
+        c.recentField == F.isConvertingOneliners &&
+        !c.isConvertingOneliners
+    {
+        c.transpiledOneliners = convTranspiledOneliners(c.entityOneliners, c.dstQueue)
+        c.recentField = F.transpiledOneliners
         return c
     }
 
@@ -1117,10 +1240,10 @@ func convShouldResetSrcQueue(_ c: ConvContext) -> ConvContext {
 func convShouldResetTranspiledShouldBranches(_ c: ConvContext) -> ConvContext {
     var c = c
 
-    /* 1. Upon transpilation completion */
+    /* 1. Finished transpilation of shoulds */
     if
-        c.recentField == F.dstQueue &&
-        c.dstQueue.count == c.srcQueue.count
+        c.recentField == F.isConvertingShoulds &&
+        !c.isConvertingShoulds
     {
         c.transpiledShouldBranches = convTranspiledShouldBranches(c.entityShouldBranches, c.dstQueue)
         c.recentField = F.transpiledShouldBranches
@@ -1153,9 +1276,9 @@ func kotlinShouldResetDidLaunch(_ c: KotlinContext) -> KotlinContext {
 func kotlinShouldResetOut(_ c: KotlinContext) -> KotlinContext {
     var c = c
 
-    /* 1. When transpiled shoulds are ready */
+    /* 1. When transpiled oneliners are ready */
     if
-        c.recentField == F.outShoulds
+        c.recentField == F.outRegisterEffects
     {
         c.out =
             KOTLIN_OGS_PKG +
@@ -1249,11 +1372,11 @@ func kotlinShouldResetOutStructs(_ c: KotlinContext) -> KotlinContext {
 func kotlinShouldResetOutRegisterEffects(_ c: KotlinContext) -> KotlinContext {
     var c = c
 
-    /* 1. When oneliners are ready */
+    /* 1. When transpiled oneliners are ready */
     if
-        c.recentField == F.entityOneliners
+        c.recentField == F.transpiledOneliners
     {
-        c.outRegisterEffects = kotlinRegisterEffects(c.entities, c.entityOneliners)
+        c.outRegisterEffects = kotlinRegisterEffects(c.entities, c.transpiledOneliners)
         c.recentField = F.outRegisterEffects
         return c
     }
@@ -1283,7 +1406,7 @@ func kotlinShouldResetOutRegisterShoulds(_ c: KotlinContext) -> KotlinContext {
 func kotlinShouldResetOutShoulds(_ c: KotlinContext) -> KotlinContext {
     var c = c
 
-    /* 1. When transpiled should branches are available */
+    /* 1. When transpiled shoulds are available */
     if
         c.recentField == F.transpiledShouldBranches
     {
@@ -1780,9 +1903,12 @@ func convRegisterShoulds(_ ctrl: DialectController) {
     [
         convShouldResetDidLaunch,
         convShouldResetDstQueue,
+        convShouldResetIsConvertingOneliners,
+        convShouldResetIsConvertingShoulds,
         convShouldResetPrompt,
         convShouldResetSrcId,
         convShouldResetSrcQueue,
+        convShouldResetTranspiledOneliners,
         convShouldResetTranspiledShouldBranches,
 
     ].forEach { f in
@@ -1872,6 +1998,7 @@ func cliRegisterEffects(_ ctrl: DialectController) {
 func convRegisterEffects(_ ctrl: DialectController) {
     let _: ConvContext? = registerOneliners(ctrl, [
         F.prompt, { (c: ConvContext) in llmSet(F.prompt, c.prompt) },
+        F.transpiledOneliners, { (c: ConvContext) in kotlinSet(F.transpiledOneliners, c.transpiledOneliners) },
         F.transpiledShouldBranches, { (c: ConvContext) in kotlinSet(F.transpiledShouldBranches, c.transpiledShouldBranches) },
 
     ])
@@ -1907,6 +2034,7 @@ func ymlRegisterEffects(_ ctrl: DialectController) {
         F.entityFields, { (c: YMLContext) in swiftSet(F.entityFields, c.entityFields) },
         F.entityFieldTypes, { (c: YMLContext) in kotlinSet(F.entityFieldTypes, c.entityFieldTypes) },
         F.entityFieldTypes, { (c: YMLContext) in swiftSet(F.entityFieldTypes, c.entityFieldTypes) },
+        F.entityOneliners, { (c: YMLContext) in convSet(F.entityOneliners, c.entityOneliners) },
         F.entityOneliners, { (c: YMLContext) in kotlinSet(F.entityOneliners, c.entityOneliners) },
         F.entityOneliners, { (c: YMLContext) in swiftSet(F.entityOneliners, c.entityOneliners) },
         F.entityShouldBranches, { (c: YMLContext) in convSet(F.entityShouldBranches, c.entityShouldBranches) },

@@ -24,6 +24,62 @@ func convSrcQueue(
     return items
 }
 
+// Build a flat queue of oneliner reactions to transpile
+func convSrcQueueOneliners(
+    _ entityOneliners: [Int: [Oneliner]]
+) -> [String] {
+    var items = [String]()
+    for entityId in entityOneliners.keys.sorted() {
+        let oneliners = entityOneliners[entityId] ?? []
+        for oneliner in oneliners {
+            items.append(oneliner.reaction)
+        }
+    }
+
+    return items
+}
+
+// Construct single transpiled oneliner
+func convTranspiledOneliner(
+    _ orig: Oneliner,
+    _ reac: String
+) -> Oneliner {
+    var o = orig
+
+    var linesReaction = reac.split(separator: "\n")
+    if
+        let first = linesReaction.first,
+        first.hasPrefix(CONV_PREFIX_KOTLIN)
+    {
+        linesReaction = Array(linesReaction.dropFirst())
+        o.reaction = linesReaction.joined(separator: "\n")
+    }
+
+    return o
+}
+
+// Construct several transpiled oneliners
+func convTranspiledOneliners(
+    _ entityOneliners: [Int: [Oneliner]],
+    _ dstQueue: [String]
+) -> [Int: [Oneliner]] {
+    var items = [Int: [Oneliner]]()
+    var id = 0
+    for entityId in entityOneliners.keys.sorted() {
+        let oneliners = entityOneliners[entityId] ?? []
+        for oneliner in oneliners {
+            // Get transpiled snippet
+            let reaction = dstQueue[id]
+            id += 1
+            // Format the snippet
+            let item = convTranspiledOneliner(oneliner, reaction)
+            items[entityId, default: []].append(item)
+        }
+    }
+
+    return items
+}
+
 // Construct single transpiled branch
 func convTranspiledShouldBranch(
     _ orig: ShouldBranch,
