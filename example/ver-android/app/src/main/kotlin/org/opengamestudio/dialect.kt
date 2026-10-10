@@ -257,7 +257,7 @@ fun rootShouldResetDidLaunch(c: RootContext): RootContext {
     // 1. Only once during the first setup
     if (
         !c.recentField == F.didSetup &&
-        c.didLaunch == false
+        !c.didLaunch
     ) {
         c.didLaunch = true
         c.recentField = F.didLaunch

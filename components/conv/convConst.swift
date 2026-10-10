@@ -14,7 +14,8 @@ KOTLIN-6
 KOTLIN-7
         c.countText = "Count: '${c.count}'"
 KOTLIN-8
-        !c.countText.isEmpty()
+        c.recentField == F.didThis &&
+        c.didThis == false
 KOTLIN-9
         c.items = listOf(c.name, "x")
 KOTLIN-10
@@ -33,29 +34,10 @@ KOTLIN-14
 KOTLIN-15
         c.recentField == F.didClickIncrement
 KOTLIN-16
-        c.count += 1
-KOTLIN-17
-        c.recentField == F.count
-KOTLIN-18
-        c.recentField == F.didLaunch
-KOTLIN-19
-        c.countText = "Press the button to count"
-KOTLIN-20
-        c.recentField == F.didSetup &&
-        c.didLaunch == false
-KOTLIN-21
-        c.didLaunch = true
-KOTLIN-22
         print(c.countText)
-KOTLIN-23
+KOTLIN-17
         c.recentField == F.didRename &&
         c.name != "new"
-KOTLIN-24
-        c.count >= 10
-KOTLIN-25
-        !c.didLaunch
-KOTLIN-26
-        c.label = c.name + "-" + c.countText
 """
 let CONV_EXAMPLE_SWIFT_SRC = """
 SWIFT-1
@@ -73,7 +55,8 @@ SWIFT-6
 SWIFT-7
         c.countText = "Count: '\\(c.count)'"
 SWIFT-8
-        !c.countText.isEmpty
+        c.recentField == F.didThis &&
+        c.didThis == false
 SWIFT-9
         c.items = [c.name, "x"]
 SWIFT-10
@@ -92,29 +75,10 @@ SWIFT-14
 SWIFT-15
         c.recentField == F.didClickIncrement
 SWIFT-16
-        c.count += 1
-SWIFT-17
-        c.recentField == F.count
-SWIFT-18
-        c.recentField == F.didLaunch
-SWIFT-19
-        c.countText = "Press the button to count"
-SWIFT-20
-        c.recentField == F.didSetup &&
-        c.didLaunch == false
-SWIFT-21
-        c.didLaunch = true
-SWIFT-22
         print(c.countText)
-SWIFT-23
+SWIFT-17
         c.recentField == F.didRename &&
         c.name != "new"
-SWIFT-24
-        c.count >= 10
-SWIFT-25
-        !c.didLaunch
-SWIFT-26
-        c.label = c.name + "-" + c.countText
 """
 let CONV_PREFIX_KOTLIN = "KOTLIN-"
 let CONV_PREFIX_SWIFT = "SWIFT-"
