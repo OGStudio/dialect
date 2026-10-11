@@ -174,6 +174,7 @@ struct F {
     static let type = "type"
     static let url = "url"
     static let version = "version"
+    static let willGenerate = "willGenerate"
     static let willShutdown = "willShutdown"
 
 }
@@ -309,6 +310,7 @@ struct ConvContext: DialectContext {
     var srcQueue = [String]()
     var transpiledOneliners = [Int: [Oneliner]]()
     var transpiledShouldBranches = [Int: [Int: [ShouldBranch]]]()
+    var willGenerate = Bool()
 
     var recentField = ""
 
@@ -351,6 +353,9 @@ struct ConvContext: DialectContext {
         }
         else if (name == "transpiledShouldBranches") {
             return transpiledShouldBranches as! T
+        }
+        else if (name == "willGenerate") {
+            return willGenerate as! T
         }
 
         return "unknown-field-name" as! T
@@ -398,6 +403,9 @@ struct ConvContext: DialectContext {
         }
         else if (name == "transpiledShouldBranches") {
             transpiledShouldBranches = value as! [Int: [Int: [ShouldBranch]]]
+        }
+        else if (name == "willGenerate") {
+            willGenerate = value as! Bool
         }
 
     }
@@ -457,6 +465,7 @@ struct KotlinContext: DialectContext {
     var outStructs = String()
     var transpiledOneliners = [Int: [Oneliner]]()
     var transpiledShouldBranches = [Int: [Int: [ShouldBranch]]]()
+    var willGenerate = Bool()
 
     var recentField = ""
 
@@ -526,6 +535,9 @@ struct KotlinContext: DialectContext {
         }
         else if (name == "transpiledShouldBranches") {
             return transpiledShouldBranches as! T
+        }
+        else if (name == "willGenerate") {
+            return willGenerate as! T
         }
 
         return "unknown-field-name" as! T
@@ -600,6 +612,9 @@ struct KotlinContext: DialectContext {
         }
         else if (name == "transpiledShouldBranches") {
             transpiledShouldBranches = value as! [Int: [Int: [ShouldBranch]]]
+        }
+        else if (name == "willGenerate") {
+            willGenerate = value as! Bool
         }
 
     }
@@ -1162,9 +1177,10 @@ func convShouldResetIsConvertingOneliners(_ c: ConvContext) -> ConvContext {
 func convShouldResetIsConvertingShoulds(_ c: ConvContext) -> ConvContext {
     var c = c
 
-    /* 1. Upon entity should branches */
+    /* 1. If going to generate */
     if
-        c.recentField == F.entityShouldBranches
+        c.recentField == F.willGenerate &&
+        c.willGenerate
     {
         c.isConvertingShoulds = true
         c.recentField = F.isConvertingShoulds
@@ -1488,6 +1504,24 @@ func kotlinShouldResetPath(_ c: KotlinContext) -> KotlinContext {
         let last = c.outputPaths.first { $0.type == KOTLIN_TYPE }?.path ?? "N/A"
         c.path = c.inputAbsoluteDir + "/" + last
         c.recentField = F.path
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func kotlinShouldResetWillGenerate(_ c: KotlinContext) -> KotlinContext {
+    var c = c
+
+    /* 1. Upon did launch */
+    if
+        c.recentField == F.didLaunch
+    {
+        let will = c.outputPaths.contains(where: { $0.type == KOTLIN_TYPE })
+        c.willGenerate = will
+        c.recentField = F.willGenerate
         return c
     }
 
@@ -1994,6 +2028,7 @@ func kotlinRegisterShoulds(_ ctrl: DialectController) {
         kotlinShouldResetOutRegisterShoulds,
         kotlinShouldResetOutShoulds,
         kotlinShouldResetPath,
+        kotlinShouldResetWillGenerate,
 
     ].forEach { f in
         ctrl.registerFunction { c in f(c as! KotlinContext) }
@@ -2081,6 +2116,7 @@ func generatorRegisterEffects(_ ctrl: DialectController) {
 func kotlinRegisterEffects(_ ctrl: DialectController) {
     let _: KotlinContext? = registerOneliners(ctrl, [
         F.out, { (c: KotlinContext) in otherWriteFile(c.path, c.out) },
+        F.willGenerate, { (c: KotlinContext) in convSet(F.willGenerate, c.willGenerate) },
 
     ])
 }

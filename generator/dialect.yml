@@ -101,9 +101,10 @@ ConvComponent:
                 then:
                     c.isConvertingOneliners = false
         isConvertingShoulds:
-            1. Upon entity should branches:
+            1. If going to generate:
                 if:
-                    c.recentField == F.entityShouldBranches
+                    c.recentField == F.willGenerate &&
+                    c.willGenerate
                 then:
                     c.isConvertingShoulds = true
             2. Upon shoulds' transpilation completion:
@@ -175,6 +176,7 @@ ConvContext:
         srcQueue: [String]
         transpiledOneliners: [Int: [Oneliner]]
         transpiledShouldBranches: [Int: [Int: [ShouldBranch]]]
+        willGenerate: Bool
 
 GeneratorComponent:
     type: component
@@ -198,6 +200,7 @@ KotlinComponent:
     type: component
     oneliners:
         - out: otherWriteFile(c.path, c.out)
+        - willGenerate: convSet(F.willGenerate, c.willGenerate)
     shoulds:
         didLaunch:
             1. Only once during the first setup:
