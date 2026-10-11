@@ -1,13 +1,14 @@
 let cli = CLIComponent()
 let conv = ConvComponent()
+let generator = GeneratorComponent()
 let kotlin = KotlinComponent()
 let llm = LLMComponent()
 let swift = SwiftComponent()
 let yml = YMLComponent()
 
 otherSetupConsoleLogging(conv.ctrl, "Conv")
+otherSetupConsoleLogging(generator.ctrl, "Generator")
 otherSetupConsoleLogging(kotlin.ctrl, "Kotlin")
-otherSetupConsoleLogging(llm.ctrl, "LLM")
 
 conv.setup()
 cli.setup()

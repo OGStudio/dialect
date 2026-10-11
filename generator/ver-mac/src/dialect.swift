@@ -123,6 +123,7 @@ struct F {
     static let arguments = "arguments"
     static let body = "body"
     static let chunks = "chunks"
+    static let cliDidConsoleOutput = "cliDidConsoleOutput"
     static let condition = "condition"
     static let consoleOutput = "consoleOutput"
     static let contents = "contents"
@@ -173,6 +174,7 @@ struct F {
     static let type = "type"
     static let url = "url"
     static let version = "version"
+    static let willShutdown = "willShutdown"
 
 }
 struct NetRequest {
@@ -396,6 +398,37 @@ struct ConvContext: DialectContext {
         }
         else if (name == "transpiledShouldBranches") {
             transpiledShouldBranches = value as! [Int: [Int: [ShouldBranch]]]
+        }
+
+    }
+}
+
+struct GeneratorContext: DialectContext {
+    var cliDidConsoleOutput = Bool()
+    var willShutdown = Bool()
+
+    var recentField = ""
+
+    func field<T>(_ name: String) -> T {
+        if (name == "cliDidConsoleOutput") {
+            return cliDidConsoleOutput as! T
+        }
+        else if (name == "willShutdown") {
+            return willShutdown as! T
+        }
+
+        return "unknown-field-name" as! T
+    }
+
+    mutating func setField(
+        _ name: String,
+        _ value: Any
+    ) {
+        if (name == "cliDidConsoleOutput") {
+            cliDidConsoleOutput = value as! Bool
+        }
+        else if (name == "willShutdown") {
+            willShutdown = value as! Bool
         }
 
     }
@@ -938,6 +971,13 @@ func convSet(
     ConvComponent.singleton!.ctrl.set(key, value)
 }
 
+func generatorSet(
+    _ key: String,
+    _ value: Any
+) {
+    GeneratorComponent.singleton!.ctrl.set(key, value)
+}
+
 func kotlinSet(
     _ key: String,
     _ value: Any
@@ -1247,6 +1287,23 @@ func convShouldResetTranspiledShouldBranches(_ c: ConvContext) -> ConvContext {
     {
         c.transpiledShouldBranches = convTranspiledShouldBranches(c.entityShouldBranches, c.dstQueue)
         c.recentField = F.transpiledShouldBranches
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func generatorShouldResetWillShutdown(_ c: GeneratorContext) -> GeneratorContext {
+    var c = c
+
+    /* 1. Upon CLI console outpu */
+    if
+        c.recentField == F.cliDidConsoleOutput
+    {
+        c.willShutdown = true
+        c.recentField = F.willShutdown
         return c
     }
 
@@ -1916,6 +1973,15 @@ func convRegisterShoulds(_ ctrl: DialectController) {
     }
 }
 
+func generatorRegisterShoulds(_ ctrl: DialectController) {
+    [
+        generatorShouldResetWillShutdown,
+
+    ].forEach { f in
+        ctrl.registerFunction { c in f(c as! GeneratorContext) }
+    }
+}
+
 func kotlinRegisterShoulds(_ ctrl: DialectController) {
     [
         kotlinShouldResetDidLaunch,
@@ -1986,6 +2052,7 @@ func ymlRegisterShoulds(_ ctrl: DialectController) {
 func cliRegisterEffects(_ ctrl: DialectController) {
     let _: CLIContext? = registerOneliners(ctrl, [
         F.consoleOutput, { (c: CLIContext) in print(c.consoleOutput) },
+        F.consoleOutput, { (c: CLIContext) in generatorSet(F.cliDidConsoleOutput, true) },
         F.inputAbsoluteDir, { (c: CLIContext) in kotlinSet(F.inputAbsoluteDir, c.inputAbsoluteDir) },
         F.inputAbsoluteDir, { (c: CLIContext) in swiftSet(F.inputAbsoluteDir, c.inputAbsoluteDir) },
         F.inputContents, { (c: CLIContext) in ymlSet(F.inputContents, c.inputContents) },
@@ -2000,6 +2067,13 @@ func convRegisterEffects(_ ctrl: DialectController) {
         F.prompt, { (c: ConvContext) in llmSet(F.prompt, c.prompt) },
         F.transpiledOneliners, { (c: ConvContext) in kotlinSet(F.transpiledOneliners, c.transpiledOneliners) },
         F.transpiledShouldBranches, { (c: ConvContext) in kotlinSet(F.transpiledShouldBranches, c.transpiledShouldBranches) },
+
+    ])
+}
+
+func generatorRegisterEffects(_ ctrl: DialectController) {
+    let _: GeneratorContext? = registerOneliners(ctrl, [
+        F.willShutdown, { (c: GeneratorContext) in otherShutdown() },
 
     ])
 }

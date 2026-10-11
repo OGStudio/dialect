@@ -8,6 +8,7 @@ CLIComponent:
     type: component
     oneliners:
         - consoleOutput: print(c.consoleOutput)
+        - consoleOutput: generatorSet(F.cliDidConsoleOutput, true)
         - inputAbsoluteDir: kotlinSet(F.inputAbsoluteDir, c.inputAbsoluteDir)
         - inputAbsoluteDir: swiftSet(F.inputAbsoluteDir, c.inputAbsoluteDir)
         - inputContents: ymlSet(F.inputContents, c.inputContents)
@@ -174,6 +175,24 @@ ConvContext:
         srcQueue: [String]
         transpiledOneliners: [Int: [Oneliner]]
         transpiledShouldBranches: [Int: [Int: [ShouldBranch]]]
+
+GeneratorComponent:
+    type: component
+    oneliners:
+        - willShutdown: otherShutdown()
+    shoulds:
+        willShutdown:
+            1. Upon CLI console output
+                if:
+                    c.recentField == F.cliDidConsoleOutput
+                then:
+                    c.willShutdown = true
+
+GeneratorContext:
+    type: context
+    fields:
+        cliDidConsoleOutput: Bool
+        willShutdown: Bool
 
 KotlinComponent:
     type: component
