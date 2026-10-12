@@ -181,10 +181,24 @@ ConvContext:
 GeneratorComponent:
     type: component
     oneliners:
+        - out: otherWriteFile(c.path, c.out)
         - willShutdown: otherShutdown()
     shoulds:
+        out:
+            1. Upon Swift path:
+                if:
+                    c.recentField == F.path &&
+                    c.outputPaths.first { $0.path == c.path }?.type == GENERATOR_SWIFT
+                then:
+                    c.out = c.outSwift
+        path:
+            1. Upon Swift output:
+                if:
+                    c.recentField == F.outSwift
+                then:
+                    c.path = c.outputPaths.first { $0.type == GENERATOR_SWIFT }?.path ?? "N/A"
         willShutdown:
-            1. Upon CLI console output
+            1. Upon CLI console output:
                 if:
                     c.recentField == F.cliDidConsoleOutput
                 then:
@@ -194,6 +208,10 @@ GeneratorContext:
     type: context
     fields:
         cliDidConsoleOutput: Bool
+        out: String
+        outputPaths: [OutputPath]
+        outSwift: String
+        path: String
         willShutdown: Bool
 
 KotlinComponent:
@@ -390,7 +408,7 @@ ShouldBranch:
 SwiftComponent:
     type: component
     oneliners:
-        - out: otherWriteFile(c.path, c.out)
+        - out: generatorSet(F.outSwift, c.out)
     shoulds:
         didLaunch:
             1. Only once during the first setup:
@@ -507,8 +525,7 @@ YMLComponent:
         - entityShoulds: swiftSet(F.entityShoulds, c.entityShoulds)
         - entityTypes: kotlinSet(F.entityTypes, c.entityTypes)
         - entityTypes: swiftSet(F.entityTypes, c.entityTypes)
-        - outputPaths: kotlinSet(F.outputPaths, c.outputPaths)
-        - outputPaths: swiftSet(F.outputPaths, c.outputPaths)
+        - outputPaths: generatorSet(F.outputPaths, c.outputPaths)
         - parseInput: ymlReadLines(c.inputContents)
     shoulds:
         chunks:

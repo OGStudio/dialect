@@ -155,6 +155,7 @@ struct F {
     static let outSets = "outSets"
     static let outShoulds = "outShoulds"
     static let outStructs = "outStructs"
+    static let outSwift = "outSwift"
     static let outputPaths = "outputPaths"
     static let parseInput = "parseInput"
     static let path = "path"
@@ -413,6 +414,10 @@ struct ConvContext: DialectContext {
 
 struct GeneratorContext: DialectContext {
     var cliDidConsoleOutput = Bool()
+    var out = String()
+    var outputPaths = [OutputPath]()
+    var outSwift = String()
+    var path = String()
     var willShutdown = Bool()
 
     var recentField = ""
@@ -420,6 +425,18 @@ struct GeneratorContext: DialectContext {
     func field<T>(_ name: String) -> T {
         if (name == "cliDidConsoleOutput") {
             return cliDidConsoleOutput as! T
+        }
+        else if (name == "out") {
+            return out as! T
+        }
+        else if (name == "outputPaths") {
+            return outputPaths as! T
+        }
+        else if (name == "outSwift") {
+            return outSwift as! T
+        }
+        else if (name == "path") {
+            return path as! T
         }
         else if (name == "willShutdown") {
             return willShutdown as! T
@@ -434,6 +451,18 @@ struct GeneratorContext: DialectContext {
     ) {
         if (name == "cliDidConsoleOutput") {
             cliDidConsoleOutput = value as! Bool
+        }
+        else if (name == "out") {
+            out = value as! String
+        }
+        else if (name == "outputPaths") {
+            outputPaths = value as! [OutputPath]
+        }
+        else if (name == "outSwift") {
+            outSwift = value as! String
+        }
+        else if (name == "path") {
+            path = value as! String
         }
         else if (name == "willShutdown") {
             willShutdown = value as! Bool
@@ -1311,10 +1340,45 @@ func convShouldResetTranspiledShouldBranches(_ c: ConvContext) -> ConvContext {
     return c
 }
 
+func generatorShouldResetOut(_ c: GeneratorContext) -> GeneratorContext {
+    var c = c
+
+    /* 1. Upon Swift path */
+    if
+        c.recentField == F.path &&
+        c.outputPaths.first { $0.path == c.path }?.type == GENERATOR_SWIFT
+    {
+        c.out = c.outSwift
+        c.recentField = F.out
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func generatorShouldResetPath(_ c: GeneratorContext) -> GeneratorContext {
+    var c = c
+
+    /* 1. Upon Swift output */
+    if
+        c.recentField == F.outSwift
+    {
+        c.path = c.outputPaths.first { $0.type == GENERATOR_SWIFT }?.path ?? "N/A"
+        c.recentField = F.path
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
 func generatorShouldResetWillShutdown(_ c: GeneratorContext) -> GeneratorContext {
     var c = c
 
-    /* 1. Upon CLI console outpu */
+    /* 1. Upon CLI console output */
     if
         c.recentField == F.cliDidConsoleOutput
     {
@@ -2009,6 +2073,8 @@ func convRegisterShoulds(_ ctrl: DialectController) {
 
 func generatorRegisterShoulds(_ ctrl: DialectController) {
     [
+        generatorShouldResetOut,
+        generatorShouldResetPath,
         generatorShouldResetWillShutdown,
 
     ].forEach { f in
@@ -2108,6 +2174,7 @@ func convRegisterEffects(_ ctrl: DialectController) {
 
 func generatorRegisterEffects(_ ctrl: DialectController) {
     let _: GeneratorContext? = registerOneliners(ctrl, [
+        F.out, { (c: GeneratorContext) in otherWriteFile(c.path, c.out) },
         F.willShutdown, { (c: GeneratorContext) in otherShutdown() },
 
     ])
@@ -2131,7 +2198,7 @@ func llmRegisterEffects(_ ctrl: DialectController) {
 
 func swiftRegisterEffects(_ ctrl: DialectController) {
     let _: SwiftContext? = registerOneliners(ctrl, [
-        F.out, { (c: SwiftContext) in otherWriteFile(c.path, c.out) },
+        F.out, { (c: SwiftContext) in generatorSet(F.outSwift, c.out) },
 
     ])
 }
@@ -2154,8 +2221,7 @@ func ymlRegisterEffects(_ ctrl: DialectController) {
         F.entityShoulds, { (c: YMLContext) in swiftSet(F.entityShoulds, c.entityShoulds) },
         F.entityTypes, { (c: YMLContext) in kotlinSet(F.entityTypes, c.entityTypes) },
         F.entityTypes, { (c: YMLContext) in swiftSet(F.entityTypes, c.entityTypes) },
-        F.outputPaths, { (c: YMLContext) in kotlinSet(F.outputPaths, c.outputPaths) },
-        F.outputPaths, { (c: YMLContext) in swiftSet(F.outputPaths, c.outputPaths) },
+        F.outputPaths, { (c: YMLContext) in generatorSet(F.outputPaths, c.outputPaths) },
         F.parseInput, { (c: YMLContext) in ymlReadLines(c.inputContents) },
 
     ])
