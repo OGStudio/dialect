@@ -183,6 +183,12 @@ GeneratorComponent:
         - out: generatorWriteFile(c.path, c.out, F.didWriteFile)
         - willShutdown: otherShutdown()
     shoulds:
+        filesCount:
+            1. Upon writing a file:
+                if:
+                    c.recentField == F.didWriteFile
+                then:
+                    c.filesCount += 1
         out:
             1. Upon Swift path:
                 if:
@@ -190,6 +196,12 @@ GeneratorComponent:
                     c.outputPaths.first(where: { c.path.hasSuffix($0.path) })!.type == GENERATOR_SWIFT
                 then:
                     c.out = c.outSwift
+            2. Upon Kotlin path:
+                if:
+                    c.recentField == F.path &&
+                    c.outputPaths.first(where: { c.path.hasSuffix($0.path) })!.type == GENERATOR_KOTLIN
+                then:
+                    c.out = c.outKotlin
         path:
             1. Upon Swift output:
                 if:
@@ -197,15 +209,22 @@ GeneratorComponent:
                 then:
                     let last = c.outputPaths.first(where: { $0.type == GENERATOR_SWIFT })!.path
                     c.path = c.inputAbsoluteDir + "/" + last
+            2. Upon Kotlin output:
+                if:
+                    c.recentField == F.outKotlin
+                then:
+                    let last = c.outputPaths.first(where: { $0.type == GENERATOR_KOTLIN })!.path
+                    c.path = c.inputAbsoluteDir + "/" + last
         willShutdown:
             1. Upon CLI console output:
                 if:
                     c.recentField == F.cliDidConsoleOutput
                 then:
                     c.willShutdown = true
-            2. After writing file:
+            2. After writing all expected files:
                 if:
-                    c.recentField == F.didWriteFile
+                    c.recentField == F.filesCount &&
+                    c.filesCount == c.outputPaths.count
                 then:
                     c.willShutdown = true
 
@@ -214,6 +233,7 @@ GeneratorContext:
     fields:
         cliDidConsoleOutput: Bool
         didWriteFile: Bool
+        filesCount: Int
         inputAbsoluteDir: String
         out: String
         outputPaths: [OutputPath]

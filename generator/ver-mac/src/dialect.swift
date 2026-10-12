@@ -139,6 +139,7 @@ struct F {
     static let entityShoulds = "entityShoulds"
     static let entityTypes = "entityTypes"
     static let field = "field"
+    static let filesCount = "filesCount"
     static let headers = "headers"
     static let inputAbsoluteDir = "inputAbsoluteDir"
     static let inputContents = "inputContents"
@@ -417,6 +418,7 @@ struct ConvContext: DialectContext {
 struct GeneratorContext: DialectContext {
     var cliDidConsoleOutput = Bool()
     var didWriteFile = Bool()
+    var filesCount = Int()
     var inputAbsoluteDir = String()
     var out = String()
     var outputPaths = [OutputPath]()
@@ -433,6 +435,9 @@ struct GeneratorContext: DialectContext {
         }
         else if (name == "didWriteFile") {
             return didWriteFile as! T
+        }
+        else if (name == "filesCount") {
+            return filesCount as! T
         }
         else if (name == "inputAbsoluteDir") {
             return inputAbsoluteDir as! T
@@ -468,6 +473,9 @@ struct GeneratorContext: DialectContext {
         }
         else if (name == "didWriteFile") {
             didWriteFile = value as! Bool
+        }
+        else if (name == "filesCount") {
+            filesCount = value as! Int
         }
         else if (name == "inputAbsoluteDir") {
             inputAbsoluteDir = value as! String
@@ -1335,6 +1343,23 @@ func convShouldResetTranspiledShouldBranches(_ c: ConvContext) -> ConvContext {
     return c
 }
 
+func generatorShouldResetFilesCount(_ c: GeneratorContext) -> GeneratorContext {
+    var c = c
+
+    /* 1. Upon writing a file */
+    if
+        c.recentField == F.didWriteFile
+    {
+        c.filesCount += 1
+        c.recentField = F.filesCount
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
 func generatorShouldResetOut(_ c: GeneratorContext) -> GeneratorContext {
     var c = c
 
@@ -1344,6 +1369,16 @@ func generatorShouldResetOut(_ c: GeneratorContext) -> GeneratorContext {
         c.outputPaths.first(where: { c.path.hasSuffix($0.path) })!.type == GENERATOR_SWIFT
     {
         c.out = c.outSwift
+        c.recentField = F.out
+        return c
+    }
+
+    /* 2. Upon Kotlin path */
+    if
+        c.recentField == F.path &&
+        c.outputPaths.first(where: { c.path.hasSuffix($0.path) })!.type == GENERATOR_KOTLIN
+    {
+        c.out = c.outKotlin
         c.recentField = F.out
         return c
     }
@@ -1366,6 +1401,16 @@ func generatorShouldResetPath(_ c: GeneratorContext) -> GeneratorContext {
         return c
     }
 
+    /* 2. Upon Kotlin output */
+    if
+        c.recentField == F.outKotlin
+    {
+        let last = c.outputPaths.first(where: { $0.type == GENERATOR_KOTLIN })!.path
+        c.path = c.inputAbsoluteDir + "/" + last
+        c.recentField = F.path
+        return c
+    }
+
 
     c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
     return c
@@ -1383,9 +1428,10 @@ func generatorShouldResetWillShutdown(_ c: GeneratorContext) -> GeneratorContext
         return c
     }
 
-    /* 2. After writing file */
+    /* 2. After writing all expected files */
     if
-        c.recentField == F.didWriteFile
+        c.recentField == F.filesCount &&
+        c.filesCount == c.outputPaths.count
     {
         c.willShutdown = true
         c.recentField = F.willShutdown
@@ -2040,6 +2086,7 @@ func convRegisterShoulds(_ ctrl: DialectController) {
 
 func generatorRegisterShoulds(_ ctrl: DialectController) {
     [
+        generatorShouldResetFilesCount,
         generatorShouldResetOut,
         generatorShouldResetPath,
         generatorShouldResetWillShutdown,
