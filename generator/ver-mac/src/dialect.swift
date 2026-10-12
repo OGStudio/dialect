@@ -150,6 +150,7 @@ struct F {
     static let out = "out"
     static let outContexts = "outContexts"
     static let outFields = "outFields"
+    static let outKotlin = "outKotlin"
     static let outRegisterEffects = "outRegisterEffects"
     static let outRegisterShoulds = "outRegisterShoulds"
     static let outSets = "outSets"
@@ -417,6 +418,7 @@ struct GeneratorContext: DialectContext {
     var inputAbsoluteDir = String()
     var out = String()
     var outputPaths = [OutputPath]()
+    var outKotlin = String()
     var outSwift = String()
     var path = String()
     var willShutdown = Bool()
@@ -435,6 +437,9 @@ struct GeneratorContext: DialectContext {
         }
         else if (name == "outputPaths") {
             return outputPaths as! T
+        }
+        else if (name == "outKotlin") {
+            return outKotlin as! T
         }
         else if (name == "outSwift") {
             return outSwift as! T
@@ -464,6 +469,9 @@ struct GeneratorContext: DialectContext {
         }
         else if (name == "outputPaths") {
             outputPaths = value as! [OutputPath]
+        }
+        else if (name == "outKotlin") {
+            outKotlin = value as! String
         }
         else if (name == "outSwift") {
             outSwift = value as! String
@@ -2103,7 +2111,7 @@ func generatorRegisterEffects(_ ctrl: DialectController) {
 
 func kotlinRegisterEffects(_ ctrl: DialectController) {
     let _: KotlinContext? = registerOneliners(ctrl, [
-        F.out, { (c: KotlinContext) in generatorWrite(F.outKotlin, c.out) },
+        F.out, { (c: KotlinContext) in generatorSet(F.outKotlin, c.out) },
         F.willGenerate, { (c: KotlinContext) in convSet(F.willGenerate, c.willGenerate) },
 
     ])

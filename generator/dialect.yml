@@ -212,6 +212,7 @@ GeneratorContext:
         inputAbsoluteDir: String
         out: String
         outputPaths: [OutputPath]
+        outKotlin: String
         outSwift: String
         path: String
         willShutdown: Bool
@@ -219,7 +220,7 @@ GeneratorContext:
 KotlinComponent:
     type: component
     oneliners:
-        - out: generatorWrite(F.outKotlin, c.out)
+        - out: generatorSet(F.outKotlin, c.out)
         - willGenerate: convSet(F.willGenerate, c.willGenerate)
     shoulds:
         didLaunch:
