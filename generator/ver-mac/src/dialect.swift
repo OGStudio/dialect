@@ -1333,7 +1333,7 @@ func generatorShouldResetOut(_ c: GeneratorContext) -> GeneratorContext {
     /* 1. Upon Swift path */
     if
         c.recentField == F.path &&
-        c.outputPaths.first(where: { $0.path == c.path })!.type == GENERATOR_SWIFT
+        c.outputPaths.first(where: { c.path.hasSuffix($0.path) })!.type == GENERATOR_SWIFT
     {
         c.out = c.outSwift
         c.recentField = F.out
