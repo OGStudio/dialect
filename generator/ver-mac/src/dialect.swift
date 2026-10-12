@@ -129,6 +129,7 @@ struct F {
     static let contents = "contents"
     static let didLaunch = "didLaunch"
     static let didSetup = "didSetup"
+    static let didWriteFile = "didWriteFile"
     static let dstQueue = "dstQueue"
     static let entities = "entities"
     static let entityFieldTypes = "entityFieldTypes"
@@ -415,6 +416,7 @@ struct ConvContext: DialectContext {
 
 struct GeneratorContext: DialectContext {
     var cliDidConsoleOutput = Bool()
+    var didWriteFile = Bool()
     var inputAbsoluteDir = String()
     var out = String()
     var outputPaths = [OutputPath]()
@@ -428,6 +430,9 @@ struct GeneratorContext: DialectContext {
     func field<T>(_ name: String) -> T {
         if (name == "cliDidConsoleOutput") {
             return cliDidConsoleOutput as! T
+        }
+        else if (name == "didWriteFile") {
+            return didWriteFile as! T
         }
         else if (name == "inputAbsoluteDir") {
             return inputAbsoluteDir as! T
@@ -460,6 +465,9 @@ struct GeneratorContext: DialectContext {
     ) {
         if (name == "cliDidConsoleOutput") {
             cliDidConsoleOutput = value as! Bool
+        }
+        else if (name == "didWriteFile") {
+            didWriteFile = value as! Bool
         }
         else if (name == "inputAbsoluteDir") {
             inputAbsoluteDir = value as! String
@@ -1363,6 +1371,32 @@ func generatorShouldResetPath(_ c: GeneratorContext) -> GeneratorContext {
     return c
 }
 
+func generatorShouldResetWillShutdown(_ c: GeneratorContext) -> GeneratorContext {
+    var c = c
+
+    /* 1. Upon CLI console output */
+    if
+        c.recentField == F.cliDidConsoleOutput
+    {
+        c.willShutdown = true
+        c.recentField = F.willShutdown
+        return c
+    }
+
+    /* 2. After writing file */
+    if
+        c.recentField == F.didWriteFile
+    {
+        c.willShutdown = true
+        c.recentField = F.willShutdown
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
 func kotlinShouldResetDidLaunch(_ c: KotlinContext) -> KotlinContext {
     var c = c
 
@@ -2008,6 +2042,7 @@ func generatorRegisterShoulds(_ ctrl: DialectController) {
     [
         generatorShouldResetOut,
         generatorShouldResetPath,
+        generatorShouldResetWillShutdown,
 
     ].forEach { f in
         ctrl.registerFunction { c in f(c as! GeneratorContext) }
@@ -2103,7 +2138,7 @@ func convRegisterEffects(_ ctrl: DialectController) {
 
 func generatorRegisterEffects(_ ctrl: DialectController) {
     let _: GeneratorContext? = registerOneliners(ctrl, [
-        F.out, { (c: GeneratorContext) in otherWriteFile(c.path, c.out) },
+        F.out, { (c: GeneratorContext) in generatorWriteFile(c.path, c.out, F.didWriteFile) },
         F.willShutdown, { (c: GeneratorContext) in otherShutdown() },
 
     ])

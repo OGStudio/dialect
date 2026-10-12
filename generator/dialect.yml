@@ -180,7 +180,7 @@ ConvContext:
 GeneratorComponent:
     type: component
     oneliners:
-        - out: otherWriteFile(c.path, c.out)
+        - out: generatorWriteFile(c.path, c.out, F.didWriteFile)
         - willShutdown: otherShutdown()
     shoulds:
         out:
@@ -197,11 +197,15 @@ GeneratorComponent:
                 then:
                     let last = c.outputPaths.first(where: { $0.type == GENERATOR_SWIFT })!.path
                     c.path = c.inputAbsoluteDir + "/" + last
-
         willShutdown:
             1. Upon CLI console output:
                 if:
                     c.recentField == F.cliDidConsoleOutput
+                then:
+                    c.willShutdown = true
+            2. After writing file:
+                if:
+                    c.recentField == F.didWriteFile
                 then:
                     c.willShutdown = true
 
@@ -209,6 +213,7 @@ GeneratorContext:
     type: context
     fields:
         cliDidConsoleOutput: Bool
+        didWriteFile: Bool
         inputAbsoluteDir: String
         out: String
         outputPaths: [OutputPath]
