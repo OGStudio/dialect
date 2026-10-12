@@ -752,7 +752,6 @@ struct SwiftContext: DialectContext {
     var out = String()
     var outContexts = String()
     var outFields = String()
-    var outputPaths = [OutputPath]()
     var outRegisterEffects = String()
     var outRegisterShoulds = String()
     var outSets = String()
@@ -797,9 +796,6 @@ struct SwiftContext: DialectContext {
         }
         else if (name == "outFields") {
             return outFields as! T
-        }
-        else if (name == "outputPaths") {
-            return outputPaths as! T
         }
         else if (name == "outRegisterEffects") {
             return outRegisterEffects as! T
@@ -859,9 +855,6 @@ struct SwiftContext: DialectContext {
         }
         else if (name == "outFields") {
             outFields = value as! String
-        }
-        else if (name == "outputPaths") {
-            outputPaths = value as! [OutputPath]
         }
         else if (name == "outRegisterEffects") {
             outRegisterEffects = value as! String
@@ -2233,6 +2226,7 @@ func ymlRegisterEffects(_ ctrl: DialectController) {
         F.entityTypes, { (c: YMLContext) in kotlinSet(F.entityTypes, c.entityTypes) },
         F.entityTypes, { (c: YMLContext) in swiftSet(F.entityTypes, c.entityTypes) },
         F.outputPaths, { (c: YMLContext) in generatorSet(F.outputPaths, c.outputPaths) },
+        F.outputPaths, { (c: YMLContext) in kotlinSet(F.outputPaths, c.outputPaths) },
         F.parseInput, { (c: YMLContext) in ymlReadLines(c.inputContents) },
 
     ])

@@ -507,7 +507,6 @@ SwiftContext:
         out: String
         outContexts: String
         outFields: String
-        outputPaths: [OutputPath]
         outRegisterEffects: String
         outRegisterShoulds: String
         outSets: String
@@ -534,6 +533,7 @@ YMLComponent:
         - entityTypes: kotlinSet(F.entityTypes, c.entityTypes)
         - entityTypes: swiftSet(F.entityTypes, c.entityTypes)
         - outputPaths: generatorSet(F.outputPaths, c.outputPaths)
+        - outputPaths: kotlinSet(F.outputPaths, c.outputPaths)
         - parseInput: ymlReadLines(c.inputContents)
     shoulds:
         chunks:
