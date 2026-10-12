@@ -414,6 +414,7 @@ struct ConvContext: DialectContext {
 
 struct GeneratorContext: DialectContext {
     var cliDidConsoleOutput = Bool()
+    var inputAbsoluteDir = String()
     var out = String()
     var outputPaths = [OutputPath]()
     var outSwift = String()
@@ -425,6 +426,9 @@ struct GeneratorContext: DialectContext {
     func field<T>(_ name: String) -> T {
         if (name == "cliDidConsoleOutput") {
             return cliDidConsoleOutput as! T
+        }
+        else if (name == "inputAbsoluteDir") {
+            return inputAbsoluteDir as! T
         }
         else if (name == "out") {
             return out as! T
@@ -451,6 +455,9 @@ struct GeneratorContext: DialectContext {
     ) {
         if (name == "cliDidConsoleOutput") {
             cliDidConsoleOutput = value as! Bool
+        }
+        else if (name == "inputAbsoluteDir") {
+            inputAbsoluteDir = value as! String
         }
         else if (name == "out") {
             out = value as! String
@@ -481,8 +488,6 @@ struct KotlinContext: DialectContext {
     var entityShouldBranches = [Int: [Int: [ShouldBranch]]]()
     var entityShoulds = [Int: [String]]()
     var entityTypes = [Int: String]()
-    var inputAbsoluteDir = String()
-    var path = String()
     var out = String()
     var outContexts = String()
     var outFields = String()
@@ -525,12 +530,6 @@ struct KotlinContext: DialectContext {
         }
         else if (name == "entityTypes") {
             return entityTypes as! T
-        }
-        else if (name == "inputAbsoluteDir") {
-            return inputAbsoluteDir as! T
-        }
-        else if (name == "path") {
-            return path as! T
         }
         else if (name == "out") {
             return out as! T
@@ -602,12 +601,6 @@ struct KotlinContext: DialectContext {
         }
         else if (name == "entityTypes") {
             entityTypes = value as! [Int: String]
-        }
-        else if (name == "inputAbsoluteDir") {
-            inputAbsoluteDir = value as! String
-        }
-        else if (name == "path") {
-            path = value as! String
         }
         else if (name == "out") {
             out = value as! String
@@ -732,8 +725,6 @@ struct SwiftContext: DialectContext {
     var entityShouldBranches = [Int: [Int: [ShouldBranch]]]()
     var entityShoulds = [Int: [String]]()
     var entityTypes = [Int: String]()
-    var inputAbsoluteDir = String()
-    var path = String()
     var out = String()
     var outContexts = String()
     var outFields = String()
@@ -773,12 +764,6 @@ struct SwiftContext: DialectContext {
         }
         else if (name == "entityTypes") {
             return entityTypes as! T
-        }
-        else if (name == "inputAbsoluteDir") {
-            return inputAbsoluteDir as! T
-        }
-        else if (name == "path") {
-            return path as! T
         }
         else if (name == "out") {
             return out as! T
@@ -841,12 +826,6 @@ struct SwiftContext: DialectContext {
         }
         else if (name == "entityTypes") {
             entityTypes = value as! [Int: String]
-        }
-        else if (name == "inputAbsoluteDir") {
-            inputAbsoluteDir = value as! String
-        }
-        else if (name == "path") {
-            path = value as! String
         }
         else if (name == "out") {
             out = value as! String
@@ -1346,7 +1325,7 @@ func generatorShouldResetOut(_ c: GeneratorContext) -> GeneratorContext {
     /* 1. Upon Swift path */
     if
         c.recentField == F.path &&
-        c.outputPaths.first { $0.path == c.path }?.type == GENERATOR_SWIFT
+        c.outputPaths.first(where: { $0.path == c.path })!.type == GENERATOR_SWIFT
     {
         c.out = c.outSwift
         c.recentField = F.out
@@ -1365,25 +1344,9 @@ func generatorShouldResetPath(_ c: GeneratorContext) -> GeneratorContext {
     if
         c.recentField == F.outSwift
     {
-        c.path = c.outputPaths.first { $0.type == GENERATOR_SWIFT }?.path ?? "N/A"
+        let last = c.outputPaths.first(where: { $0.type == GENERATOR_SWIFT })!.path
+        c.path = c.inputAbsoluteDir + "/" + last
         c.recentField = F.path
-        return c
-    }
-
-
-    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
-    return c
-}
-
-func generatorShouldResetWillShutdown(_ c: GeneratorContext) -> GeneratorContext {
-    var c = c
-
-    /* 1. Upon CLI console output */
-    if
-        c.recentField == F.cliDidConsoleOutput
-    {
-        c.willShutdown = true
-        c.recentField = F.willShutdown
         return c
     }
 
@@ -1549,25 +1512,6 @@ func kotlinShouldResetOutShoulds(_ c: KotlinContext) -> KotlinContext {
     {
         c.outShoulds = kotlinShoulds(c.entities, c.entityShoulds, c.transpiledShouldBranches)
         c.recentField = F.outShoulds
-        return c
-    }
-
-
-    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
-    return c
-}
-
-func kotlinShouldResetPath(_ c: KotlinContext) -> KotlinContext {
-    var c = c
-
-    /* 1. Extract Kotlin path if present */
-    if
-        c.recentField == F.outputPaths &&
-        c.outputPaths.contains(where: { $0.type == KOTLIN_TYPE })
-    {
-        let last = c.outputPaths.first { $0.type == KOTLIN_TYPE }?.path ?? "N/A"
-        c.path = c.inputAbsoluteDir + "/" + last
-        c.recentField = F.path
         return c
     }
 
@@ -1817,25 +1761,6 @@ func swiftShouldResetOutStructs(_ c: SwiftContext) -> SwiftContext {
     return c
 }
 
-func swiftShouldResetPath(_ c: SwiftContext) -> SwiftContext {
-    var c = c
-
-    /* 1. Extract Swift path if present */
-    if
-        c.recentField == F.outputPaths &&
-        c.outputPaths.contains(where: { $0.type == SWIFT_TYPE })
-    {
-        let last = c.outputPaths.first { $0.type == SWIFT_TYPE }?.path ?? "N/A"
-        c.path = c.inputAbsoluteDir + "/" + last
-        c.recentField = F.path
-        return c
-    }
-
-
-    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
-    return c
-}
-
 func ymlShouldResetChunks(_ c: YMLContext) -> YMLContext {
     var c = c
 
@@ -2075,7 +2000,6 @@ func generatorRegisterShoulds(_ ctrl: DialectController) {
     [
         generatorShouldResetOut,
         generatorShouldResetPath,
-        generatorShouldResetWillShutdown,
 
     ].forEach { f in
         ctrl.registerFunction { c in f(c as! GeneratorContext) }
@@ -2093,7 +2017,6 @@ func kotlinRegisterShoulds(_ ctrl: DialectController) {
         kotlinShouldResetOutRegisterEffects,
         kotlinShouldResetOutRegisterShoulds,
         kotlinShouldResetOutShoulds,
-        kotlinShouldResetPath,
         kotlinShouldResetWillGenerate,
 
     ].forEach { f in
@@ -2123,7 +2046,6 @@ func swiftRegisterShoulds(_ ctrl: DialectController) {
         swiftShouldResetOutSets,
         swiftShouldResetOutShoulds,
         swiftShouldResetOutStructs,
-        swiftShouldResetPath,
 
     ].forEach { f in
         ctrl.registerFunction { c in f(c as! SwiftContext) }
@@ -2154,8 +2076,7 @@ func cliRegisterEffects(_ ctrl: DialectController) {
     let _: CLIContext? = registerOneliners(ctrl, [
         F.consoleOutput, { (c: CLIContext) in print(c.consoleOutput) },
         F.consoleOutput, { (c: CLIContext) in generatorSet(F.cliDidConsoleOutput, true) },
-        F.inputAbsoluteDir, { (c: CLIContext) in kotlinSet(F.inputAbsoluteDir, c.inputAbsoluteDir) },
-        F.inputAbsoluteDir, { (c: CLIContext) in swiftSet(F.inputAbsoluteDir, c.inputAbsoluteDir) },
+        F.inputAbsoluteDir, { (c: CLIContext) in generatorSet(F.inputAbsoluteDir, c.inputAbsoluteDir) },
         F.inputContents, { (c: CLIContext) in ymlSet(F.inputContents, c.inputContents) },
         F.inputFileName, { (c: CLIContext) in cliResolveAbsoluteDir(c.inputFileName, F.inputAbsoluteDir) },
         F.readFile, { (c: CLIContext) in cliReadInputFile(c.inputFileName, F.inputContents, F.inputError) },
@@ -2182,7 +2103,7 @@ func generatorRegisterEffects(_ ctrl: DialectController) {
 
 func kotlinRegisterEffects(_ ctrl: DialectController) {
     let _: KotlinContext? = registerOneliners(ctrl, [
-        F.out, { (c: KotlinContext) in otherWriteFile(c.path, c.out) },
+        F.out, { (c: KotlinContext) in generatorWrite(F.outKotlin, c.out) },
         F.willGenerate, { (c: KotlinContext) in convSet(F.willGenerate, c.willGenerate) },
 
     ])
