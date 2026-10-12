@@ -9,8 +9,7 @@ CLIComponent:
     oneliners:
         - consoleOutput: print(c.consoleOutput)
         - consoleOutput: generatorSet(F.cliDidConsoleOutput, true)
-        - inputAbsoluteDir: kotlinSet(F.inputAbsoluteDir, c.inputAbsoluteDir)
-        - inputAbsoluteDir: swiftSet(F.inputAbsoluteDir, c.inputAbsoluteDir)
+        - inputAbsoluteDir: generatorSet(F.inputAbsoluteDir, c.inputAbsoluteDir)
         - inputContents: ymlSet(F.inputContents, c.inputContents)
         - inputFileName: cliResolveAbsoluteDir(c.inputFileName, F.inputAbsoluteDir)
         - readFile: cliReadInputFile(c.inputFileName, F.inputContents, F.inputError)
@@ -188,7 +187,7 @@ GeneratorComponent:
             1. Upon Swift path:
                 if:
                     c.recentField == F.path &&
-                    c.outputPaths.first { $0.path == c.path }?.type == GENERATOR_SWIFT
+                    c.outputPaths.first(where: { $0.path == c.path })!.type == GENERATOR_SWIFT
                 then:
                     c.out = c.outSwift
         path:
@@ -196,7 +195,9 @@ GeneratorComponent:
                 if:
                     c.recentField == F.outSwift
                 then:
-                    c.path = c.outputPaths.first { $0.type == GENERATOR_SWIFT }?.path ?? "N/A"
+                    let last = c.outputPaths.first(where: { $0.type == GENERATOR_SWIFT })!.path
+                    c.path = c.inputAbsoluteDir + "/" + last
+
         willShutdown:
             1. Upon CLI console output:
                 if:
@@ -208,6 +209,7 @@ GeneratorContext:
     type: context
     fields:
         cliDidConsoleOutput: Bool
+        inputAbsoluteDir: String
         out: String
         outputPaths: [OutputPath]
         outSwift: String
@@ -217,7 +219,7 @@ GeneratorContext:
 KotlinComponent:
     type: component
     oneliners:
-        - out: otherWriteFile(c.path, c.out)
+        - out: generatorWrite(F.outKotlin, c.out)
         - willGenerate: convSet(F.willGenerate, c.willGenerate)
     shoulds:
         didLaunch:
@@ -286,14 +288,6 @@ KotlinComponent:
                     c.recentField == F.transpiledShouldBranches
                 then:
                     c.outShoulds = kotlinShoulds(c.entities, c.entityShoulds, c.transpiledShouldBranches)
-        path:
-            1. Extract Kotlin path if present:
-                if:
-                    c.recentField == F.outputPaths &&
-                    c.outputPaths.contains(where: { $0.type == KOTLIN_TYPE })
-                then:
-                    let last = c.outputPaths.first { $0.type == KOTLIN_TYPE }?.path ?? "N/A"
-                    c.path = c.inputAbsoluteDir + "/" + last
         willGenerate:
             1. Upon did launch:
                 if:
@@ -314,8 +308,6 @@ KotlinContext:
         entityShouldBranches: [Int: [Int: [ShouldBranch]]]
         entityShoulds: [Int: [String]]
         entityTypes: [Int: String]
-        inputAbsoluteDir: String
-        path: String
         out: String
         outContexts: String
         outFields: String
@@ -473,14 +465,6 @@ SwiftComponent:
                     c.recentField == F.entityFieldTypes
                 then:
                     c.outStructs = swiftStructs(c.entities, c.entityTypes, c.entityFields, c.entityFieldTypes)
-        path:
-            1. Extract Swift path if present:
-                if:
-                    c.recentField == F.outputPaths &&
-                    c.outputPaths.contains(where: { $0.type == SWIFT_TYPE })
-                then:
-                    let last = c.outputPaths.first { $0.type == SWIFT_TYPE }?.path ?? "N/A"
-                    c.path = c.inputAbsoluteDir + "/" + last
 
 SwiftContext:
     type: context
@@ -494,8 +478,6 @@ SwiftContext:
         entityShouldBranches: [Int: [Int: [ShouldBranch]]]
         entityShoulds: [Int: [String]]
         entityTypes: [Int: String]
-        inputAbsoluteDir: String
-        path: String
         out: String
         outContexts: String
         outFields: String
