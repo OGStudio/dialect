@@ -19,6 +19,8 @@ Linux and Windows support is pending.
 
 Have a look at `example` directory. The `dialect.swift` file is generated for macOS & iOS. The `dialect.kt` file is an equivalent transpilation to Kotlin.
 
+# Dependencies
+
 Prerequisites for macOS:
 
 * Xcode
