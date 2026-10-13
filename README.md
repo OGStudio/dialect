@@ -1,23 +1,32 @@
 
 # Dialect
 
-Plan:
+Dialect is a way to write cross-platform logic core natively.
 
-1. You write Swift code as Single source of truth
-1. Agent transpiles parts of the code to other languages
-1. You get native support (without KMP or similar binary approach) at no runtime cost
+How it works basically:
+
+1. Write Swift code as Single source of truth
+1. Make sure (debug, fine tune, etc.) it works for both macOS & iOS
+1. Use 'kotlin' target inside `dialect.yml` to have it transpiled to `dialect.kt` via LLM
+1. Make sure (debug, fine tune, etc.) it works for Android, too (Effects are your part, yes, only `dialect.yml` logic is transpiled)
 
 # Example
 
-Prerequisites for Android:
+Have a look at `example` directory. The `dialect.swift` file is generated for macOS & iOS. The `dialect.kt` file is an equivalent transpilation to Kotlin.
 
-* Android Studio for macOS
+Prerequisites for macOS:
+
+* Xcode
 
 Prerequisites for iOS:
 
 * XcodeGen: `brew install xcodegen`
 
+Prerequisites for Android:
+
+* Android Studio for macOS
+
 Prerequisites for transpilation:
 
 * `ollama serve` everytime you plan to transpile
-* `ollama run qwen2.5-coder:1.5b` (1 GB disk, 1.2 GB VRAM) only once to install, for later runs ollama loads requested models itself, `ollama serve` is enough after that
+* `ollama run qwen2.5-coder:3b` (2 GB disk, 2 GB VRAM) only once to install, for later runs ollama loads requested models itself, `ollama serve` is enough after that
