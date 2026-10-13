@@ -1,14 +1,13 @@
 
 # Dialect
 
-Dialect is a way to write cross-platform logic core natively without a burden of having KMP-like binary, wrappers, and other runtime / build time overhead
+Dialect is a way to write cross-platform logic core natively without a burden of having KMP-like binary, wrappers, and other runtime / build time overhead. SwiftUI, Jetpack Compose and native effects remain your duty, only Redux-like logic core is taken care of
 
 How you should now work:
 
 1. Write macOS application with Swift and SwiftUI to serve as Single source of truth
 1. Add iOS support by adapting SwiftUI to mobile UX
 1. Add Android support by using 'kotlin' target inside `dialect.yml` to have it transpiled to `dialect.kt` via LLM
-1. Manually provide and fine tune Effects, SwiftUI, Jetpack Compose
 
 # Supported platforms
 
