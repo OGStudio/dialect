@@ -1,7 +1,7 @@
 
 # Dialect
 
-Dialect is a way to write cross-platform logic core natively without a burden of having KMP-like binary, wrappers, and other runtime / build time overhead. SwiftUI, Jetpack Compose and native effects remain your duty, only Redux-like logic core is taken care of
+Dialect is a way to write cross-platform logic core natively without a burden of having KMP-like binary, wrappers, and other runtime / build time overhead. SwiftUI, Jetpack Compose and native effects remain your duty, only Redux-like logic core is taken care of.
 
 How you should now work:
 
