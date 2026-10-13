@@ -1350,7 +1350,19 @@ func generatorShouldResetConsoleOutput(_ c: GeneratorContext) -> GeneratorContex
     if
         c.recentField == F.llmError
     {
-        c.consoleOutput = GENERATOR_LLM_ERROR_T.replacingOccurrences(of: "%ERROR%", with: c.llmError)
+        c.consoleOutput = GENERATOR_LLM_ERROR_T
+            .replacingOccurrences(of: "%ERROR%", with: c.llmError)
+        c.recentField = F.consoleOutput
+        return c
+    }
+
+    /* 2. Upon writing a file */
+    if
+        c.recentField == F.didWriteFile
+    {
+        c.consoleOutput = GENERATOR_DID_WRITE_FILE_T
+            .replacingOccurrences(of: "%PATH%", with: c.path)
+            .replacingOccurrences(of: "%SIZE%", with: String(c.out.count))
         c.recentField = F.consoleOutput
         return c
     }
