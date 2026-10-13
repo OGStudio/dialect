@@ -14,7 +14,7 @@ How it works:
 
 Currently Dialect is only supported for: macOS, iOS, and Android.
 
-Linux and Windows support is pending
+Linux and Windows support is pending.
 
 # Example
 
