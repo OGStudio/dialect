@@ -10,6 +10,12 @@ How it works:
 1. Use 'kotlin' target inside `dialect.yml` to have it transpiled to `dialect.kt` via LLM
 1. Make sure (debug, fine tune, etc.) it works for Android, too (Effects are your part, yes, only `dialect.yml` logic is transpiled)
 
+# Supported platforms
+
+Currently Dialect is only supported for: macOS, iOS, and Android.
+
+Linux and Windows support is pending
+
 # Example
 
 Have a look at `example` directory. The `dialect.swift` file is generated for macOS & iOS. The `dialect.kt` file is an equivalent transpilation to Kotlin.
