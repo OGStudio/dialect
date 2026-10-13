@@ -3,12 +3,12 @@
 
 Dialect is a way to write cross-platform logic core natively.
 
-How it works:
+How you should now work:
 
-1. Write Swift code as Single source of truth
-1. Make sure (debug, fine tune, etc.) it works for both macOS & iOS
-1. Use 'kotlin' target inside `dialect.yml` to have it transpiled to `dialect.kt` via LLM
-1. Make sure (debug, fine tune, etc.) it works for Android, too (Effects are your part, yes, only `dialect.yml` logic is transpiled)
+1. Write macOS application with Swift and SwiftUI to serve as Single source of truth
+1. Add iOS support by adapting SwiftUI to mobile UX
+1. Add Android support by using 'kotlin' target inside `dialect.yml` to have it transpiled to `dialect.kt` via LLM
+1. Have all platforms supported natively without KMP-like binary overhead
 
 # Supported platforms
 
