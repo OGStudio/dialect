@@ -12,7 +12,7 @@ How it works:
 
 # Supported platforms
 
-Currently Dialect is only supported for: macOS, iOS, and Android.
+Currently Dialect only supports development for: macOS, iOS, and Android.
 
 Linux and Windows support is pending.
 
