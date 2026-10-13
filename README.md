@@ -3,7 +3,7 @@
 
 Dialect is a way to write cross-platform logic core natively.
 
-How it works basically:
+How it works:
 
 1. Write Swift code as Single source of truth
 1. Make sure (debug, fine tune, etc.) it works for both macOS & iOS
