@@ -81,7 +81,7 @@ ConvComponent:
                     c.recentField == F.srcQueue
                 then:
                     c.dstQueue = []
-            2. Upon transpiled reply:
+            2. Upon LLM reply:
                 if:
                     c.recentField == F.reply
                 then:
@@ -180,9 +180,16 @@ ConvContext:
 GeneratorComponent:
     type: component
     oneliners:
+        - consoleOutput: print(c.consoleOutput)
         - out: generatorWriteFile(c.path, c.out, F.didWriteFile)
         - willShutdown: otherShutdown()
     shoulds:
+        consoleOutput:
+            1. Upon LLM error:
+                if:
+                    c.recentField == F.llmError
+                then:
+                    c.consoleOutput = GENERATOR_LLM_ERROR_T.replacingOccurrences(of: "%ERROR%", with: c.llmError)
         filesCount:
             1. Upon writing a file:
                 if:
@@ -227,14 +234,21 @@ GeneratorComponent:
                     c.filesCount == c.outputPaths.count
                 then:
                     c.willShutdown = true
+            3. Upon LLM error:
+                if:
+                    c.recentField == F.llmError
+                then:
+                    c.willShutdown = true
 
 GeneratorContext:
     type: context
     fields:
         cliDidConsoleOutput: Bool
+        consoleOutput: String
         didWriteFile: Bool
         filesCount: Int
         inputAbsoluteDir: String
+        llmError: String
         out: String
         outputPaths: [OutputPath]
         outKotlin: String
@@ -351,6 +365,7 @@ LLMComponent:
     type: component
     oneliners:
         - request: llmLoad(c.request, F.response, F.responseError)
+        - responseError: generatorSet(F.llmError, c.responseError.contents)
         - reply: convSet(F.reply, c.reply)
     shoulds:
         didLaunch:
@@ -388,7 +403,6 @@ LLMContext:
         request: NetRequest
         response: NetResponse
         responseError: NetResponse
-        system: String
 
 NetRequest:
     type: struct

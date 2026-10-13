@@ -148,6 +148,7 @@ struct F {
     static let inputLines = "inputLines"
     static let isConvertingOneliners = "isConvertingOneliners"
     static let isConvertingShoulds = "isConvertingShoulds"
+    static let llmError = "llmError"
     static let method = "method"
     static let out = "out"
     static let outContexts = "outContexts"
@@ -172,7 +173,6 @@ struct F {
     static let responseError = "responseError"
     static let srcId = "srcId"
     static let srcQueue = "srcQueue"
-    static let system = "system"
     static let transpiledOneliners = "transpiledOneliners"
     static let transpiledShouldBranches = "transpiledShouldBranches"
     static let type = "type"
@@ -417,9 +417,11 @@ struct ConvContext: DialectContext {
 
 struct GeneratorContext: DialectContext {
     var cliDidConsoleOutput = Bool()
+    var consoleOutput = String()
     var didWriteFile = Bool()
     var filesCount = Int()
     var inputAbsoluteDir = String()
+    var llmError = String()
     var out = String()
     var outputPaths = [OutputPath]()
     var outKotlin = String()
@@ -433,6 +435,9 @@ struct GeneratorContext: DialectContext {
         if (name == "cliDidConsoleOutput") {
             return cliDidConsoleOutput as! T
         }
+        else if (name == "consoleOutput") {
+            return consoleOutput as! T
+        }
         else if (name == "didWriteFile") {
             return didWriteFile as! T
         }
@@ -441,6 +446,9 @@ struct GeneratorContext: DialectContext {
         }
         else if (name == "inputAbsoluteDir") {
             return inputAbsoluteDir as! T
+        }
+        else if (name == "llmError") {
+            return llmError as! T
         }
         else if (name == "out") {
             return out as! T
@@ -471,6 +479,9 @@ struct GeneratorContext: DialectContext {
         if (name == "cliDidConsoleOutput") {
             cliDidConsoleOutput = value as! Bool
         }
+        else if (name == "consoleOutput") {
+            consoleOutput = value as! String
+        }
         else if (name == "didWriteFile") {
             didWriteFile = value as! Bool
         }
@@ -479,6 +490,9 @@ struct GeneratorContext: DialectContext {
         }
         else if (name == "inputAbsoluteDir") {
             inputAbsoluteDir = value as! String
+        }
+        else if (name == "llmError") {
+            llmError = value as! String
         }
         else if (name == "out") {
             out = value as! String
@@ -674,7 +688,6 @@ struct LLMContext: DialectContext {
     var request = NetRequest()
     var response = NetResponse()
     var responseError = NetResponse()
-    var system = String()
 
     var recentField = ""
 
@@ -699,9 +712,6 @@ struct LLMContext: DialectContext {
         }
         else if (name == "responseError") {
             return responseError as! T
-        }
-        else if (name == "system") {
-            return system as! T
         }
 
         return "unknown-field-name" as! T
@@ -731,9 +741,6 @@ struct LLMContext: DialectContext {
         }
         else if (name == "responseError") {
             responseError = value as! NetResponse
-        }
-        else if (name == "system") {
-            system = value as! String
         }
 
     }
@@ -1157,7 +1164,7 @@ func convShouldResetDstQueue(_ c: ConvContext) -> ConvContext {
         return c
     }
 
-    /* 2. Upon transpiled reply */
+    /* 2. Upon LLM reply */
     if
         c.recentField == F.reply
     {
@@ -1336,6 +1343,23 @@ func convShouldResetTranspiledShouldBranches(_ c: ConvContext) -> ConvContext {
     return c
 }
 
+func generatorShouldResetConsoleOutput(_ c: GeneratorContext) -> GeneratorContext {
+    var c = c
+
+    /* 1. Upon LLM error */
+    if
+        c.recentField == F.llmError
+    {
+        c.consoleOutput = GENERATOR_LLM_ERROR_T.replacingOccurrences(of: "%ERROR%", with: c.llmError)
+        c.recentField = F.consoleOutput
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
 func generatorShouldResetFilesCount(_ c: GeneratorContext) -> GeneratorContext {
     var c = c
 
@@ -1425,6 +1449,15 @@ func generatorShouldResetWillShutdown(_ c: GeneratorContext) -> GeneratorContext
     if
         c.recentField == F.filesCount &&
         c.filesCount == c.outputPaths.count
+    {
+        c.willShutdown = true
+        c.recentField = F.willShutdown
+        return c
+    }
+
+    /* 3. Upon LLM error */
+    if
+        c.recentField == F.llmError
     {
         c.willShutdown = true
         c.recentField = F.willShutdown
@@ -2079,6 +2112,7 @@ func convRegisterShoulds(_ ctrl: DialectController) {
 
 func generatorRegisterShoulds(_ ctrl: DialectController) {
     [
+        generatorShouldResetConsoleOutput,
         generatorShouldResetFilesCount,
         generatorShouldResetOut,
         generatorShouldResetPath,
@@ -2178,6 +2212,7 @@ func convRegisterEffects(_ ctrl: DialectController) {
 
 func generatorRegisterEffects(_ ctrl: DialectController) {
     let _: GeneratorContext? = registerOneliners(ctrl, [
+        F.consoleOutput, { (c: GeneratorContext) in print(c.consoleOutput) },
         F.out, { (c: GeneratorContext) in generatorWriteFile(c.path, c.out, F.didWriteFile) },
         F.willShutdown, { (c: GeneratorContext) in otherShutdown() },
 
@@ -2195,6 +2230,7 @@ func kotlinRegisterEffects(_ ctrl: DialectController) {
 func llmRegisterEffects(_ ctrl: DialectController) {
     let _: LLMContext? = registerOneliners(ctrl, [
         F.request, { (c: LLMContext) in llmLoad(c.request, F.response, F.responseError) },
+        F.responseError, { (c: LLMContext) in generatorSet(F.llmError, c.responseError.contents) },
         F.reply, { (c: LLMContext) in convSet(F.reply, c.reply) },
 
     ])

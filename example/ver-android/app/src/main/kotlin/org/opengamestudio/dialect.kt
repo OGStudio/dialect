@@ -231,7 +231,7 @@ fun rootShouldResetCountText(c: RootContext): RootContext {
     if (
 c.recentField == F.count
     ) {
-        c.countText = "Count: '${c.count}'"
+c.countText = "Count: '\(c.count)'"
         c.recentField = F.countText
         return c
     }
@@ -239,7 +239,7 @@ c.recentField == F.count
     if (
 c.recentField == F.didLaunch
     ) {
-        c.countText = "Press the button to count"
+c.countText = "Press the button to count"
         c.recentField = F.countText
         return c
     }
@@ -279,7 +279,7 @@ fun rootRegisterShoulds(ctrl: DialectController) {
 fun rootRegisterEffects(ctrl: DialectController) {
     registerOneliners(ctrl, arrayOf(
         F.countText, { c: RootContext -> print(c.countText) },
-        F.countText, { c: RootContext -> RootVM.shared!!.countText = c.countText },
+        F.countText, { c: RootContext -> RootVM.shared!.countText = c.countText },
 
     ))
 }

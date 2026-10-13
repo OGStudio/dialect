@@ -9,6 +9,7 @@ let yml = YMLComponent()
 otherSetupConsoleLogging(conv.ctrl, "Conv")
 otherSetupConsoleLogging(generator.ctrl, "Generator")
 otherSetupConsoleLogging(kotlin.ctrl, "Kotlin")
+otherSetupConsoleLogging(llm.ctrl, "LLM")
 
 conv.setup()
 cli.setup()
