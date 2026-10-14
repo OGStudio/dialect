@@ -6,10 +6,8 @@ let llm = LLMComponent()
 let swift = SwiftComponent()
 let yml = YMLComponent()
 
-otherSetupConsoleLogging(conv.ctrl, "Conv")
-otherSetupConsoleLogging(generator.ctrl, "Generator")
-otherSetupConsoleLogging(kotlin.ctrl, "Kotlin")
-otherSetupConsoleLogging(llm.ctrl, "LLM")
+//otherSetupConsoleLogging(generator.ctrl, "Generator")
+//otherSetupConsoleLogging(llm.ctrl, "LLM")
 
 conv.setup()
 cli.setup()
