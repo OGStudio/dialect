@@ -12,4 +12,4 @@ conv.setup()
 llm.setup()
 cli.setup()
 
-transpilerLaunch()
+otherLaunch()

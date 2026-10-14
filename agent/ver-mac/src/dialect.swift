@@ -565,7 +565,7 @@ func llmRegisterShoulds(_ ctrl: DialectController) {
 func agentRegisterEffects(_ ctrl: DialectController) {
     let _: AgentContext? = registerOneliners(ctrl, [
         F.consoleOutput, { (c: AgentContext) in print(c.consoleOutput) },
-        F.willShutdown, { (c: AgentContext) in agentShutdown() },
+        F.willShutdown, { (c: AgentContext) in otherShutdown() },
 
     ])
 }

@@ -1,0 +1,1 @@
+../../../../components/generator/generator.swift

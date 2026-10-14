@@ -1,0 +1,1 @@
+../../../../components/generator/generatorEffect.swift

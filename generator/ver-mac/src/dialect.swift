@@ -123,11 +123,14 @@ struct F {
     static let arguments = "arguments"
     static let body = "body"
     static let chunks = "chunks"
+    static let cliDidConsoleOutput = "cliDidConsoleOutput"
     static let condition = "condition"
     static let consoleOutput = "consoleOutput"
     static let contents = "contents"
     static let didLaunch = "didLaunch"
     static let didSetup = "didSetup"
+    static let didWriteFile = "didWriteFile"
+    static let dstQueue = "dstQueue"
     static let entities = "entities"
     static let entityFieldTypes = "entityFieldTypes"
     static let entityFields = "entityFields"
@@ -136,21 +139,27 @@ struct F {
     static let entityShoulds = "entityShoulds"
     static let entityTypes = "entityTypes"
     static let field = "field"
+    static let filesCount = "filesCount"
     static let headers = "headers"
     static let inputAbsoluteDir = "inputAbsoluteDir"
     static let inputContents = "inputContents"
     static let inputError = "inputError"
     static let inputFileName = "inputFileName"
     static let inputLines = "inputLines"
+    static let isConvertingOneliners = "isConvertingOneliners"
+    static let isConvertingShoulds = "isConvertingShoulds"
+    static let llmError = "llmError"
     static let method = "method"
     static let out = "out"
     static let outContexts = "outContexts"
     static let outFields = "outFields"
+    static let outKotlin = "outKotlin"
     static let outRegisterEffects = "outRegisterEffects"
     static let outRegisterShoulds = "outRegisterShoulds"
     static let outSets = "outSets"
     static let outShoulds = "outShoulds"
     static let outStructs = "outStructs"
+    static let outSwift = "outSwift"
     static let outputPaths = "outputPaths"
     static let parseInput = "parseInput"
     static let path = "path"
@@ -162,10 +171,15 @@ struct F {
     static let request = "request"
     static let response = "response"
     static let responseError = "responseError"
-    static let system = "system"
+    static let srcId = "srcId"
+    static let srcQueue = "srcQueue"
+    static let transpiledOneliners = "transpiledOneliners"
+    static let transpiledShouldBranches = "transpiledShouldBranches"
     static let type = "type"
     static let url = "url"
     static let version = "version"
+    static let willGenerate = "willGenerate"
+    static let willShutdown = "willShutdown"
 
 }
 struct NetRequest {
@@ -286,6 +300,222 @@ struct CLIContext: DialectContext {
     }
 }
 
+struct ConvContext: DialectContext {
+    var didLaunch = Bool()
+    var didSetup = Bool()
+    var dstQueue = [String]()
+    var entityOneliners = [Int: [Oneliner]]()
+    var entityShouldBranches = [Int: [Int: [ShouldBranch]]]()
+    var isConvertingOneliners = Bool()
+    var isConvertingShoulds = Bool()
+    var prompt = String()
+    var reply = String()
+    var srcId = Int()
+    var srcQueue = [String]()
+    var transpiledOneliners = [Int: [Oneliner]]()
+    var transpiledShouldBranches = [Int: [Int: [ShouldBranch]]]()
+    var willGenerate = Bool()
+
+    var recentField = ""
+
+    func field<T>(_ name: String) -> T {
+        if (name == "didLaunch") {
+            return didLaunch as! T
+        }
+        else if (name == "didSetup") {
+            return didSetup as! T
+        }
+        else if (name == "dstQueue") {
+            return dstQueue as! T
+        }
+        else if (name == "entityOneliners") {
+            return entityOneliners as! T
+        }
+        else if (name == "entityShouldBranches") {
+            return entityShouldBranches as! T
+        }
+        else if (name == "isConvertingOneliners") {
+            return isConvertingOneliners as! T
+        }
+        else if (name == "isConvertingShoulds") {
+            return isConvertingShoulds as! T
+        }
+        else if (name == "prompt") {
+            return prompt as! T
+        }
+        else if (name == "reply") {
+            return reply as! T
+        }
+        else if (name == "srcId") {
+            return srcId as! T
+        }
+        else if (name == "srcQueue") {
+            return srcQueue as! T
+        }
+        else if (name == "transpiledOneliners") {
+            return transpiledOneliners as! T
+        }
+        else if (name == "transpiledShouldBranches") {
+            return transpiledShouldBranches as! T
+        }
+        else if (name == "willGenerate") {
+            return willGenerate as! T
+        }
+
+        return "unknown-field-name" as! T
+    }
+
+    mutating func setField(
+        _ name: String,
+        _ value: Any
+    ) {
+        if (name == "didLaunch") {
+            didLaunch = value as! Bool
+        }
+        else if (name == "didSetup") {
+            didSetup = value as! Bool
+        }
+        else if (name == "dstQueue") {
+            dstQueue = value as! [String]
+        }
+        else if (name == "entityOneliners") {
+            entityOneliners = value as! [Int: [Oneliner]]
+        }
+        else if (name == "entityShouldBranches") {
+            entityShouldBranches = value as! [Int: [Int: [ShouldBranch]]]
+        }
+        else if (name == "isConvertingOneliners") {
+            isConvertingOneliners = value as! Bool
+        }
+        else if (name == "isConvertingShoulds") {
+            isConvertingShoulds = value as! Bool
+        }
+        else if (name == "prompt") {
+            prompt = value as! String
+        }
+        else if (name == "reply") {
+            reply = value as! String
+        }
+        else if (name == "srcId") {
+            srcId = value as! Int
+        }
+        else if (name == "srcQueue") {
+            srcQueue = value as! [String]
+        }
+        else if (name == "transpiledOneliners") {
+            transpiledOneliners = value as! [Int: [Oneliner]]
+        }
+        else if (name == "transpiledShouldBranches") {
+            transpiledShouldBranches = value as! [Int: [Int: [ShouldBranch]]]
+        }
+        else if (name == "willGenerate") {
+            willGenerate = value as! Bool
+        }
+
+    }
+}
+
+struct GeneratorContext: DialectContext {
+    var cliDidConsoleOutput = Bool()
+    var consoleOutput = String()
+    var didWriteFile = Bool()
+    var filesCount = Int()
+    var inputAbsoluteDir = String()
+    var llmError = String()
+    var out = String()
+    var outputPaths = [OutputPath]()
+    var outKotlin = String()
+    var outSwift = String()
+    var path = String()
+    var willShutdown = Bool()
+
+    var recentField = ""
+
+    func field<T>(_ name: String) -> T {
+        if (name == "cliDidConsoleOutput") {
+            return cliDidConsoleOutput as! T
+        }
+        else if (name == "consoleOutput") {
+            return consoleOutput as! T
+        }
+        else if (name == "didWriteFile") {
+            return didWriteFile as! T
+        }
+        else if (name == "filesCount") {
+            return filesCount as! T
+        }
+        else if (name == "inputAbsoluteDir") {
+            return inputAbsoluteDir as! T
+        }
+        else if (name == "llmError") {
+            return llmError as! T
+        }
+        else if (name == "out") {
+            return out as! T
+        }
+        else if (name == "outputPaths") {
+            return outputPaths as! T
+        }
+        else if (name == "outKotlin") {
+            return outKotlin as! T
+        }
+        else if (name == "outSwift") {
+            return outSwift as! T
+        }
+        else if (name == "path") {
+            return path as! T
+        }
+        else if (name == "willShutdown") {
+            return willShutdown as! T
+        }
+
+        return "unknown-field-name" as! T
+    }
+
+    mutating func setField(
+        _ name: String,
+        _ value: Any
+    ) {
+        if (name == "cliDidConsoleOutput") {
+            cliDidConsoleOutput = value as! Bool
+        }
+        else if (name == "consoleOutput") {
+            consoleOutput = value as! String
+        }
+        else if (name == "didWriteFile") {
+            didWriteFile = value as! Bool
+        }
+        else if (name == "filesCount") {
+            filesCount = value as! Int
+        }
+        else if (name == "inputAbsoluteDir") {
+            inputAbsoluteDir = value as! String
+        }
+        else if (name == "llmError") {
+            llmError = value as! String
+        }
+        else if (name == "out") {
+            out = value as! String
+        }
+        else if (name == "outputPaths") {
+            outputPaths = value as! [OutputPath]
+        }
+        else if (name == "outKotlin") {
+            outKotlin = value as! String
+        }
+        else if (name == "outSwift") {
+            outSwift = value as! String
+        }
+        else if (name == "path") {
+            path = value as! String
+        }
+        else if (name == "willShutdown") {
+            willShutdown = value as! Bool
+        }
+
+    }
+}
+
 struct KotlinContext: DialectContext {
     var didLaunch = Bool()
     var didSetup = Bool()
@@ -296,8 +526,6 @@ struct KotlinContext: DialectContext {
     var entityShouldBranches = [Int: [Int: [ShouldBranch]]]()
     var entityShoulds = [Int: [String]]()
     var entityTypes = [Int: String]()
-    var inputAbsoluteDir = String()
-    var path = String()
     var out = String()
     var outContexts = String()
     var outFields = String()
@@ -307,6 +535,9 @@ struct KotlinContext: DialectContext {
     var outSets = String()
     var outShoulds = String()
     var outStructs = String()
+    var transpiledOneliners = [Int: [Oneliner]]()
+    var transpiledShouldBranches = [Int: [Int: [ShouldBranch]]]()
+    var willGenerate = Bool()
 
     var recentField = ""
 
@@ -338,12 +569,6 @@ struct KotlinContext: DialectContext {
         else if (name == "entityTypes") {
             return entityTypes as! T
         }
-        else if (name == "inputAbsoluteDir") {
-            return inputAbsoluteDir as! T
-        }
-        else if (name == "path") {
-            return path as! T
-        }
         else if (name == "out") {
             return out as! T
         }
@@ -370,6 +595,15 @@ struct KotlinContext: DialectContext {
         }
         else if (name == "outStructs") {
             return outStructs as! T
+        }
+        else if (name == "transpiledOneliners") {
+            return transpiledOneliners as! T
+        }
+        else if (name == "transpiledShouldBranches") {
+            return transpiledShouldBranches as! T
+        }
+        else if (name == "willGenerate") {
+            return willGenerate as! T
         }
 
         return "unknown-field-name" as! T
@@ -406,12 +640,6 @@ struct KotlinContext: DialectContext {
         else if (name == "entityTypes") {
             entityTypes = value as! [Int: String]
         }
-        else if (name == "inputAbsoluteDir") {
-            inputAbsoluteDir = value as! String
-        }
-        else if (name == "path") {
-            path = value as! String
-        }
         else if (name == "out") {
             out = value as! String
         }
@@ -439,6 +667,15 @@ struct KotlinContext: DialectContext {
         else if (name == "outStructs") {
             outStructs = value as! String
         }
+        else if (name == "transpiledOneliners") {
+            transpiledOneliners = value as! [Int: [Oneliner]]
+        }
+        else if (name == "transpiledShouldBranches") {
+            transpiledShouldBranches = value as! [Int: [Int: [ShouldBranch]]]
+        }
+        else if (name == "willGenerate") {
+            willGenerate = value as! Bool
+        }
 
     }
 }
@@ -451,7 +688,6 @@ struct LLMContext: DialectContext {
     var request = NetRequest()
     var response = NetResponse()
     var responseError = NetResponse()
-    var system = String()
 
     var recentField = ""
 
@@ -476,9 +712,6 @@ struct LLMContext: DialectContext {
         }
         else if (name == "responseError") {
             return responseError as! T
-        }
-        else if (name == "system") {
-            return system as! T
         }
 
         return "unknown-field-name" as! T
@@ -509,9 +742,6 @@ struct LLMContext: DialectContext {
         else if (name == "responseError") {
             responseError = value as! NetResponse
         }
-        else if (name == "system") {
-            system = value as! String
-        }
 
     }
 }
@@ -526,12 +756,9 @@ struct SwiftContext: DialectContext {
     var entityShouldBranches = [Int: [Int: [ShouldBranch]]]()
     var entityShoulds = [Int: [String]]()
     var entityTypes = [Int: String]()
-    var inputAbsoluteDir = String()
-    var path = String()
     var out = String()
     var outContexts = String()
     var outFields = String()
-    var outputPaths = [OutputPath]()
     var outRegisterEffects = String()
     var outRegisterShoulds = String()
     var outSets = String()
@@ -568,12 +795,6 @@ struct SwiftContext: DialectContext {
         else if (name == "entityTypes") {
             return entityTypes as! T
         }
-        else if (name == "inputAbsoluteDir") {
-            return inputAbsoluteDir as! T
-        }
-        else if (name == "path") {
-            return path as! T
-        }
         else if (name == "out") {
             return out as! T
         }
@@ -582,9 +803,6 @@ struct SwiftContext: DialectContext {
         }
         else if (name == "outFields") {
             return outFields as! T
-        }
-        else if (name == "outputPaths") {
-            return outputPaths as! T
         }
         else if (name == "outRegisterEffects") {
             return outRegisterEffects as! T
@@ -636,12 +854,6 @@ struct SwiftContext: DialectContext {
         else if (name == "entityTypes") {
             entityTypes = value as! [Int: String]
         }
-        else if (name == "inputAbsoluteDir") {
-            inputAbsoluteDir = value as! String
-        }
-        else if (name == "path") {
-            path = value as! String
-        }
         else if (name == "out") {
             out = value as! String
         }
@@ -650,9 +862,6 @@ struct SwiftContext: DialectContext {
         }
         else if (name == "outFields") {
             outFields = value as! String
-        }
-        else if (name == "outputPaths") {
-            outputPaths = value as! [OutputPath]
         }
         else if (name == "outRegisterEffects") {
             outRegisterEffects = value as! String
@@ -802,6 +1011,20 @@ func cliSet(
     CLIComponent.singleton!.ctrl.set(key, value)
 }
 
+func convSet(
+    _ key: String,
+    _ value: Any
+) {
+    ConvComponent.singleton!.ctrl.set(key, value)
+}
+
+func generatorSet(
+    _ key: String,
+    _ value: Any
+) {
+    GeneratorComponent.singleton!.ctrl.set(key, value)
+}
+
 func kotlinSet(
     _ key: String,
     _ value: Any
@@ -911,6 +1134,353 @@ func cliShouldResetReadFile(_ c: CLIContext) -> CLIContext {
     return c
 }
 
+func convShouldResetDidLaunch(_ c: ConvContext) -> ConvContext {
+    var c = c
+
+    /* 1. Only once during the first setup */
+    if
+        c.recentField == F.didSetup &&
+        c.didLaunch == false
+    {
+        c.didLaunch = true
+        c.recentField = F.didLaunch
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func convShouldResetDstQueue(_ c: ConvContext) -> ConvContext {
+    var c = c
+
+    /* 1. Upon new queue to transpile */
+    if
+        c.recentField == F.srcQueue
+    {
+        c.dstQueue = []
+        c.recentField = F.dstQueue
+        return c
+    }
+
+    /* 2. Upon LLM reply */
+    if
+        c.recentField == F.reply
+    {
+        c.dstQueue.append(c.reply)
+        c.recentField = F.dstQueue
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func convShouldResetIsConvertingOneliners(_ c: ConvContext) -> ConvContext {
+    var c = c
+
+    /* 1. Upon transpiled shoulds */
+    if
+        c.recentField == F.transpiledShouldBranches
+    {
+        c.isConvertingOneliners = true
+        c.recentField = F.isConvertingOneliners
+        return c
+    }
+
+    /* 2. Upon oneliners' transpilation completion */
+    if
+        c.recentField == F.dstQueue &&
+        c.isConvertingOneliners &&
+        c.dstQueue.count == c.srcQueue.count
+    {
+        c.isConvertingOneliners = false
+        c.recentField = F.isConvertingOneliners
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func convShouldResetIsConvertingShoulds(_ c: ConvContext) -> ConvContext {
+    var c = c
+
+    /* 1. If going to generate */
+    if
+        c.recentField == F.willGenerate &&
+        c.willGenerate
+    {
+        c.isConvertingShoulds = true
+        c.recentField = F.isConvertingShoulds
+        return c
+    }
+
+    /* 2. Upon shoulds' transpilation completion */
+    if
+        c.recentField == F.dstQueue &&
+        c.isConvertingShoulds &&
+        c.dstQueue.count == c.srcQueue.count
+    {
+        c.isConvertingShoulds = false
+        c.recentField = F.isConvertingShoulds
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func convShouldResetPrompt(_ c: ConvContext) -> ConvContext {
+    var c = c
+
+    /* 1. Upon getting new source to transpile */
+    if
+        c.recentField == F.srcId
+    {
+        c.prompt = convQueuePrompt(c.srcQueue, c.srcId)
+        c.recentField = F.prompt
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func convShouldResetSrcId(_ c: ConvContext) -> ConvContext {
+    var c = c
+
+    /* 1. Upon new queue to transpile */
+    if
+        c.recentField == F.srcQueue
+    {
+        c.srcId = 0
+        c.recentField = F.srcId
+        return c
+    }
+
+    /* 2. Upon transpiled reply */
+    if
+        c.recentField == F.reply &&
+        c.srcId + 1 < c.srcQueue.count
+    {
+        c.srcId += 1
+        c.recentField = F.srcId
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func convShouldResetSrcQueue(_ c: ConvContext) -> ConvContext {
+    var c = c
+
+    /* 1. Started transpilation of shoulds */
+    if
+        c.recentField == F.isConvertingShoulds &&
+        c.isConvertingShoulds
+    {
+        c.srcQueue = convSrcQueueShoulds(c.entityShouldBranches)
+        c.recentField = F.srcQueue
+        return c
+    }
+
+    /* 2. Started transpilation of oneliners */
+    if
+        c.recentField == F.isConvertingOneliners &&
+        c.isConvertingOneliners
+    {
+        c.srcQueue = convSrcQueueOneliners(c.entityOneliners)
+        c.recentField = F.srcQueue
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func convShouldResetTranspiledOneliners(_ c: ConvContext) -> ConvContext {
+    var c = c
+
+    /* 1. Finished transpilation of oneliners */
+    if
+        c.recentField == F.isConvertingOneliners &&
+        !c.isConvertingOneliners
+    {
+        c.transpiledOneliners = convTranspiledOneliners(c.entityOneliners, c.dstQueue)
+        c.recentField = F.transpiledOneliners
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func convShouldResetTranspiledShouldBranches(_ c: ConvContext) -> ConvContext {
+    var c = c
+
+    /* 1. Finished transpilation of shoulds */
+    if
+        c.recentField == F.isConvertingShoulds &&
+        !c.isConvertingShoulds
+    {
+        c.transpiledShouldBranches = convTranspiledShouldBranches(c.entityShouldBranches, c.dstQueue)
+        c.recentField = F.transpiledShouldBranches
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func generatorShouldResetConsoleOutput(_ c: GeneratorContext) -> GeneratorContext {
+    var c = c
+
+    /* 1. Upon LLM error */
+    if
+        c.recentField == F.llmError
+    {
+        c.consoleOutput = GENERATOR_LLM_ERROR_T
+            .replacingOccurrences(of: "%ERROR%", with: c.llmError)
+        c.recentField = F.consoleOutput
+        return c
+    }
+
+    /* 2. Upon writing a file */
+    if
+        c.recentField == F.didWriteFile
+    {
+        c.consoleOutput = GENERATOR_DID_WRITE_FILE_T
+            .replacingOccurrences(of: "%PATH%", with: c.path)
+            .replacingOccurrences(of: "%SIZE%", with: String(c.out.count))
+        c.recentField = F.consoleOutput
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func generatorShouldResetFilesCount(_ c: GeneratorContext) -> GeneratorContext {
+    var c = c
+
+    /* 1. Upon writing a file */
+    if
+        c.recentField == F.didWriteFile
+    {
+        c.filesCount += 1
+        c.recentField = F.filesCount
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func generatorShouldResetOut(_ c: GeneratorContext) -> GeneratorContext {
+    var c = c
+
+    /* 1. Upon Swift path */
+    if
+        c.recentField == F.path &&
+        c.outputPaths.first(where: { c.path.hasSuffix($0.path) })!.type == GENERATOR_SWIFT
+    {
+        c.out = c.outSwift
+        c.recentField = F.out
+        return c
+    }
+
+    /* 2. Upon Kotlin path */
+    if
+        c.recentField == F.path &&
+        c.outputPaths.first(where: { c.path.hasSuffix($0.path) })!.type == GENERATOR_KOTLIN
+    {
+        c.out = c.outKotlin
+        c.recentField = F.out
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func generatorShouldResetPath(_ c: GeneratorContext) -> GeneratorContext {
+    var c = c
+
+    /* 1. Upon Swift output */
+    if
+        c.recentField == F.outSwift
+    {
+        let last = c.outputPaths.first(where: { $0.type == GENERATOR_SWIFT })!.path
+        c.path = c.inputAbsoluteDir + "/" + last
+        c.recentField = F.path
+        return c
+    }
+
+    /* 2. Upon Kotlin output */
+    if
+        c.recentField == F.outKotlin
+    {
+        let last = c.outputPaths.first(where: { $0.type == GENERATOR_KOTLIN })!.path
+        c.path = c.inputAbsoluteDir + "/" + last
+        c.recentField = F.path
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
+func generatorShouldResetWillShutdown(_ c: GeneratorContext) -> GeneratorContext {
+    var c = c
+
+    /* 1. Upon CLI console output */
+    if
+        c.recentField == F.cliDidConsoleOutput
+    {
+        c.willShutdown = true
+        c.recentField = F.willShutdown
+        return c
+    }
+
+    /* 2. After writing all expected files */
+    if
+        c.recentField == F.filesCount &&
+        c.filesCount == c.outputPaths.count
+    {
+        c.willShutdown = true
+        c.recentField = F.willShutdown
+        return c
+    }
+
+    /* 3. Upon LLM error */
+    if
+        c.recentField == F.llmError
+    {
+        c.willShutdown = true
+        c.recentField = F.willShutdown
+        return c
+    }
+
+
+    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
+    return c
+}
+
 func kotlinShouldResetDidLaunch(_ c: KotlinContext) -> KotlinContext {
     var c = c
 
@@ -932,9 +1502,9 @@ func kotlinShouldResetDidLaunch(_ c: KotlinContext) -> KotlinContext {
 func kotlinShouldResetOut(_ c: KotlinContext) -> KotlinContext {
     var c = c
 
-    /* 1. Upon launch */
+    /* 1. When transpiled oneliners are ready */
     if
-        c.recentField == F.didLaunch
+        c.recentField == F.outRegisterEffects
     {
         c.out =
             KOTLIN_OGS_PKG +
@@ -1028,11 +1598,11 @@ func kotlinShouldResetOutStructs(_ c: KotlinContext) -> KotlinContext {
 func kotlinShouldResetOutRegisterEffects(_ c: KotlinContext) -> KotlinContext {
     var c = c
 
-    /* 1. When oneliners are ready */
+    /* 1. When transpiled oneliners are ready */
     if
-        c.recentField == F.entityOneliners
+        c.recentField == F.transpiledOneliners
     {
-        c.outRegisterEffects = kotlinRegisterEffects(c.entities, c.entityOneliners)
+        c.outRegisterEffects = kotlinRegisterEffects(c.entities, c.transpiledOneliners)
         c.recentField = F.outRegisterEffects
         return c
     }
@@ -1062,11 +1632,11 @@ func kotlinShouldResetOutRegisterShoulds(_ c: KotlinContext) -> KotlinContext {
 func kotlinShouldResetOutShoulds(_ c: KotlinContext) -> KotlinContext {
     var c = c
 
-    /* 1. When entity should branches are available */
+    /* 1. When transpiled shoulds are available */
     if
-        c.recentField == F.entityShouldBranches
+        c.recentField == F.transpiledShouldBranches
     {
-        c.outShoulds = kotlinShoulds(c.entities, c.entityShoulds, c.entityShouldBranches)
+        c.outShoulds = kotlinShoulds(c.entities, c.entityShoulds, c.transpiledShouldBranches)
         c.recentField = F.outShoulds
         return c
     }
@@ -1076,17 +1646,16 @@ func kotlinShouldResetOutShoulds(_ c: KotlinContext) -> KotlinContext {
     return c
 }
 
-func kotlinShouldResetPath(_ c: KotlinContext) -> KotlinContext {
+func kotlinShouldResetWillGenerate(_ c: KotlinContext) -> KotlinContext {
     var c = c
 
-    /* 1. Extract Kotlin path if present */
+    /* 1. Upon did launch */
     if
-        c.recentField == F.outputPaths &&
-        c.outputPaths.contains(where: { $0.type == KOTLIN_TYPE })
+        c.recentField == F.didLaunch
     {
-        let last = c.outputPaths.first { $0.type == KOTLIN_TYPE }?.path ?? "N/A"
-        c.path = c.inputAbsoluteDir + "/" + last
-        c.recentField = F.path
+        let will = c.outputPaths.contains(where: { $0.type == KOTLIN_TYPE })
+        c.willGenerate = will
+        c.recentField = F.willGenerate
         return c
     }
 
@@ -1318,25 +1887,6 @@ func swiftShouldResetOutStructs(_ c: SwiftContext) -> SwiftContext {
     return c
 }
 
-func swiftShouldResetPath(_ c: SwiftContext) -> SwiftContext {
-    var c = c
-
-    /* 1. Extract Swift path if present */
-    if
-        c.recentField == F.outputPaths &&
-        c.outputPaths.contains(where: { $0.type == SWIFT_TYPE })
-    {
-        let last = c.outputPaths.first { $0.type == SWIFT_TYPE }?.path ?? "N/A"
-        c.path = c.inputAbsoluteDir + "/" + last
-        c.recentField = F.path
-        return c
-    }
-
-
-    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE
-    return c
-}
-
 func ymlShouldResetChunks(_ c: YMLContext) -> YMLContext {
     var c = c
 
@@ -1555,6 +2105,36 @@ func cliRegisterShoulds(_ ctrl: DialectController) {
     }
 }
 
+func convRegisterShoulds(_ ctrl: DialectController) {
+    [
+        convShouldResetDidLaunch,
+        convShouldResetDstQueue,
+        convShouldResetIsConvertingOneliners,
+        convShouldResetIsConvertingShoulds,
+        convShouldResetPrompt,
+        convShouldResetSrcId,
+        convShouldResetSrcQueue,
+        convShouldResetTranspiledOneliners,
+        convShouldResetTranspiledShouldBranches,
+
+    ].forEach { f in
+        ctrl.registerFunction { c in f(c as! ConvContext) }
+    }
+}
+
+func generatorRegisterShoulds(_ ctrl: DialectController) {
+    [
+        generatorShouldResetConsoleOutput,
+        generatorShouldResetFilesCount,
+        generatorShouldResetOut,
+        generatorShouldResetPath,
+        generatorShouldResetWillShutdown,
+
+    ].forEach { f in
+        ctrl.registerFunction { c in f(c as! GeneratorContext) }
+    }
+}
+
 func kotlinRegisterShoulds(_ ctrl: DialectController) {
     [
         kotlinShouldResetDidLaunch,
@@ -1566,7 +2146,7 @@ func kotlinRegisterShoulds(_ ctrl: DialectController) {
         kotlinShouldResetOutRegisterEffects,
         kotlinShouldResetOutRegisterShoulds,
         kotlinShouldResetOutShoulds,
-        kotlinShouldResetPath,
+        kotlinShouldResetWillGenerate,
 
     ].forEach { f in
         ctrl.registerFunction { c in f(c as! KotlinContext) }
@@ -1595,7 +2175,6 @@ func swiftRegisterShoulds(_ ctrl: DialectController) {
         swiftShouldResetOutSets,
         swiftShouldResetOutShoulds,
         swiftShouldResetOutStructs,
-        swiftShouldResetPath,
 
     ].forEach { f in
         ctrl.registerFunction { c in f(c as! SwiftContext) }
@@ -1625,8 +2204,8 @@ func ymlRegisterShoulds(_ ctrl: DialectController) {
 func cliRegisterEffects(_ ctrl: DialectController) {
     let _: CLIContext? = registerOneliners(ctrl, [
         F.consoleOutput, { (c: CLIContext) in print(c.consoleOutput) },
-        F.inputAbsoluteDir, { (c: CLIContext) in kotlinSet(F.inputAbsoluteDir, c.inputAbsoluteDir) },
-        F.inputAbsoluteDir, { (c: CLIContext) in swiftSet(F.inputAbsoluteDir, c.inputAbsoluteDir) },
+        F.consoleOutput, { (c: CLIContext) in generatorSet(F.cliDidConsoleOutput, true) },
+        F.inputAbsoluteDir, { (c: CLIContext) in generatorSet(F.inputAbsoluteDir, c.inputAbsoluteDir) },
         F.inputContents, { (c: CLIContext) in ymlSet(F.inputContents, c.inputContents) },
         F.inputFileName, { (c: CLIContext) in cliResolveAbsoluteDir(c.inputFileName, F.inputAbsoluteDir) },
         F.readFile, { (c: CLIContext) in cliReadInputFile(c.inputFileName, F.inputContents, F.inputError) },
@@ -1634,9 +2213,28 @@ func cliRegisterEffects(_ ctrl: DialectController) {
     ])
 }
 
+func convRegisterEffects(_ ctrl: DialectController) {
+    let _: ConvContext? = registerOneliners(ctrl, [
+        F.prompt, { (c: ConvContext) in llmSet(F.prompt, c.prompt) },
+        F.transpiledOneliners, { (c: ConvContext) in kotlinSet(F.transpiledOneliners, c.transpiledOneliners) },
+        F.transpiledShouldBranches, { (c: ConvContext) in kotlinSet(F.transpiledShouldBranches, c.transpiledShouldBranches) },
+
+    ])
+}
+
+func generatorRegisterEffects(_ ctrl: DialectController) {
+    let _: GeneratorContext? = registerOneliners(ctrl, [
+        F.consoleOutput, { (c: GeneratorContext) in print(c.consoleOutput) },
+        F.out, { (c: GeneratorContext) in generatorWriteFile(c.path, c.out, F.didWriteFile) },
+        F.willShutdown, { (c: GeneratorContext) in otherShutdown() },
+
+    ])
+}
+
 func kotlinRegisterEffects(_ ctrl: DialectController) {
     let _: KotlinContext? = registerOneliners(ctrl, [
-        F.out, { (c: KotlinContext) in otherWriteFile(c.path, c.out) },
+        F.out, { (c: KotlinContext) in generatorSet(F.outKotlin, c.out) },
+        F.willGenerate, { (c: KotlinContext) in convSet(F.willGenerate, c.willGenerate) },
 
     ])
 }
@@ -1644,13 +2242,15 @@ func kotlinRegisterEffects(_ ctrl: DialectController) {
 func llmRegisterEffects(_ ctrl: DialectController) {
     let _: LLMContext? = registerOneliners(ctrl, [
         F.request, { (c: LLMContext) in llmLoad(c.request, F.response, F.responseError) },
+        F.responseError, { (c: LLMContext) in generatorSet(F.llmError, c.responseError.contents) },
+        F.reply, { (c: LLMContext) in convSet(F.reply, c.reply) },
 
     ])
 }
 
 func swiftRegisterEffects(_ ctrl: DialectController) {
     let _: SwiftContext? = registerOneliners(ctrl, [
-        F.out, { (c: SwiftContext) in otherWriteFile(c.path, c.out) },
+        F.out, { (c: SwiftContext) in generatorSet(F.outSwift, c.out) },
 
     ])
 }
@@ -1663,16 +2263,18 @@ func ymlRegisterEffects(_ ctrl: DialectController) {
         F.entityFields, { (c: YMLContext) in swiftSet(F.entityFields, c.entityFields) },
         F.entityFieldTypes, { (c: YMLContext) in kotlinSet(F.entityFieldTypes, c.entityFieldTypes) },
         F.entityFieldTypes, { (c: YMLContext) in swiftSet(F.entityFieldTypes, c.entityFieldTypes) },
+        F.entityOneliners, { (c: YMLContext) in convSet(F.entityOneliners, c.entityOneliners) },
         F.entityOneliners, { (c: YMLContext) in kotlinSet(F.entityOneliners, c.entityOneliners) },
         F.entityOneliners, { (c: YMLContext) in swiftSet(F.entityOneliners, c.entityOneliners) },
+        F.entityShouldBranches, { (c: YMLContext) in convSet(F.entityShouldBranches, c.entityShouldBranches) },
         F.entityShouldBranches, { (c: YMLContext) in kotlinSet(F.entityShouldBranches, c.entityShouldBranches) },
         F.entityShouldBranches, { (c: YMLContext) in swiftSet(F.entityShouldBranches, c.entityShouldBranches) },
         F.entityShoulds, { (c: YMLContext) in kotlinSet(F.entityShoulds, c.entityShoulds) },
         F.entityShoulds, { (c: YMLContext) in swiftSet(F.entityShoulds, c.entityShoulds) },
         F.entityTypes, { (c: YMLContext) in kotlinSet(F.entityTypes, c.entityTypes) },
         F.entityTypes, { (c: YMLContext) in swiftSet(F.entityTypes, c.entityTypes) },
+        F.outputPaths, { (c: YMLContext) in generatorSet(F.outputPaths, c.outputPaths) },
         F.outputPaths, { (c: YMLContext) in kotlinSet(F.outputPaths, c.outputPaths) },
-        F.outputPaths, { (c: YMLContext) in swiftSet(F.outputPaths, c.outputPaths) },
         F.parseInput, { (c: YMLContext) in ymlReadLines(c.inputContents) },
 
     ])

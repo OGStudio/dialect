@@ -4,4 +4,7 @@ import androidx.compose.runtime.*
 
 object RootVM {
     var countText by mutableStateOf("")
+
+    var shared: RootVM? = this
+        private set
 }

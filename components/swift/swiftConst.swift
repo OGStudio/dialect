@@ -49,7 +49,10 @@ func %FUNC%(_ ctrl: DialectController) {
 }
 
 """
-let SWIFT_REGISTER_EFFECT_ITEM_T = "        F.%FIELD%, { (c: %CONTEXT%) in %REACTION% },\n"
+let SWIFT_REGISTER_EFFECT_ITEM_T = """
+        F.%FIELD%, { (c: %CONTEXT%) in %REACTION% },
+
+"""
 let SWIFT_REGISTER_SHOULDS_SUFFIX = "RegisterShoulds"
 let SWIFT_REGISTER_SHOULDS_T = """
 

@@ -1,21 +1,37 @@
 
 # Dialect
 
-Plan:
+Dialect is a way to write cross-platform logic core natively without a burden of having KMP-like binary, wrappers, and other runtime / build time overhead. SwiftUI, Jetpack Compose and native effects remain your duty, only Redux-like logic core is taken care of.
 
-1. You write Swift code as Single source of truth
-1. Agent transpiles parts of the code to other languages
-1. You get native support (without KMP or similar binary approach) at no runtime cost
+How you should now work:
+
+1. Write macOS application with Swift and SwiftUI to serve as Single source of truth
+1. Add iOS support by adapting SwiftUI to mobile UX
+1. Add Android support by using 'kotlin' target inside `dialect.yml` to have it transpiled to `dialect.kt` via LLM
+
+# Supported platforms
+
+Currently Dialect only supports development for: macOS, iOS, and Android.
+
+Linux and Windows support is pending.
 
 # Example
 
-Prerequisites for Android:
+Have a look at `example` directory. The `dialect.swift` file is generated for macOS & iOS. The `dialect.kt` file is an equivalent transpilation to Kotlin.
 
-* Android Studio for macOS
+# Dependencies
+
+Prerequisites for macOS:
+
+* Xcode
 
 Prerequisites for iOS:
 
 * XcodeGen: `brew install xcodegen`
+
+Prerequisites for Android:
+
+* Android Studio for macOS
 
 Prerequisites for transpilation:
 

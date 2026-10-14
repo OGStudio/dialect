@@ -98,9 +98,9 @@ func kotlinFields(_ entityFields: [Int: [String]]) -> String {
     return KOTLIN_FIELDS_T.replacingOccurrences(of: "%ITEMS%", with: sitems)
 }
 
-/// Join branch lines, indenting each by 8 spaces while keeping relative indent
-func kotlinFormatShould(_ lines: [String]) -> String {
-    return lines.map { KOTLIN_SHOULD_INDENTATION + $0 }.joined(separator: "\n")
+/// Join code lines
+func kotlinFormatCode(_ lines: [String]) -> String {
+    return lines.joined(separator: "\n")
 }
 
 /// Generate single component `RegisterEffects` function
@@ -115,8 +115,9 @@ func kotlinRegisterEffect(
     for oneliner in oneliners {
         outItems +=
             KOTLIN_REGISTER_EFFECT_ITEM_T
+                .replacingOccurrences(of: "%CONTEXT%", with: contextName)
                 .replacingOccurrences(of: "%FIELD%", with: oneliner.field)
-                .replacingOccurrences(of: "%REACTION%", with: kotlinFormatShould([oneliner.reaction]))
+                .replacingOccurrences(of: "%REACTION%", with: kotlinFormatCode([oneliner.reaction]))
     }
 
     return
@@ -244,8 +245,8 @@ func kotlinShould(
             KOTLIN_SHOULD_BRANCH_T
                 .replacingOccurrences(of: "%ABOUT%", with: branch.about)
                 .replacingOccurrences(of: "%FIELD%", with: name)
-                .replacingOccurrences(of: "%CONDITION%", with: kotlinFormatShould(branch.condition))
-                .replacingOccurrences(of: "%REACTION%", with: kotlinFormatShould(branch.reaction))
+                .replacingOccurrences(of: "%CONDITION%", with: kotlinFormatCode(branch.condition))
+                .replacingOccurrences(of: "%REACTION%", with: kotlinFormatCode(branch.reaction))
     }
 
     let prefix = String(contextName.dropLast(KOTLIN_SUFFIX_CONTEXT.count)).lowercased()

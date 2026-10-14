@@ -76,7 +76,7 @@ ConvComponent:
                 if:
                     c.recentField == F.inputContents
                 then:
-                    c.prompt = CONV_PROMPT_PREFIX + c.inputContents + CONV_OUTPUT_SUFFIX
+                    c.prompt = CONV_PROMPT_PREFIX + c.inputContents + CONV_PROMPT_SUFFIX
 
 ConvContext:
     type: context
@@ -148,7 +148,7 @@ TranspilerComponent:
     type: component
     oneliners:
         - consoleOutput: print(c.consoleOutput)
-        - willShutdown: transpilerShutdown()
+        - willShutdown: otherShutdown()
     shoulds:
         consoleOutput:
             1. Upon reply:

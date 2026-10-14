@@ -1,0 +1,138 @@
+func convQueuePrompt(
+    _ queue: [String],
+    _ id: Int
+) -> String {
+    let src = CONV_PREFIX_SWIFT + String(id) + "\n" + queue[id]
+    return CONV_PROMPT_PREFIX + src + CONV_PROMPT_SUFFIX
+}
+
+// Build a flat queue of oneliner reactions to transpile
+func convSrcQueueOneliners(
+    _ entityOneliners: [Int: [Oneliner]]
+) -> [String] {
+    var items = [String]()
+    for entityId in entityOneliners.keys.sorted() {
+        let oneliners = entityOneliners[entityId] ?? []
+        for oneliner in oneliners {
+            items.append(oneliner.reaction)
+        }
+    }
+
+    return items
+}
+
+// Build a flat queue of shoulds to transpile
+func convSrcQueueShoulds(
+    _ entityShouldBranches: [Int: [Int: [ShouldBranch]]]
+) -> [String] {
+    var items = [String]()
+    for entityId in entityShouldBranches.keys.sorted() {
+        let shoulds = entityShouldBranches[entityId] ?? [:]
+        for shouldId in shoulds.keys.sorted() {
+            let branches = shoulds[shouldId] ?? []
+            for branch in branches {
+                items.append(branch.condition.joined(separator: "\n"))
+                items.append(branch.reaction.joined(separator: "\n"))
+            }
+        }
+    }
+
+    return items
+}
+
+// Construct single transpiled oneliner
+func convTranspiledOneliner(
+    _ orig: Oneliner,
+    _ reac: String
+) -> Oneliner {
+    var o = orig
+
+    var linesReaction = reac.split(separator: "\n")
+    if
+        let first = linesReaction.first,
+        first.hasPrefix(CONV_PREFIX_KOTLIN)
+    {
+        linesReaction = Array(linesReaction.dropFirst())
+        o.reaction = linesReaction.joined(separator: "\n")
+    }
+
+    return o
+}
+
+// Construct several transpiled oneliners
+func convTranspiledOneliners(
+    _ entityOneliners: [Int: [Oneliner]],
+    _ dstQueue: [String]
+) -> [Int: [Oneliner]] {
+    var items = [Int: [Oneliner]]()
+    var id = 0
+    for entityId in entityOneliners.keys.sorted() {
+        let oneliners = entityOneliners[entityId] ?? []
+        for oneliner in oneliners {
+            // Get transpiled snippet
+            let reaction = dstQueue[id]
+            id += 1
+            // Format the snippet
+            let item = convTranspiledOneliner(oneliner, reaction)
+            items[entityId, default: []].append(item)
+        }
+    }
+
+    return items
+}
+
+// Construct single transpiled branch
+func convTranspiledShouldBranch(
+    _ orig: ShouldBranch,
+    _ cond: String,
+    _ reac: String
+) -> ShouldBranch {
+    var b = orig
+
+    var linesCondition = cond.split(separator: "\n")
+    if
+        let first = linesCondition.first,
+        first.hasPrefix(CONV_PREFIX_KOTLIN)
+    {
+        linesCondition = Array(linesCondition.dropFirst())
+        b.condition = linesCondition.map(String.init)
+    }
+
+    var linesReaction = reac.split(separator: "\n")
+    if
+        let first = linesReaction.first,
+        first.hasPrefix(CONV_PREFIX_KOTLIN)
+    {
+        linesReaction = Array(linesReaction.dropFirst())
+        b.reaction = linesReaction.map(String.init)
+    }
+
+    return b
+}
+
+// Construct serveral transpiled branches
+func convTranspiledShouldBranches(
+    _ entityShouldBranches: [Int: [Int: [ShouldBranch]]],
+    _ dstQueue: [String]
+) -> [Int: [Int: [ShouldBranch]]] {
+    var items = [Int: [Int: [ShouldBranch]]]()
+    var id = 0
+    for entityId in entityShouldBranches.keys.sorted() {
+        let shoulds = entityShouldBranches[entityId] ?? [:]
+        for shouldId in shoulds.keys.sorted() {
+            let branches = shoulds[shouldId] ?? []
+            for branch in branches {
+                // Get transpiled snippets
+                let condition = dstQueue[id]
+                id += 1
+                let reaction = dstQueue[id]
+                id += 1
+                // Format the snippets
+                let item = convTranspiledShouldBranch(branch, condition, reaction)
+                items[entityId, default: [:]][shouldId, default: []].append(item)
+            }
+        }
+    }
+
+    return items
+}
