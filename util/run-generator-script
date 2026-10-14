@@ -1,0 +1,9 @@
+#!/bin/bash -e
+SDIR=$(cd "$(dirname "$0")" ; pwd -P)
+
+T=$SDIR/step
+source $SDIR/paths
+
+$SDIR/package-generator-script
+
+source $T/runGeneratorScript "$@" 2>/tmp/dialect.log
