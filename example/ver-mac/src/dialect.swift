@@ -191,7 +191,7 @@ func rootShouldResetCount(_ c: RootContext) -> RootContext {
     /* 1. Upon hitting 10 the first time */
     if
         c.recentField == F.didClickIncrement &&
-        c.count == 9
+        c.count == 7
     {
         c.count += 10
         c.recentField = F.count
