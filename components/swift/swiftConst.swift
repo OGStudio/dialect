@@ -68,6 +68,7 @@ func %FUNC%(_ ctrl: DialectController) {
 let SWIFT_SET_SUFFIX = "Set"
 let SWIFT_SET_T = """
 
+@MainActor
 public func %FUNC%(
     _ key: String,
     _ value: Any
