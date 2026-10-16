@@ -2,7 +2,7 @@
 
 2026-10-16
 
-1. Add `public` to generated entities to Swift target so that the generated entites are visible across Swift module boundaries (entities are `internal` by default and invisible outside the hosting module)
+1. Add `public` to generated entities to Swift target so that the generated entites are visible outside Swift module boundary (entities are `internal` by default and invisible outside the parent module)
 
 # [4.1.0](https://github.com/OGStudio/dialect/pull/9)
 
