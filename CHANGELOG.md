@@ -1,16 +1,16 @@
-# [4.1.1](https://github.com/OGStudio/kotlin-dialect/pull/8 https://github.com/OGStudio/kotlin-dialect/pull/10)
+# [4.1.1](https://github.com/OGStudio/dialect/pull/10)
 
 2026-10-16
 
 1. Add `public` to generated entities to Swift target so that the generated entites are visible across Swift module boundaries (entities are `internal` by default and invisible outside the hosting module)
 
-# [4.1.0](https://github.com/OGStudio/kotlin-dialect/pull/8 https://github.com/OGStudio/kotlin-dialect/pull/9)
+# [4.1.0](https://github.com/OGStudio/dialect/pull/9)
 
 2026-10-14
 
 1. Introduce `generator-script.swift` to be able to use the generator like a script (skipping the build stage) on macOS 
 
-# [4.0.0](https://github.com/OGStudio/kotlin-dialect/pull/8)
+# [4.0.0](https://github.com/OGStudio/dialect/pull/8)
 
 2026-10-14
 
