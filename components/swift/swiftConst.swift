@@ -1,4 +1,4 @@
-let SWIFT_CONTEXT_FIELD_T = "    var %NAME% = %DEFAULT%\n"
+let SWIFT_CONTEXT_FIELD_T = "    public var %NAME% = %DEFAULT%\n"
 let SWIFT_CONTEXT_GETTER_T = """
         %ELSE%if (name == \"%NAME%\") {
             return %NAME% as! T

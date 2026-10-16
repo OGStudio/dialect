@@ -118,122 +118,122 @@ func registerOneliners<T>(
 }
 
 // Context field names for static type check
-struct F {
-    static let about = "about"
-    static let arguments = "arguments"
-    static let body = "body"
-    static let chunks = "chunks"
-    static let cliDidConsoleOutput = "cliDidConsoleOutput"
-    static let condition = "condition"
-    static let consoleOutput = "consoleOutput"
-    static let contents = "contents"
-    static let didLaunch = "didLaunch"
-    static let didSetup = "didSetup"
-    static let didWriteFile = "didWriteFile"
-    static let dstQueue = "dstQueue"
-    static let entities = "entities"
-    static let entityFieldTypes = "entityFieldTypes"
-    static let entityFields = "entityFields"
-    static let entityOneliners = "entityOneliners"
-    static let entityShouldBranches = "entityShouldBranches"
-    static let entityShoulds = "entityShoulds"
-    static let entityTypes = "entityTypes"
-    static let field = "field"
-    static let filesCount = "filesCount"
-    static let headers = "headers"
-    static let inputAbsoluteDir = "inputAbsoluteDir"
-    static let inputContents = "inputContents"
-    static let inputError = "inputError"
-    static let inputFileName = "inputFileName"
-    static let inputLines = "inputLines"
-    static let isConvertingOneliners = "isConvertingOneliners"
-    static let isConvertingShoulds = "isConvertingShoulds"
-    static let llmError = "llmError"
-    static let method = "method"
-    static let out = "out"
-    static let outContexts = "outContexts"
-    static let outFields = "outFields"
-    static let outKotlin = "outKotlin"
-    static let outRegisterEffects = "outRegisterEffects"
-    static let outRegisterShoulds = "outRegisterShoulds"
-    static let outSets = "outSets"
-    static let outShoulds = "outShoulds"
-    static let outStructs = "outStructs"
-    static let outSwift = "outSwift"
-    static let outputPaths = "outputPaths"
-    static let parseInput = "parseInput"
-    static let path = "path"
-    static let prompt = "prompt"
-    static let reaction = "reaction"
-    static let readFile = "readFile"
-    static let reply = "reply"
-    static let req = "req"
-    static let request = "request"
-    static let response = "response"
-    static let responseError = "responseError"
-    static let srcId = "srcId"
-    static let srcQueue = "srcQueue"
-    static let transpiledOneliners = "transpiledOneliners"
-    static let transpiledShouldBranches = "transpiledShouldBranches"
-    static let type = "type"
-    static let url = "url"
-    static let version = "version"
-    static let willGenerate = "willGenerate"
-    static let willShutdown = "willShutdown"
+public struct F {
+    public static let about = "about"
+    public static let arguments = "arguments"
+    public static let body = "body"
+    public static let chunks = "chunks"
+    public static let cliDidConsoleOutput = "cliDidConsoleOutput"
+    public static let condition = "condition"
+    public static let consoleOutput = "consoleOutput"
+    public static let contents = "contents"
+    public static let didLaunch = "didLaunch"
+    public static let didSetup = "didSetup"
+    public static let didWriteFile = "didWriteFile"
+    public static let dstQueue = "dstQueue"
+    public static let entities = "entities"
+    public static let entityFieldTypes = "entityFieldTypes"
+    public static let entityFields = "entityFields"
+    public static let entityOneliners = "entityOneliners"
+    public static let entityShouldBranches = "entityShouldBranches"
+    public static let entityShoulds = "entityShoulds"
+    public static let entityTypes = "entityTypes"
+    public static let field = "field"
+    public static let filesCount = "filesCount"
+    public static let headers = "headers"
+    public static let inputAbsoluteDir = "inputAbsoluteDir"
+    public static let inputContents = "inputContents"
+    public static let inputError = "inputError"
+    public static let inputFileName = "inputFileName"
+    public static let inputLines = "inputLines"
+    public static let isConvertingOneliners = "isConvertingOneliners"
+    public static let isConvertingShoulds = "isConvertingShoulds"
+    public static let llmError = "llmError"
+    public static let method = "method"
+    public static let out = "out"
+    public static let outContexts = "outContexts"
+    public static let outFields = "outFields"
+    public static let outKotlin = "outKotlin"
+    public static let outRegisterEffects = "outRegisterEffects"
+    public static let outRegisterShoulds = "outRegisterShoulds"
+    public static let outSets = "outSets"
+    public static let outShoulds = "outShoulds"
+    public static let outStructs = "outStructs"
+    public static let outSwift = "outSwift"
+    public static let outputPaths = "outputPaths"
+    public static let parseInput = "parseInput"
+    public static let path = "path"
+    public static let prompt = "prompt"
+    public static let reaction = "reaction"
+    public static let readFile = "readFile"
+    public static let reply = "reply"
+    public static let req = "req"
+    public static let request = "request"
+    public static let response = "response"
+    public static let responseError = "responseError"
+    public static let srcId = "srcId"
+    public static let srcQueue = "srcQueue"
+    public static let transpiledOneliners = "transpiledOneliners"
+    public static let transpiledShouldBranches = "transpiledShouldBranches"
+    public static let type = "type"
+    public static let url = "url"
+    public static let version = "version"
+    public static let willGenerate = "willGenerate"
+    public static let willShutdown = "willShutdown"
 
 }
-struct NetRequest {
-    var body = String()
-    var headers = [String: String]()
-    var method = String()
-    var url = String()
-
-}
-
-
-struct NetResponse {
-    var contents = String()
-    var req = NetRequest()
+public struct NetRequest {
+    public var body = String()
+    public var headers = [String: String]()
+    public var method = String()
+    public var url = String()
 
 }
 
 
-struct Oneliner {
-    var field = String()
-    var reaction = String()
+public struct NetResponse {
+    public var contents = String()
+    public var req = NetRequest()
 
 }
 
 
-struct OutputPath {
-    var path = String()
-    var type = String()
+public struct Oneliner {
+    public var field = String()
+    public var reaction = String()
 
 }
 
 
-struct ShouldBranch {
-    var about = String()
-    var condition = [String]()
-    var reaction = [String]()
+public struct OutputPath {
+    public var path = String()
+    public var type = String()
 
 }
 
 
-struct CLIContext: DialectContext {
-    var arguments = [String]()
-    var consoleOutput = String()
-    var didLaunch = Bool()
-    var didSetup = Bool()
-    var inputAbsoluteDir = String()
-    var inputContents = String()
-    var inputError = String()
-    var inputFileName = String()
-    var readFile = Bool()
+public struct ShouldBranch {
+    public var about = String()
+    public var condition = [String]()
+    public var reaction = [String]()
 
-    var recentField = ""
+}
 
-    func field<T>(_ name: String) -> T {
+
+public struct CLIContext: DialectContext {
+    public var arguments = [String]()
+    public var consoleOutput = String()
+    public var didLaunch = Bool()
+    public var didSetup = Bool()
+    public var inputAbsoluteDir = String()
+    public var inputContents = String()
+    public var inputError = String()
+    public var inputFileName = String()
+    public var readFile = Bool()
+
+    public var recentField = ""
+
+    public func field<T>(_ name: String) -> T {
         if (name == "arguments") {
             return arguments as! T
         }
@@ -265,7 +265,7 @@ struct CLIContext: DialectContext {
         return "unknown-field-name" as! T
     }
 
-    mutating func setField(
+    public mutating func setField(
         _ name: String,
         _ value: Any
     ) {
@@ -300,25 +300,25 @@ struct CLIContext: DialectContext {
     }
 }
 
-struct ConvContext: DialectContext {
-    var didLaunch = Bool()
-    var didSetup = Bool()
-    var dstQueue = [String]()
-    var entityOneliners = [Int: [Oneliner]]()
-    var entityShouldBranches = [Int: [Int: [ShouldBranch]]]()
-    var isConvertingOneliners = Bool()
-    var isConvertingShoulds = Bool()
-    var prompt = String()
-    var reply = String()
-    var srcId = Int()
-    var srcQueue = [String]()
-    var transpiledOneliners = [Int: [Oneliner]]()
-    var transpiledShouldBranches = [Int: [Int: [ShouldBranch]]]()
-    var willGenerate = Bool()
+public struct ConvContext: DialectContext {
+    public var didLaunch = Bool()
+    public var didSetup = Bool()
+    public var dstQueue = [String]()
+    public var entityOneliners = [Int: [Oneliner]]()
+    public var entityShouldBranches = [Int: [Int: [ShouldBranch]]]()
+    public var isConvertingOneliners = Bool()
+    public var isConvertingShoulds = Bool()
+    public var prompt = String()
+    public var reply = String()
+    public var srcId = Int()
+    public var srcQueue = [String]()
+    public var transpiledOneliners = [Int: [Oneliner]]()
+    public var transpiledShouldBranches = [Int: [Int: [ShouldBranch]]]()
+    public var willGenerate = Bool()
 
-    var recentField = ""
+    public var recentField = ""
 
-    func field<T>(_ name: String) -> T {
+    public func field<T>(_ name: String) -> T {
         if (name == "didLaunch") {
             return didLaunch as! T
         }
@@ -365,7 +365,7 @@ struct ConvContext: DialectContext {
         return "unknown-field-name" as! T
     }
 
-    mutating func setField(
+    public mutating func setField(
         _ name: String,
         _ value: Any
     ) {
@@ -415,23 +415,23 @@ struct ConvContext: DialectContext {
     }
 }
 
-struct GeneratorContext: DialectContext {
-    var cliDidConsoleOutput = Bool()
-    var consoleOutput = String()
-    var didWriteFile = Bool()
-    var filesCount = Int()
-    var inputAbsoluteDir = String()
-    var llmError = String()
-    var out = String()
-    var outputPaths = [OutputPath]()
-    var outKotlin = String()
-    var outSwift = String()
-    var path = String()
-    var willShutdown = Bool()
+public struct GeneratorContext: DialectContext {
+    public var cliDidConsoleOutput = Bool()
+    public var consoleOutput = String()
+    public var didWriteFile = Bool()
+    public var filesCount = Int()
+    public var inputAbsoluteDir = String()
+    public var llmError = String()
+    public var out = String()
+    public var outputPaths = [OutputPath]()
+    public var outKotlin = String()
+    public var outSwift = String()
+    public var path = String()
+    public var willShutdown = Bool()
 
-    var recentField = ""
+    public var recentField = ""
 
-    func field<T>(_ name: String) -> T {
+    public func field<T>(_ name: String) -> T {
         if (name == "cliDidConsoleOutput") {
             return cliDidConsoleOutput as! T
         }
@@ -472,7 +472,7 @@ struct GeneratorContext: DialectContext {
         return "unknown-field-name" as! T
     }
 
-    mutating func setField(
+    public mutating func setField(
         _ name: String,
         _ value: Any
     ) {
@@ -516,32 +516,32 @@ struct GeneratorContext: DialectContext {
     }
 }
 
-struct KotlinContext: DialectContext {
-    var didLaunch = Bool()
-    var didSetup = Bool()
-    var entities = [String]()
-    var entityFields = [Int: [String]]()
-    var entityFieldTypes = [Int: [Int: String]]()
-    var entityOneliners = [Int: [Oneliner]]()
-    var entityShouldBranches = [Int: [Int: [ShouldBranch]]]()
-    var entityShoulds = [Int: [String]]()
-    var entityTypes = [Int: String]()
-    var out = String()
-    var outContexts = String()
-    var outFields = String()
-    var outputPaths = [OutputPath]()
-    var outRegisterEffects = String()
-    var outRegisterShoulds = String()
-    var outSets = String()
-    var outShoulds = String()
-    var outStructs = String()
-    var transpiledOneliners = [Int: [Oneliner]]()
-    var transpiledShouldBranches = [Int: [Int: [ShouldBranch]]]()
-    var willGenerate = Bool()
+public struct KotlinContext: DialectContext {
+    public var didLaunch = Bool()
+    public var didSetup = Bool()
+    public var entities = [String]()
+    public var entityFields = [Int: [String]]()
+    public var entityFieldTypes = [Int: [Int: String]]()
+    public var entityOneliners = [Int: [Oneliner]]()
+    public var entityShouldBranches = [Int: [Int: [ShouldBranch]]]()
+    public var entityShoulds = [Int: [String]]()
+    public var entityTypes = [Int: String]()
+    public var out = String()
+    public var outContexts = String()
+    public var outFields = String()
+    public var outputPaths = [OutputPath]()
+    public var outRegisterEffects = String()
+    public var outRegisterShoulds = String()
+    public var outSets = String()
+    public var outShoulds = String()
+    public var outStructs = String()
+    public var transpiledOneliners = [Int: [Oneliner]]()
+    public var transpiledShouldBranches = [Int: [Int: [ShouldBranch]]]()
+    public var willGenerate = Bool()
 
-    var recentField = ""
+    public var recentField = ""
 
-    func field<T>(_ name: String) -> T {
+    public func field<T>(_ name: String) -> T {
         if (name == "didLaunch") {
             return didLaunch as! T
         }
@@ -609,7 +609,7 @@ struct KotlinContext: DialectContext {
         return "unknown-field-name" as! T
     }
 
-    mutating func setField(
+    public mutating func setField(
         _ name: String,
         _ value: Any
     ) {
@@ -680,18 +680,18 @@ struct KotlinContext: DialectContext {
     }
 }
 
-struct LLMContext: DialectContext {
-    var didLaunch = Bool()
-    var didSetup = Bool()
-    var prompt = String()
-    var reply = String()
-    var request = NetRequest()
-    var response = NetResponse()
-    var responseError = NetResponse()
+public struct LLMContext: DialectContext {
+    public var didLaunch = Bool()
+    public var didSetup = Bool()
+    public var prompt = String()
+    public var reply = String()
+    public var request = NetRequest()
+    public var response = NetResponse()
+    public var responseError = NetResponse()
 
-    var recentField = ""
+    public var recentField = ""
 
-    func field<T>(_ name: String) -> T {
+    public func field<T>(_ name: String) -> T {
         if (name == "didLaunch") {
             return didLaunch as! T
         }
@@ -717,7 +717,7 @@ struct LLMContext: DialectContext {
         return "unknown-field-name" as! T
     }
 
-    mutating func setField(
+    public mutating func setField(
         _ name: String,
         _ value: Any
     ) {
@@ -746,28 +746,28 @@ struct LLMContext: DialectContext {
     }
 }
 
-struct SwiftContext: DialectContext {
-    var didLaunch = Bool()
-    var didSetup = Bool()
-    var entities = [String]()
-    var entityFields = [Int: [String]]()
-    var entityFieldTypes = [Int: [Int: String]]()
-    var entityOneliners = [Int: [Oneliner]]()
-    var entityShouldBranches = [Int: [Int: [ShouldBranch]]]()
-    var entityShoulds = [Int: [String]]()
-    var entityTypes = [Int: String]()
-    var out = String()
-    var outContexts = String()
-    var outFields = String()
-    var outRegisterEffects = String()
-    var outRegisterShoulds = String()
-    var outSets = String()
-    var outShoulds = String()
-    var outStructs = String()
+public struct SwiftContext: DialectContext {
+    public var didLaunch = Bool()
+    public var didSetup = Bool()
+    public var entities = [String]()
+    public var entityFields = [Int: [String]]()
+    public var entityFieldTypes = [Int: [Int: String]]()
+    public var entityOneliners = [Int: [Oneliner]]()
+    public var entityShouldBranches = [Int: [Int: [ShouldBranch]]]()
+    public var entityShoulds = [Int: [String]]()
+    public var entityTypes = [Int: String]()
+    public var out = String()
+    public var outContexts = String()
+    public var outFields = String()
+    public var outRegisterEffects = String()
+    public var outRegisterShoulds = String()
+    public var outSets = String()
+    public var outShoulds = String()
+    public var outStructs = String()
 
-    var recentField = ""
+    public var recentField = ""
 
-    func field<T>(_ name: String) -> T {
+    public func field<T>(_ name: String) -> T {
         if (name == "didLaunch") {
             return didLaunch as! T
         }
@@ -823,7 +823,7 @@ struct SwiftContext: DialectContext {
         return "unknown-field-name" as! T
     }
 
-    mutating func setField(
+    public mutating func setField(
         _ name: String,
         _ value: Any
     ) {
@@ -882,26 +882,26 @@ struct SwiftContext: DialectContext {
     }
 }
 
-struct YMLContext: DialectContext {
-    var chunks = [String: [String]]()
-    var didLaunch = Bool()
-    var didSetup = Bool()
-    var entities = [String]()
-    var entityFields = [Int: [String]]()
-    var entityFieldTypes = [Int: [Int: String]]()
-    var entityOneliners = [Int: [Oneliner]]()
-    var entityShouldBranches = [Int: [Int: [ShouldBranch]]]()
-    var entityShoulds = [Int: [String]]()
-    var entityTypes = [Int: String]()
-    var inputContents = String()
-    var inputLines = [String]()
-    var outputPaths = [OutputPath]()
-    var parseInput = Bool()
-    var version = Int()
+public struct YMLContext: DialectContext {
+    public var chunks = [String: [String]]()
+    public var didLaunch = Bool()
+    public var didSetup = Bool()
+    public var entities = [String]()
+    public var entityFields = [Int: [String]]()
+    public var entityFieldTypes = [Int: [Int: String]]()
+    public var entityOneliners = [Int: [Oneliner]]()
+    public var entityShouldBranches = [Int: [Int: [ShouldBranch]]]()
+    public var entityShoulds = [Int: [String]]()
+    public var entityTypes = [Int: String]()
+    public var inputContents = String()
+    public var inputLines = [String]()
+    public var outputPaths = [OutputPath]()
+    public var parseInput = Bool()
+    public var version = Int()
 
-    var recentField = ""
+    public var recentField = ""
 
-    func field<T>(_ name: String) -> T {
+    public func field<T>(_ name: String) -> T {
         if (name == "chunks") {
             return chunks as! T
         }
@@ -951,7 +951,7 @@ struct YMLContext: DialectContext {
         return "unknown-field-name" as! T
     }
 
-    mutating func setField(
+    public mutating func setField(
         _ name: String,
         _ value: Any
     ) {
@@ -1004,49 +1004,49 @@ struct YMLContext: DialectContext {
     }
 }
 
-func cliSet(
+public func cliSet(
     _ key: String,
     _ value: Any
 ) {
     CLIComponent.singleton!.ctrl.set(key, value)
 }
 
-func convSet(
+public func convSet(
     _ key: String,
     _ value: Any
 ) {
     ConvComponent.singleton!.ctrl.set(key, value)
 }
 
-func generatorSet(
+public func generatorSet(
     _ key: String,
     _ value: Any
 ) {
     GeneratorComponent.singleton!.ctrl.set(key, value)
 }
 
-func kotlinSet(
+public func kotlinSet(
     _ key: String,
     _ value: Any
 ) {
     KotlinComponent.singleton!.ctrl.set(key, value)
 }
 
-func llmSet(
+public func llmSet(
     _ key: String,
     _ value: Any
 ) {
     LLMComponent.singleton!.ctrl.set(key, value)
 }
 
-func swiftSet(
+public func swiftSet(
     _ key: String,
     _ value: Any
 ) {
     SwiftComponent.singleton!.ctrl.set(key, value)
 }
 
-func ymlSet(
+public func ymlSet(
     _ key: String,
     _ value: Any
 ) {
