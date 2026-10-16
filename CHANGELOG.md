@@ -20,4 +20,4 @@ Major changes:
 1. Kotlin is no longer SSOT
 2. Kotlin Multiplatform has been deprecated in favour of code transpilation
 3. Swift is now considered SSOT
-4. LLM (Qwen Coder 2.5 3B) transpiled Swift to Kotlin to remove any runtime overhead incurred by Kotlin Multiplatform
+4. LLM (Qwen Coder 2.5 3B) transpiles Swift to Kotlin to remove any runtime overhead incurred by Kotlin Multiplatform
