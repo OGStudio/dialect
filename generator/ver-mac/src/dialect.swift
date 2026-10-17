@@ -1004,7 +1004,6 @@ public struct YMLContext: DialectContext {
     }
 }
 
-@MainActor
 public func cliSet(
     _ key: String,
     _ value: Any
@@ -1012,7 +1011,6 @@ public func cliSet(
     CLIComponent.singleton!.ctrl.set(key, value)
 }
 
-@MainActor
 public func convSet(
     _ key: String,
     _ value: Any
@@ -1020,7 +1018,6 @@ public func convSet(
     ConvComponent.singleton!.ctrl.set(key, value)
 }
 
-@MainActor
 public func generatorSet(
     _ key: String,
     _ value: Any
@@ -1028,7 +1025,6 @@ public func generatorSet(
     GeneratorComponent.singleton!.ctrl.set(key, value)
 }
 
-@MainActor
 public func kotlinSet(
     _ key: String,
     _ value: Any
@@ -1036,7 +1032,6 @@ public func kotlinSet(
     KotlinComponent.singleton!.ctrl.set(key, value)
 }
 
-@MainActor
 public func llmSet(
     _ key: String,
     _ value: Any
@@ -1044,7 +1039,6 @@ public func llmSet(
     LLMComponent.singleton!.ctrl.set(key, value)
 }
 
-@MainActor
 public func swiftSet(
     _ key: String,
     _ value: Any
@@ -1052,7 +1046,6 @@ public func swiftSet(
     SwiftComponent.singleton!.ctrl.set(key, value)
 }
 
-@MainActor
 public func ymlSet(
     _ key: String,
     _ value: Any
