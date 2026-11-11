@@ -1,3 +1,11 @@
+# 4.2.0(https://github.com/OGStudio/dialect/pull/11)
+
+2026-11-11
+
+1. Generate Kotlin defaults for `Float` and `Double` types
+1. Fix Kotlin generation for components without oneliners
+1. Add a generator test
+
 # [4.1.1](https://github.com/OGStudio/dialect/pull/10)
 
 2026-10-16

@@ -1,4 +1,4 @@
-// Version 4.1.1
+// Version 4.2.0
 //
 // Part of the Dialect project:
 //    https://github.com/OGStudio/dialect
