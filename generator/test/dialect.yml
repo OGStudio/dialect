@@ -1,0 +1,21 @@
+version: 4
+
+output:
+    generated.swift:
+        type: swift
+
+CounterComponent:
+    type: component
+    shoulds:
+        count:
+            1. Upon increment:
+                if:
+                    c.recentField == F.didIncrement
+                then:
+                    c.count += 1
+
+CounterContext:
+    type: context
+    fields:
+        count: Int
+        didIncrement: Bool

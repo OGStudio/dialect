@@ -1,0 +1,17 @@
+#!/bin/bash -e
+SDIR=$(cd "$(dirname "$0")" ; pwd -P)
+
+BUILD="$SDIR/../.build"
+TEST="$SDIR/../generator/test"
+mkdir -p "$BUILD"
+
+"$SDIR/build-generator"
+
+swiftc \
+    -o "$BUILD/test-generator" \
+    "$TEST/tests.swift" \
+    "$TEST/main.swift"
+
+"$BUILD/test-generator" \
+    "$SDIR/../generator/ver-mac/.build/release/generator" \
+    "$TEST/dialect.yml"
