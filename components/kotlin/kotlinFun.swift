@@ -393,6 +393,12 @@ func kotlinTypeDefaultValue(_ type: String) -> String {
     if type == KOTLIN_TYPE_BOOL {
         return KOTLIN_DEFAULT_BOOL
     }
+    if type == KOTLIN_TYPE_DOUBLE {
+        return KOTLIN_DEFAULT_DOUBLE
+    }
+    if type == KOTLIN_TYPE_FLOAT {
+        return KOTLIN_DEFAULT_FLOAT
+    }
     if type == KOTLIN_TYPE_INT {
         return KOTLIN_DEFAULT_INT
     }

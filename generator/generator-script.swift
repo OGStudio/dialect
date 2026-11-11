@@ -2720,6 +2720,8 @@ data class %NAME%(
 
 """
 let KOTLIN_DEFAULT_BOOL = "false"
+let KOTLIN_DEFAULT_DOUBLE = "0.0"
+let KOTLIN_DEFAULT_FLOAT = "0.0f"
 let KOTLIN_DEFAULT_INT = "0"
 let KOTLIN_DEFAULT_LIST = "arrayOf()"
 let KOTLIN_DEFAULT_MAP = "mapOf()"
@@ -2816,6 +2818,8 @@ let KOTLIN_TYPE = "kotlin"
 let KOTLIN_TYPE_BOOL = "Bool"
 let KOTLIN_TYPE_COMPONENT = "component"
 let KOTLIN_TYPE_CONTEXT = "context"
+let KOTLIN_TYPE_DOUBLE = "Double"
+let KOTLIN_TYPE_FLOAT = "Float"
 let KOTLIN_TYPE_INT = "Int"
 let KOTLIN_TYPE_STRING = "String"
 let KOTLIN_TYPE_STRUCT = "struct"
@@ -3216,6 +3220,12 @@ func kotlinTypeDefaultValue(_ type: String) -> String {
     }
     if type == KOTLIN_TYPE_BOOL {
         return KOTLIN_DEFAULT_BOOL
+    }
+    if type == KOTLIN_TYPE_DOUBLE {
+        return KOTLIN_DEFAULT_DOUBLE
+    }
+    if type == KOTLIN_TYPE_FLOAT {
+        return KOTLIN_DEFAULT_FLOAT
     }
     if type == KOTLIN_TYPE_INT {
         return KOTLIN_DEFAULT_INT
