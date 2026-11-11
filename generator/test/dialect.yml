@@ -3,6 +3,8 @@ version: 4
 output:
     generated.swift:
         type: swift
+    generated.kt:
+        type: kotlin
 
 CounterComponent:
     type: component

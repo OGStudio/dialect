@@ -1240,7 +1240,8 @@ func convShouldResetPrompt(_ c: ConvContext) -> ConvContext {
 
     /* 1. Upon getting new source to transpile */
     if
-        c.recentField == F.srcId
+        c.recentField == F.srcId &&
+        c.srcId < c.srcQueue.count
     {
         c.prompt = convQueuePrompt(c.srcQueue, c.srcId)
         c.recentField = F.prompt

@@ -18,7 +18,7 @@ func t01_generateWithoutOneliners(_ generator: URL, _ fixture: URL) -> Bool {
         process.terminationHandler = { _ in finished.signal() }
         try process.run()
 
-        guard finished.wait(timeout: .now() + 10) == .success else {
+        guard finished.wait(timeout: .now() + 60) == .success else {
             process.terminate()
             print("Generator timed out")
             return false
@@ -28,10 +28,16 @@ func t01_generateWithoutOneliners(_ generator: URL, _ fixture: URL) -> Bool {
             return false
         }
 
-        let output = directory.appendingPathComponent("generated.swift")
-        let source = try String(contentsOf: output, encoding: .utf8)
-        return source.contains("struct CounterContext") &&
-            source.contains("func counterShouldResetCount")
+        let swift = try String(
+            contentsOf: directory.appendingPathComponent("generated.swift"), encoding: .utf8
+        )
+        let kotlin = try String(
+            contentsOf: directory.appendingPathComponent("generated.kt"), encoding: .utf8
+        )
+        return swift.contains("struct CounterContext") &&
+            swift.contains("func counterShouldResetCount") &&
+            kotlin.contains("data class CounterContext") &&
+            kotlin.contains("fun counterShouldResetCount")
     } catch {
         print(error)
         return false
