@@ -5,7 +5,7 @@ BUILD="$SDIR/../.build"
 TEST="$SDIR/../generator/test"
 mkdir -p "$BUILD"
 
-# Kotlin rule translation requires local Ollama with qwen2.5-coder:3b.
+# Kotlin rule translation requires local Ollama with qwen2.5-coder:7b.
 "$SDIR/build-generator"
 
 swiftc \
