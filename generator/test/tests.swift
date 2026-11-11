@@ -1,6 +1,6 @@
 import Foundation
 
-func t01_generateWithoutOneliners(_ generator: URL, _ fixture: URL) -> Bool {
+func t01_generateWithoutOneliners(_ generator: URL, _ ymlFile: URL) -> Bool {
     let files = FileManager.default
     let directory = files.temporaryDirectory.appendingPathComponent(UUID().uuidString)
 
@@ -9,7 +9,7 @@ func t01_generateWithoutOneliners(_ generator: URL, _ fixture: URL) -> Bool {
         defer { try? files.removeItem(at: directory) }
 
         let input = directory.appendingPathComponent("dialect.yml")
-        try files.copyItem(at: fixture, to: input)
+        try files.copyItem(at: ymlFile, to: input)
 
         let process = Process()
         process.executableURL = generator
