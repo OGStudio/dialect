@@ -116,7 +116,8 @@ ConvComponent:
         prompt:
             1. Upon getting new source to transpile:
                 if:
-                    c.recentField == F.srcId
+                    c.recentField == F.srcId &&
+                    c.srcId < c.srcQueue.count
                 then:
                     c.prompt = convQueuePrompt(c.srcQueue, c.srcId)
         srcId:

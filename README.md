@@ -33,10 +33,10 @@ Prerequisites for Android:
 
 * Android Studio for macOS
 
-Prerequisites for transpilation:
+Prerequisites for Swift-to-Kotlin transpilation:
 
-* `ollama serve` everytime you plan to transpile
-* `ollama run qwen2.5-coder:3b` (2 GB disk, 2 GB VRAM) only once to install, for later runs ollama loads requested models itself, `ollama serve` is enough after that
+* Run `ollama serve` to launch Ollama server process in the background
+* Run `ollama run qwen2.5-coder:7b` (~4.7 GB VRAM) once to install the model
 
 # Running generator on macOS
 

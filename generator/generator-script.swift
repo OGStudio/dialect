@@ -1,4 +1,4 @@
-// Version 4.1.1
+// Version 4.2.0
 //
 // Part of the Dialect project:
 //    https://github.com/OGStudio/dialect
@@ -1247,7 +1247,8 @@ func convShouldResetPrompt(_ c: ConvContext) -> ConvContext {
 
     /* 1. Upon getting new source to transpile */
     if
-        c.recentField == F.srcId
+        c.recentField == F.srcId &&
+        c.srcId < c.srcQueue.count
     {
         c.prompt = convQueuePrompt(c.srcQueue, c.srcId)
         c.recentField = F.prompt
@@ -2720,6 +2721,8 @@ data class %NAME%(
 
 """
 let KOTLIN_DEFAULT_BOOL = "false"
+let KOTLIN_DEFAULT_DOUBLE = "0.0"
+let KOTLIN_DEFAULT_FLOAT = "0.0f"
 let KOTLIN_DEFAULT_INT = "0"
 let KOTLIN_DEFAULT_LIST = "arrayOf()"
 let KOTLIN_DEFAULT_MAP = "mapOf()"
@@ -2816,6 +2819,8 @@ let KOTLIN_TYPE = "kotlin"
 let KOTLIN_TYPE_BOOL = "Bool"
 let KOTLIN_TYPE_COMPONENT = "component"
 let KOTLIN_TYPE_CONTEXT = "context"
+let KOTLIN_TYPE_DOUBLE = "Double"
+let KOTLIN_TYPE_FLOAT = "Float"
 let KOTLIN_TYPE_INT = "Int"
 let KOTLIN_TYPE_STRING = "String"
 let KOTLIN_TYPE_STRUCT = "struct"
@@ -3217,6 +3222,12 @@ func kotlinTypeDefaultValue(_ type: String) -> String {
     if type == KOTLIN_TYPE_BOOL {
         return KOTLIN_DEFAULT_BOOL
     }
+    if type == KOTLIN_TYPE_DOUBLE {
+        return KOTLIN_DEFAULT_DOUBLE
+    }
+    if type == KOTLIN_TYPE_FLOAT {
+        return KOTLIN_DEFAULT_FLOAT
+    }
     if type == KOTLIN_TYPE_INT {
         return KOTLIN_DEFAULT_INT
     }
@@ -3278,7 +3289,7 @@ func llmSetAsync(
 }
 
 let LLM_DEFAULT_HOST = "localhost"
-let LLM_DEFAULT_MODEL = "qwen2.5-coder:3b"
+let LLM_DEFAULT_MODEL = "qwen2.5-coder:7b"
 let LLM_DEFAULT_PORT = 11434
 let LLM_LINE_DELIMITER = "\",\""
 let LLM_REPLY_PREFIX = "response\":\""
