@@ -32,15 +32,19 @@ KOTLIN-13
 KOTLIN-14
         c.stats = l10nTwo(L10N_STATS_T, "${c.matchedItemIds.size}", "${c.items.size}")
 KOTLIN-15
+        c.recentField == F.selectedItemId &&
+        c.selectedItemId != -1 &&
+        c.matchedItemIds.isEmpty()
+KOTLIN-16
         c.recentField == F.didClickIncrement &&
         c.count == 9
-KOTLIN-16
-        c.count += 10
 KOTLIN-17
-        c.recentField == F.didClickIncrement
+        c.count += 10
 KOTLIN-18
-        print(c.countText)
+        c.recentField == F.didClickIncrement
 KOTLIN-19
+        print(c.countText)
+KOTLIN-20
         c.recentField == F.didRename &&
         c.name != "new"
 """
@@ -78,15 +82,19 @@ SWIFT-13
 SWIFT-14
         c.stats = l10nTwo(L10N_STATS_T, "\\(c.matchedItemIds.count)", "\\(c.items.count)")
 SWIFT-15
+        c.recentField == F.selectedItemId &&
+        c.selectedItemId != -1 &&
+        c.matchedItemIds.isEmpty
+SWIFT-16
         c.recentField == F.didClickIncrement &&
         c.count == 9
-SWIFT-16
-        c.count += 10
 SWIFT-17
-        c.recentField == F.didClickIncrement
+        c.count += 10
 SWIFT-18
-        print(c.countText)
+        c.recentField == F.didClickIncrement
 SWIFT-19
+        print(c.countText)
+SWIFT-20
         c.recentField == F.didRename &&
         c.name != "new"
 """
