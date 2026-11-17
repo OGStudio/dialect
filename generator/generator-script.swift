@@ -1,4 +1,4 @@
-// Version 4.2.0
+// Version 4.2.1
 //
 // Part of the Dialect project:
 //    https://github.com/OGStudio/dialect
@@ -2413,15 +2413,20 @@ KOTLIN-11
 KOTLIN-12
         c.countText = if (c.count > 0) "yes" else "no"
 KOTLIN-13
+        c.matchedItemIds.size == c.items.size &&
+        c.items.size > 0
+KOTLIN-14
+        c.stats = l10nTwo(L10N_STATS_T, "${c.matchedItemIds.size}", "${c.items.size}")
+KOTLIN-15
         c.recentField == F.didClickIncrement &&
         c.count == 9
-KOTLIN-14
-        c.count += 10
-KOTLIN-15
-        c.recentField == F.didClickIncrement
 KOTLIN-16
-        print(c.countText)
+        c.count += 10
 KOTLIN-17
+        c.recentField == F.didClickIncrement
+KOTLIN-18
+        print(c.countText)
+KOTLIN-19
         c.recentField == F.didRename &&
         c.name != "new"
 """
@@ -2454,15 +2459,20 @@ SWIFT-11
 SWIFT-12
         c.countText = c.count > 0 ? "yes" : "no"
 SWIFT-13
+        c.matchedItemIds.count == c.items.count &&
+        c.items.count > 0
+SWIFT-14
+        c.stats = l10nTwo(L10N_STATS_T, "\\(c.matchedItemIds.count)", "\\(c.items.count)")
+SWIFT-15
         c.recentField == F.didClickIncrement &&
         c.count == 9
-SWIFT-14
-        c.count += 10
-SWIFT-15
-        c.recentField == F.didClickIncrement
 SWIFT-16
-        print(c.countText)
+        c.count += 10
 SWIFT-17
+        c.recentField == F.didClickIncrement
+SWIFT-18
+        print(c.countText)
+SWIFT-19
         c.recentField == F.didRename &&
         c.name != "new"
 """
@@ -2480,6 +2490,7 @@ Rules you must always follow:
 - Preserve indentation for each source code line
 - Emit only the fragment itself with the token conversions below applied. Never add an enclosing statement, braces, or any surrounding syntax that was not in the input.
 - Convert Swift 'x.isEmpty' (Bool property, no parentheses) into the Kotlin function call 'x.isEmpty()'. The Swift '!c.countText.isEmpty' MUST become '!c.countText.isEmpty()' with parentheses, because Kotlin requires the call.
+- Convert a Swift collection's '.count' property into Kotlin '.size', including inside string interpolation. Preserve scalar fields named 'count': 'c.count' stays 'c.count', while 'c.items.count' becomes 'c.items.size'.
 - Convert Swift string interpolation '\\(expr)' to Kotlin '${expr}'.
 - Convert a Swift force unwrap 'x!' to the Kotlin non-null assertion 'x!!'. For example 'c.singleton!.countText' must become 'c.singleton!!.countText' — add the second '!'.
 - Convert a Swift force cast 'x as! T' to Kotlin 'x as T'. For example 'RootVM.shared as! RootVM' must become 'RootVM.shared as RootVM' — remove the '!'.
