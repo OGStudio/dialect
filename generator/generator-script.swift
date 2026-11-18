@@ -2526,7 +2526,8 @@ func convQueuePrompt(
     _ queue: [String],
     _ id: Int
 ) -> String {
-    let src = CONV_PREFIX_SWIFT + String(id) + "\n" + queue[id]
+    // Keep the queue index separate from the numbered conversion examples
+    let src = CONV_PREFIX_SWIFT + "0\n" + queue[id]
     return CONV_PROMPT_PREFIX + src + CONV_PROMPT_SUFFIX
 }
 
