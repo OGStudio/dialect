@@ -7,4 +7,5 @@ gradle-daemon-jvm.properties
 .kotlin
 local.properties
 Package.resolved
+.playwright-mcp
 *.xcodeproj
