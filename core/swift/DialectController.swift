@@ -28,7 +28,7 @@ public class DialectController {
     }
 
     func processQueue() {
-        // Prevent recursion.
+        // Prevent recursion
         if isProcessingQueue {
             return
         }
