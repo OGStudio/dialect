@@ -18,25 +18,25 @@ typedef enum {
 } DialectValueKind;
 
 // OutputPath: path: String, type: String
-typedef struct OutputPath {
+typedef struct {
     char* path;
     char* type;
 } OutputPath;
 
 // A list of strings (for ShouldBranch's condition:[String]/reaction:[String])
-typedef struct StringList {
+typedef struct {
     char** items;
     size_t count;
 } StringList;
 
 // ShouldBranch: about: String, condition: [String], reaction: [String]
-typedef struct ShouldBranch {
+typedef struct {
     char* about;
     StringList condition;
     StringList reaction;
 } ShouldBranch;
 
-typedef struct DialectValue {
+typedef struct {
     DialectValueKind kind;
     union {
         bool boolean;
@@ -76,7 +76,7 @@ typedef struct {
     DialectCallback cb;
 } DialectOneliner;
 
-typedef struct DialectController {
+typedef struct {
     bool isProcessingQueue;
     DialectContext* context;
     DialectCallbackEntry* callbacks;
