@@ -1,3 +1,10 @@
+# [4.2.1](https://github.com/OGStudio/dialect/pull/12)
+
+2026-11-24
+
+1. Improve Swift-to-Kotlin collection conversion by expanding the prompt
+1. Fix a crash when converting entities without oneliners to Kotlin
+
 # 4.2.0(https://github.com/OGStudio/dialect/pull/11)
 
 2026-11-11
