@@ -8,6 +8,9 @@
 // Reusable "none" constant
 #define DIALECT_CONTEXT_RECENT_FIELD_NONE "none"
 
+// Includes the terminating null byte.
+#define DIALECT_FIELD_NAME_CAPACITY 16
+
 // A value of a context field (mirrors Swift `Any`)
 typedef enum {
     D_VALUE_NONE = 0,
@@ -67,7 +70,7 @@ typedef void (*DialectCallback)(DialectContext* ctx);
 typedef DialectContext* (*DialectFunction)(DialectContext* ctx);
 
 typedef struct {
-    const char* fieldName; // NULL => plain callback
+    char fieldName[DIALECT_FIELD_NAME_CAPACITY];
     DialectCallback cb;
 } DialectCallbackEntry;
 
@@ -103,6 +106,8 @@ DialectValue dialectContextDefaultFieldAny(const DialectContext* ctx, const char
 DialectController* dialectControllerCreate(DialectContext* ctx);
 void dialectControllerDestroy(DialectController* ctrl);
 void dialectControllerRegisterCallback(DialectController* ctrl, DialectCallback cb);
+// Copies up to 15 bytes of fieldName and null-terminates it.
+// NULL or an empty name registers a plain callback.
 void dialectControllerRegisterFieldCallback(DialectController* ctrl, const char* fieldName, DialectCallback cb);
 void dialectControllerRegisterFunction(DialectController* ctrl, DialectFunction f);
 void dialectControllerExecuteFunctions(DialectController* ctrl);

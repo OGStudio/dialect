@@ -9,6 +9,8 @@ int t05_DialectController_executeFunctions_set(void);
 int t06_DialectController_processQueue(void);
 int t07_DialectController_registerFieldCallback_match(void);
 int t08_DialectController_registerFieldCallback_mismatch(void);
+int t09_DialectController_fieldName_capacity(void);
+int t10_DialectController_fieldName_registration(void);
 
 int main(void) {
     printf("Testing... \n");
@@ -22,6 +24,8 @@ int main(void) {
         t06_DialectController_processQueue,
         t07_DialectController_registerFieldCallback_match,
         t08_DialectController_registerFieldCallback_mismatch,
+        t09_DialectController_fieldName_capacity,
+        t10_DialectController_fieldName_registration,
     };
     int totalCount = (int)(sizeof(tests) / sizeof(tests[0]));
 

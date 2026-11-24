@@ -4,18 +4,19 @@
 #include <stdlib.h>
 #include <string.h>
 
-static void growCallbacks(DialectController* ctrl) {
+static bool growCallbacks(DialectController* ctrl) {
     if (ctrl->callbacksCount < ctrl->callbacksCapacity) {
-        return;
+        return true;
     }
     size_t newCapacity = ctrl->callbacksCapacity == 0 ? 4 : ctrl->callbacksCapacity * 2;
     DialectCallbackEntry* newCallbacks =
         (DialectCallbackEntry*)realloc(ctrl->callbacks, newCapacity * sizeof(DialectCallbackEntry));
     if (newCallbacks == NULL) {
-        return;
+        return false;
     }
     ctrl->callbacks = newCallbacks;
     ctrl->callbacksCapacity = newCapacity;
+    return true;
 }
 
 static void growFunctions(DialectController* ctrl) {
@@ -66,10 +67,7 @@ void dialectControllerDestroy(DialectController* ctrl) {
 }
 
 void dialectControllerRegisterCallback(DialectController* ctrl, DialectCallback cb) {
-    growCallbacks(ctrl);
-    ctrl->callbacks[ctrl->callbacksCount].fieldName = NULL;
-    ctrl->callbacks[ctrl->callbacksCount].cb = cb;
-    ctrl->callbacksCount++;
+    dialectControllerRegisterFieldCallback(ctrl, NULL, cb);
 }
 
 void dialectControllerRegisterFieldCallback(
@@ -77,9 +75,16 @@ void dialectControllerRegisterFieldCallback(
     const char* fieldName,
     DialectCallback cb
 ) {
-    growCallbacks(ctrl);
-    ctrl->callbacks[ctrl->callbacksCount].fieldName = fieldName;
-    ctrl->callbacks[ctrl->callbacksCount].cb = cb;
+    size_t length = fieldName == NULL ? 0 : strnlen(fieldName, DIALECT_FIELD_NAME_CAPACITY - 1);
+    DialectCallbackEntry entry = {0};
+    if (fieldName != NULL) {
+        memcpy(entry.fieldName, fieldName, length);
+    }
+    entry.cb = cb;
+    if (!growCallbacks(ctrl)) {
+        return;
+    }
+    ctrl->callbacks[ctrl->callbacksCount] = entry;
     ctrl->callbacksCount++;
 }
 
@@ -143,7 +148,7 @@ void dialectControllerProcessQueue(DialectController* ctrl) {
 void dialectControllerReportContext(DialectController* ctrl) {
     for (size_t i = 0; i < ctrl->callbacksCount; i++) {
         DialectCallbackEntry* entry = &ctrl->callbacks[i];
-        if (entry->fieldName == NULL ||
+        if (entry->fieldName[0] == '\0' ||
             strcmp(ctrl->context->vtable->recentField(ctrl->context), entry->fieldName) == 0) {
             entry->cb(ctrl->context);
         }

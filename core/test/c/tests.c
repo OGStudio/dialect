@@ -261,3 +261,69 @@ int t08_DialectController_registerFieldCallback_mismatch(void) {
     dialectControllerDestroy(ctrl);
     return ok;
 }
+
+// Field filters own their names and truncate to 15 bytes plus a terminator.
+int t09_DialectController_fieldName_capacity(void) {
+    ExampleContext initial = {0};
+    initial.base.vtable = &exVtable;
+    initial.recentField = "123456789012345";
+    DialectController* ctrl = dialectControllerCreate(&initial.base);
+
+    char* name = strdup(initial.recentField);
+    dialectControllerRegisterFieldCallback(ctrl, name, cbFlag);
+    memset(name, 'x', 15);
+    free(name);
+
+    g_callbackFlag = false;
+    dialectControllerReportContext(ctrl);
+    bool copied = g_callbackFlag &&
+        strcmp(ctrl->callbacks[0].fieldName, initial.recentField) == 0;
+
+    dialectControllerRegisterFieldCallback(ctrl, "12345678901234567890", cbFlag);
+    bool truncated = strcmp(ctrl->callbacks[1].fieldName, initial.recentField) == 0;
+    char unterminated[DIALECT_FIELD_NAME_CAPACITY];
+    memset(unterminated, 'x', sizeof(unterminated));
+    dialectControllerRegisterFieldCallback(ctrl, unterminated, cbFlag);
+    bool bounded = strlen(ctrl->callbacks[2].fieldName) == DIALECT_FIELD_NAME_CAPACITY - 1;
+
+    dialectControllerDestroy(ctrl);
+    return copied && truncated && bounded;
+}
+
+// Empty and NULL field names register plain callbacks; oneliners copy names.
+int t10_DialectController_fieldName_registration(void) {
+    ExampleContext initial = {0};
+    initial.base.vtable = &exVtable;
+    initial.recentField = "host";
+    DialectController* ctrl = dialectControllerCreate(&initial.base);
+
+    dialectControllerRegisterFieldCallback(ctrl, "", cbFlag);
+    g_callbackFlag = false;
+    dialectControllerReportContext(ctrl);
+    bool emptyUnconditional = g_callbackFlag;
+    initial.recentField = "";
+    g_callbackFlag = false;
+    dialectControllerReportContext(ctrl);
+    bool emptyMatched = g_callbackFlag;
+
+    dialectControllerDestroy(ctrl);
+    ctrl = dialectControllerCreate(&initial.base);
+    initial.recentField = "host";
+    dialectControllerRegisterFieldCallback(ctrl, NULL, cbFlag);
+    g_callbackFlag = false;
+    dialectControllerReportContext(ctrl);
+    bool plainMatched = g_callbackFlag;
+
+    char field[] = "host";
+    DialectOneliner items[] = {
+        {field, cbFlag},
+        {"1234567890123456", cbFlag},
+    };
+    dialectRegisterOneliners(ctrl, items, 2);
+    field[0] = 'x';
+    bool copied = strcmp(ctrl->callbacks[1].fieldName, "host") == 0;
+    bool truncated = strcmp(ctrl->callbacks[2].fieldName, "123456789012345") == 0;
+
+    dialectControllerDestroy(ctrl);
+    return emptyUnconditional && emptyMatched && plainMatched && copied && truncated;
+}
