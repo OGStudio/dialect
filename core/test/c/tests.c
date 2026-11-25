@@ -16,7 +16,7 @@ typedef struct {
     DialectFieldName recentField;
 } ExampleContext;
 
-static DialectValue exField(const DialectContext* ctx, const DialectFieldName name) {
+DialectValue exField(const DialectContext* ctx, const DialectFieldName name) {
     const ExampleContext* c = (const ExampleContext*)ctx;
     if (strcmp(name, "didLaunch") == 0) {
         return dialectValueBool(c->didLaunch);
@@ -29,7 +29,7 @@ static DialectValue exField(const DialectContext* ctx, const DialectFieldName na
     return dialectValueString("unknown-field-name");
 }
 
-static void exSetField(DialectContext* ctx, const DialectFieldName name, DialectValue value) {
+void exSetField(DialectContext* ctx, const DialectFieldName name, DialectValue value) {
     ExampleContext* c = (ExampleContext*)ctx;
     if (strcmp(name, "didLaunch") == 0) {
         if (value.kind == D_VALUE_BOOL) {
@@ -44,15 +44,15 @@ static void exSetField(DialectContext* ctx, const DialectFieldName name, Dialect
     }
 }
 
-static const char* exRecentField(const DialectContext* ctx) {
+const char* exRecentField(const DialectContext* ctx) {
     return ((const ExampleContext*)ctx)->recentField;
 }
 
-static void exSetRecentField(DialectContext* ctx, const DialectFieldName name) {
+void exSetRecentField(DialectContext* ctx, const DialectFieldName name) {
     dialectFieldNameCopy(((ExampleContext*)ctx)->recentField, name);
 }
 
-static DialectContext* exCopy(const DialectContext* ctx) {
+DialectContext* exCopy(const DialectContext* ctx) {
     const ExampleContext* c = (const ExampleContext*)ctx;
     ExampleContext* n = (ExampleContext*)calloc(1, sizeof(ExampleContext));
     n->base = c->base;
@@ -63,14 +63,14 @@ static DialectContext* exCopy(const DialectContext* ctx) {
     return (DialectContext*)n;
 }
 
-static void exDealloc(DialectContext* ctx) {
+void exDealloc(DialectContext* ctx) {
     ExampleContext* c = (ExampleContext*)ctx;
     free(c->host);
     free(c->sometimes);
     free(c);
 }
 
-static const DialectContext exBase = {
+const DialectContext exBase = {
     exField,
     dialectContextDefaultFieldAny,
     exSetField,
@@ -81,7 +81,7 @@ static const DialectContext exBase = {
 };
 
 // Sample function for processing context change
-static DialectContext* hostToDidLaunch(DialectContext* ctx) {
+DialectContext* hostToDidLaunch(DialectContext* ctx) {
     ExampleContext* c = (ExampleContext*)ctx;
     if (strcmp(c->recentField, "host") == 0) {
         c->didLaunch = true;
@@ -206,11 +206,11 @@ int t06_DialectController_processQueue(void) {
     return ok;
 }
 
-static char* g_callbackHost = NULL;
-static bool g_callbackFlag = false;
+char* g_callbackHost = NULL;
+bool g_callbackFlag = false;
 
 // Capture the host field from the current context
-static void cbHostCapture(DialectContext* ctx) {
+void cbHostCapture(DialectContext* ctx) {
     const ExampleContext* c = (const ExampleContext*)ctx;
     if (g_callbackHost != NULL) {
         free(g_callbackHost);
@@ -219,7 +219,7 @@ static void cbHostCapture(DialectContext* ctx) {
 }
 
 // Set a flag when the callback is invoked
-static void cbFlag(DialectContext* ctx) {
+void cbFlag(DialectContext* ctx) {
     (void)ctx;
     g_callbackFlag = true;
 }
@@ -360,9 +360,9 @@ int t11_DialectController_fieldName_consistency(void) {
     return matched && sameCapacity && independent && overlap;
 }
 
-static size_t g_callbackCount = 0;
+size_t g_callbackCount = 0;
 
-static void cbCount(DialectContext* ctx) {
+void cbCount(DialectContext* ctx) {
     (void)ctx;
     g_callbackCount++;
 }
