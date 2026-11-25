@@ -1,4 +1,12 @@
 // C port of core/test/swift/main.swift
+#define DIALECT_CONTEXT_IMPLEMENTATION
+#define DIALECT_CONTROLLER_IMPLEMENTATION
+#define REGISTER_ONELINERS_IMPLEMENTATION
+
+#include "DialectContext.h"
+#include "DialectController.h"
+#include "registerOneliners.h"
+
 #include <stdio.h>
 
 int t01_ExampleContext_field(void);
