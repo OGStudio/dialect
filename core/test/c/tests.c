@@ -115,7 +115,7 @@ void exampleContextSetRecentField(
 }
 
 // Sample function for processing context change
-DialectContext* hostToDidLaunch(DialectContext* ctx) {
+DialectContext* shouldChangeDidLaunch(DialectContext* ctx) {
     ExampleContext* c = (ExampleContext*)ctx;
     if (strcmp(c->recentField, "host") == 0) {
         c->didLaunch = true;
@@ -197,7 +197,7 @@ int t05_DialectController_executeFunctions_set(void) {
     dialectControllerSet(ctrl, "host", hostValue);
     dialectValueFree(&hostValue);
 
-    dialectControllerRegisterFunction(ctrl, hostToDidLaunch);
+    dialectControllerRegisterFunction(ctrl, shouldChangeDidLaunch);
 
     // Apply `host` value
     dialectControllerExecuteFunctions(ctrl);
@@ -217,7 +217,7 @@ int t06_DialectController_processQueue(void) {
     ExampleContext* initial = exampleContextCreate();
     DialectController* ctrl = dialectControllerCreate(&initial->base);
 
-    dialectControllerRegisterFunction(ctrl, hostToDidLaunch);
+    dialectControllerRegisterFunction(ctrl, shouldChangeDidLaunch);
     DialectValue hostValue = dialectValueString("123");
     dialectControllerSet(ctrl, "host", hostValue);
     dialectValueFree(&hostValue);
@@ -398,7 +398,7 @@ int t12_DialectController_registration_batches(void) {
     DialectOneliner items[12] = {0};
     for (size_t i = 0; i < 12; i++) {
         items[i].cb = cbCount;
-        dialectControllerRegisterFunction(ctrl, hostToDidLaunch);
+        dialectControllerRegisterFunction(ctrl, shouldChangeDidLaunch);
     }
 
     dialectRegisterOneliners(ctrl, items, 10);
@@ -410,7 +410,7 @@ int t12_DialectController_registration_batches(void) {
     bool emptyBatch = ctrl->callbacks == callbacks && ctrl->callbacksCount == 12;
     bool functions = ctrl->functionsCount == 12;
     for (size_t i = 0; i < ctrl->functionsCount; i++) {
-        functions = functions && ctrl->functions[i] == hostToDidLaunch;
+        functions = functions && ctrl->functions[i] == shouldChangeDidLaunch;
     }
 
     memset(items, 0, sizeof(items));
