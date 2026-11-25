@@ -80,22 +80,20 @@ void exampleContextDestroy(DialectContext* ctx) {
     free(c);
 }
 
-const DialectContext exampleContextBase = {
-    exampleContextField,
-    exampleContextSetField,
-    exampleContextRecentField,
-    exampleContextSetRecentField,
-    exampleContextCopy,
-    exampleContextDestroy,
-};
-
 ExampleContext* exampleContextCreate(void) {
     ExampleContext* inst = malloc(sizeof(*inst));
     if (inst == NULL) {
         abort();
     }
     *inst = (ExampleContext){
-        .base = exampleContextBase,
+        .base = {
+            .copy = exampleContextCopy,
+            .dealloc = exampleContextDestroy,
+            .field = exampleContextField,
+            .recentField = exampleContextRecentField,
+            .setField = exampleContextSetField,
+            .setRecentField = exampleContextSetRecentField,
+        },
         .recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE,
     };
     return inst;
