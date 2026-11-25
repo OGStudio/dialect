@@ -1,6 +1,8 @@
-// C port of core/swift (v4 Dialect engine)
-#ifndef DIALECT_H
-#define DIALECT_H
+// C port of core/swift/DialectContext.swift
+// Define DIALECT_CONTEXT_IMPLEMENTATION in one translation unit to emit definitions
+
+#ifndef DIALECT_CONTEXT_H
+#define DIALECT_CONTEXT_H
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -66,29 +68,6 @@ struct DialectContext {
 };
 
 typedef void (*DialectCallback)(DialectContext* ctx);
-typedef DialectContext* (*DialectFunction)(DialectContext* ctx);
-
-typedef struct {
-    DialectFieldName fieldName;
-    DialectCallback cb;
-} DialectCallbackEntry;
-
-typedef struct {
-    DialectFieldName field;
-    DialectCallback cb;
-} DialectOneliner;
-
-typedef struct {
-    bool isProcessingQueue;
-    DialectContext* context;
-    DialectCallbackEntry* callbacks;
-    size_t callbacksCount;
-    DialectFunction* functions;
-    size_t functionsCount;
-    DialectContext** queue;
-    size_t queueCount;
-    size_t queueCapacity;
-} DialectController;
 
 // Copies a field name, truncating to capacity - 1 bytes and null-terminating it.
 // NULL becomes an empty name. Source and destination may overlap.
@@ -103,20 +82,55 @@ void dialectValueFree(DialectValue* v);
 // Default `fieldAny`, mirroring the Swift DialectContext extension
 DialectValue dialectContextDefaultFieldAny(const DialectContext* ctx, const DialectFieldName name);
 
-// DialectController API
-DialectController* dialectControllerCreate(DialectContext* ctx);
-void dialectControllerDestroy(DialectController* ctrl);
-void dialectControllerRegisterCallback(DialectController* ctrl, DialectCallback cb);
-// Copies up to 15 bytes of fieldName and null-terminates it.
-// NULL or an empty name registers a plain callback.
-void dialectControllerRegisterFieldCallback(DialectController* ctrl, const DialectFieldName fieldName, DialectCallback cb);
-void dialectControllerRegisterFunction(DialectController* ctrl, DialectFunction f);
-void dialectControllerExecuteFunctions(DialectController* ctrl);
-void dialectControllerProcessQueue(DialectController* ctrl);
-void dialectControllerReportContext(DialectController* ctrl);
-void dialectControllerSet(DialectController* ctrl, const DialectFieldName fieldName, DialectValue value);
+#endif // DIALECT_CONTEXT_H
 
-// registerOneliners (items = [field, cb, ...])
-void dialectRegisterOneliners(DialectController* ctrl, const DialectOneliner* items, size_t count);
+#if defined(DIALECT_CONTEXT_IMPLEMENTATION) && !defined(DIALECT_CONTEXT_IMPLEMENTATION_ONCE)
+#define DIALECT_CONTEXT_IMPLEMENTATION_ONCE
 
-#endif // DIALECT_H
+#include <stdlib.h>
+#include <string.h>
+
+// Default implementation of `fieldAny`, mirroring the Swift extension:
+// it just delegates to `field(name)`.
+DialectValue dialectContextDefaultFieldAny(const DialectContext* ctx, const DialectFieldName name) {
+    return ctx->field(ctx, name);
+}
+
+void dialectFieldNameCopy(DialectFieldName destination, const char* source) {
+    size_t length = source == NULL ? 0 : strnlen(source, DIALECT_FIELD_NAME_CAPACITY - 1);
+    if (length > 0) {
+        memmove(destination, source, length);
+    }
+    destination[length] = '\0';
+}
+
+DialectValue dialectValueBool(bool b) {
+    DialectValue v;
+    v.kind = D_VALUE_BOOL;
+    v.as.boolean = b;
+    return v;
+}
+
+void dialectValueFree(DialectValue* v) {
+    if (v != NULL && v->kind == D_VALUE_STRING) {
+        free(v->as.str);
+        v->as.str = NULL;
+    }
+}
+
+// DialectValue helpers
+DialectValue dialectValueNone(void) {
+    DialectValue v;
+    v.kind = D_VALUE_NONE;
+    v.as.boolean = false;
+    return v;
+}
+
+DialectValue dialectValueString(const char* s) {
+    DialectValue v;
+    v.kind = D_VALUE_STRING;
+    v.as.str = s != NULL ? strdup(s) : NULL;
+    return v;
+}
+
+#endif // DIALECT_CONTEXT_IMPLEMENTATION

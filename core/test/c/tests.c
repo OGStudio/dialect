@@ -1,5 +1,6 @@
 // C port of core/test/swift/tests.swift
-#include "dialect.h"
+#include "DialectController.h"
+#include "registerOneliners.h"
 
 #include <stdbool.h>
 #include <stdio.h>

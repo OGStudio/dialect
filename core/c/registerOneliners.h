@@ -1,5 +1,27 @@
 // C port of core/swift/registerOneliners.swift
-#include "dialect.h"
+// Define REGISTER_ONELINERS_IMPLEMENTATION in one translation unit to emit definitions
+
+#ifndef REGISTER_ONELINERS_H
+#define REGISTER_ONELINERS_H
+
+#include "DialectContext.h"
+
+struct DialectController;
+
+typedef struct {
+    DialectFieldName field;
+    DialectCallback cb;
+} DialectOneliner;
+
+// Append a batch of copied field/callback pairs
+void dialectRegisterOneliners(struct DialectController* ctrl, const DialectOneliner* items, size_t count);
+
+#endif // REGISTER_ONELINERS_H
+
+#if defined(REGISTER_ONELINERS_IMPLEMENTATION) && !defined(REGISTER_ONELINERS_IMPLEMENTATION_ONCE)
+#define REGISTER_ONELINERS_IMPLEMENTATION_ONCE
+
+#include "DialectController.h"
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -29,3 +51,5 @@ void dialectRegisterOneliners(DialectController* ctrl, const DialectOneliner* it
     ctrl->callbacks = callbacks;
     ctrl->callbacksCount = totalCount;
 }
+
+#endif // REGISTER_ONELINERS_IMPLEMENTATION
