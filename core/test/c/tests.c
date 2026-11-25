@@ -62,13 +62,13 @@ void exampleContextSetRecentField(
 
 DialectContext* exampleContextCopy(const DialectContext* ctx) {
     const ExampleContext* c = (const ExampleContext*)ctx;
-    ExampleContext* n = (ExampleContext*)calloc(1, sizeof(ExampleContext));
-    n->base = c->base;
-    n->didLaunch = c->didLaunch;
-    n->host = c->host != NULL ? strdup(c->host) : NULL;
-    n->sometimes = c->sometimes != NULL ? strdup(c->sometimes) : NULL;
-    dialectFieldNameCopy(n->recentField, c->recentField);
-    return (DialectContext*)n;
+    ExampleContext* inst = (ExampleContext*)calloc(1, sizeof(ExampleContext));
+    inst->base = c->base;
+    inst->didLaunch = c->didLaunch;
+    inst->host = c->host != NULL ? strdup(c->host) : NULL;
+    inst->sometimes = c->sometimes != NULL ? strdup(c->sometimes) : NULL;
+    dialectFieldNameCopy(inst->recentField, c->recentField);
+    return (DialectContext*)inst;
 }
 
 void exampleContextDealloc(DialectContext* ctx) {
