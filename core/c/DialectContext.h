@@ -73,7 +73,7 @@ struct DialectContext {
         const DialectFieldName name
     );
     DialectContext* (*copy)(const DialectContext* ctx);
-    void (*dealloc)(DialectContext* ctx);
+    void (*destroy)(DialectContext* ctx);
 };
 
 typedef void (*DialectCallback)(DialectContext* ctx);

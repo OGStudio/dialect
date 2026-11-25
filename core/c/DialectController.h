@@ -76,7 +76,7 @@ void dialectControllerDestroy(DialectController* ctrl) {
         return;
     }
     for (size_t i = 0; i < ctrl->queueCount; i++) {
-        ctrl->queue[i]->dealloc(ctrl->queue[i]);
+        ctrl->queue[i]->destroy(ctrl->queue[i]);
     }
     free(ctrl->queue);
     free(ctrl->functions);
@@ -112,13 +112,13 @@ void dialectControllerExecuteFunctions(DialectController* ctrl) {
             ctrl->queue[ctrl->queueCount] = ctx;
             ctrl->queueCount++;
         } else {
-            ctx->dealloc(ctx);
+            ctx->destroy(ctx);
         }
     }
 
     dialectControllerReportContext(ctrl);
 
-    c->dealloc(c);
+    c->destroy(c);
 }
 
 void dialectControllerProcessQueue(DialectController* ctrl) {

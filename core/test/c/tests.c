@@ -52,7 +52,7 @@ ExampleContext* exampleContextCreate(void) {
     *inst = (ExampleContext){
         .base = {
             .copy = exampleContextCopy,
-            .dealloc = exampleContextDestroy,
+            .destroy = exampleContextDestroy,
             .field = exampleContextField,
             .recentField = exampleContextRecentField,
             .setField = exampleContextSetField,
