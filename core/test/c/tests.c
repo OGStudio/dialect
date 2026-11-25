@@ -17,50 +17,21 @@ typedef struct {
 } ExampleContext;
 
 ExampleContext* exampleContextCreate(void);
-
+void exampleContextDestroy(DialectContext* ctx);
 DialectValue exampleContextField(
     const DialectContext* ctx,
     const DialectFieldName name
-) {
-    const ExampleContext* c = (const ExampleContext*)ctx;
-    if (strcmp(name, "didLaunch") == 0) {
-        return dialectValueBool(c->didLaunch);
-    } else if (strcmp(name, "host") == 0) {
-        return dialectValueString(c->host);
-    } else if (strcmp(name, "sometimes") == 0) {
-        return c->sometimes != NULL ? dialectValueString(c->sometimes) : dialectValueNone();
-    }
-
-    return dialectValueString("unknown-field-name");
-}
-
+);
+const char* exampleContextRecentField(const DialectContext* ctx);
 void exampleContextSetField(
     DialectContext* ctx,
     const DialectFieldName name,
     DialectValue value
-) {
-    ExampleContext* c = (ExampleContext*)ctx;
-    if (strcmp(name, "didLaunch") == 0) {
-        c->didLaunch = value.as.boolean;
-    } else if (strcmp(name, "host") == 0) {
-        free(c->host);
-        c->host = strdup(value.as.str);
-    } else if (strcmp(name, "sometimes") == 0) {
-        free(c->sometimes);
-        c->sometimes = value.kind == D_VALUE_NONE ? NULL : strdup(value.as.str);
-    }
-}
-
-const char* exampleContextRecentField(const DialectContext* ctx) {
-    return ((const ExampleContext*)ctx)->recentField;
-}
-
+);
 void exampleContextSetRecentField(
     DialectContext* ctx,
     const DialectFieldName name
-) {
-    dialectFieldNameCopy(((ExampleContext*)ctx)->recentField, name);
-}
+);
 
 DialectContext* exampleContextCopy(const DialectContext* ctx) {
     const ExampleContext* c = (const ExampleContext*)ctx;
@@ -71,13 +42,6 @@ DialectContext* exampleContextCopy(const DialectContext* ctx) {
     inst->sometimes = c->sometimes != NULL ? strdup(c->sometimes) : NULL;
     dialectFieldNameCopy(inst->recentField, c->recentField);
     return &inst->base;
-}
-
-void exampleContextDestroy(DialectContext* ctx) {
-    ExampleContext* c = (ExampleContext*)ctx;
-    free(c->host);
-    free(c->sometimes);
-    free(c);
 }
 
 ExampleContext* exampleContextCreate(void) {
@@ -97,6 +61,57 @@ ExampleContext* exampleContextCreate(void) {
         .recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE,
     };
     return inst;
+}
+
+void exampleContextDestroy(DialectContext* ctx) {
+    ExampleContext* c = (ExampleContext*)ctx;
+    free(c->host);
+    free(c->sometimes);
+    free(c);
+}
+
+DialectValue exampleContextField(
+    const DialectContext* ctx,
+    const DialectFieldName name
+) {
+    const ExampleContext* c = (const ExampleContext*)ctx;
+    if (strcmp(name, "didLaunch") == 0) {
+        return dialectValueBool(c->didLaunch);
+    } else if (strcmp(name, "host") == 0) {
+        return dialectValueString(c->host);
+    } else if (strcmp(name, "sometimes") == 0) {
+        return c->sometimes != NULL ? dialectValueString(c->sometimes) : dialectValueNone();
+    }
+
+    return dialectValueString("unknown-field-name");
+}
+
+const char* exampleContextRecentField(const DialectContext* ctx) {
+    return ((const ExampleContext*)ctx)->recentField;
+}
+
+void exampleContextSetField(
+    DialectContext* ctx,
+    const DialectFieldName name,
+    DialectValue value
+) {
+    ExampleContext* c = (ExampleContext*)ctx;
+    if (strcmp(name, "didLaunch") == 0) {
+        c->didLaunch = value.as.boolean;
+    } else if (strcmp(name, "host") == 0) {
+        free(c->host);
+        c->host = strdup(value.as.str);
+    } else if (strcmp(name, "sometimes") == 0) {
+        free(c->sometimes);
+        c->sometimes = value.kind == D_VALUE_NONE ? NULL : strdup(value.as.str);
+    }
+}
+
+void exampleContextSetRecentField(
+    DialectContext* ctx,
+    const DialectFieldName name
+) {
+    dialectFieldNameCopy(((ExampleContext*)ctx)->recentField, name);
 }
 
 // Sample function for processing context change
