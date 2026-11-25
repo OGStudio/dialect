@@ -14,7 +14,11 @@ typedef struct {
 } DialectOneliner;
 
 // Append a batch of copied field/callback pairs
-void dialectRegisterOneliners(struct DialectController* ctrl, const DialectOneliner* items, size_t count);
+void dialectRegisterOneliners(
+    struct DialectController* ctrl,
+    const DialectOneliner* items,
+    size_t count
+);
 
 #endif // REGISTER_ONELINERS_H
 
@@ -30,7 +34,11 @@ void dialectRegisterOneliners(struct DialectController* ctrl, const DialectOneli
 // Register several oneliner callbacks to a controller.
 // items is an array of { field, cb } pairs mirroring the Swift
 // alternating [field, callback, ...] payload.
-void dialectRegisterOneliners(DialectController* ctrl, const DialectOneliner* items, size_t count) {
+void dialectRegisterOneliners(
+    DialectController* ctrl,
+    const DialectOneliner* items,
+    size_t count
+) {
     if (count == 0 || count > SIZE_MAX / sizeof(DialectCallbackEntry) - ctrl->callbacksCount) {
         return;
     }

@@ -57,12 +57,25 @@ typedef struct {
 typedef struct DialectContext DialectContext;
 
 struct DialectContext {
-    DialectValue (*field)(const DialectContext* ctx, const DialectFieldName name);
-    DialectValue (*fieldAny)(const DialectContext* ctx, const DialectFieldName name);
-    void (*setField)(DialectContext* ctx, const DialectFieldName name, DialectValue value);
+    DialectValue (*field)(
+        const DialectContext* ctx,
+        const DialectFieldName name
+    );
+    DialectValue (*fieldAny)(
+        const DialectContext* ctx,
+        const DialectFieldName name
+    );
+    void (*setField)(
+        DialectContext* ctx,
+        const DialectFieldName name,
+        DialectValue value
+    );
     // Borrowed view of the concrete context's DialectFieldName storage.
     const char* (*recentField)(const DialectContext* ctx);
-    void (*setRecentField)(DialectContext* ctx, const DialectFieldName name);
+    void (*setRecentField)(
+        DialectContext* ctx,
+        const DialectFieldName name
+    );
     DialectContext* (*copy)(const DialectContext* ctx);
     void (*dealloc)(DialectContext* ctx);
 };
@@ -71,7 +84,10 @@ typedef void (*DialectCallback)(DialectContext* ctx);
 
 // Copies a field name, truncating to capacity - 1 bytes and null-terminating it.
 // NULL becomes an empty name. Source and destination may overlap.
-void dialectFieldNameCopy(DialectFieldName destination, const char* source);
+void dialectFieldNameCopy(
+    DialectFieldName destination,
+    const char* source
+);
 
 // DialectValue helpers
 DialectValue dialectValueNone(void);
@@ -80,7 +96,10 @@ DialectValue dialectValueString(const char* s);
 void dialectValueFree(DialectValue* v);
 
 // Default `fieldAny`, mirroring the Swift DialectContext extension
-DialectValue dialectContextDefaultFieldAny(const DialectContext* ctx, const DialectFieldName name);
+DialectValue dialectContextDefaultFieldAny(
+    const DialectContext* ctx,
+    const DialectFieldName name
+);
 
 #endif // DIALECT_CONTEXT_H
 
@@ -92,11 +111,17 @@ DialectValue dialectContextDefaultFieldAny(const DialectContext* ctx, const Dial
 
 // Default implementation of `fieldAny`, mirroring the Swift extension:
 // it just delegates to `field(name)`.
-DialectValue dialectContextDefaultFieldAny(const DialectContext* ctx, const DialectFieldName name) {
+DialectValue dialectContextDefaultFieldAny(
+    const DialectContext* ctx,
+    const DialectFieldName name
+) {
     return ctx->field(ctx, name);
 }
 
-void dialectFieldNameCopy(DialectFieldName destination, const char* source) {
+void dialectFieldNameCopy(
+    DialectFieldName destination,
+    const char* source
+) {
     size_t length = source == NULL ? 0 : strnlen(source, DIALECT_FIELD_NAME_CAPACITY - 1);
     if (length > 0) {
         memmove(destination, source, length);

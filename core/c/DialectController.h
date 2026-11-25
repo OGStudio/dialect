@@ -28,15 +28,29 @@ typedef struct DialectController {
 // DialectController API
 DialectController* dialectControllerCreate(DialectContext* ctx);
 void dialectControllerDestroy(DialectController* ctrl);
-void dialectControllerRegisterCallback(DialectController* ctrl, DialectCallback cb);
+void dialectControllerRegisterCallback(
+    DialectController* ctrl,
+    DialectCallback cb
+);
 // Copies up to 15 bytes of fieldName and null-terminates it.
 // NULL or an empty name registers a plain callback.
-void dialectControllerRegisterFieldCallback(DialectController* ctrl, const DialectFieldName fieldName, DialectCallback cb);
-void dialectControllerRegisterFunction(DialectController* ctrl, DialectFunction f);
+void dialectControllerRegisterFieldCallback(
+    DialectController* ctrl,
+    const DialectFieldName fieldName,
+    DialectCallback cb
+);
+void dialectControllerRegisterFunction(
+    DialectController* ctrl,
+    DialectFunction f
+);
 void dialectControllerExecuteFunctions(DialectController* ctrl);
 void dialectControllerProcessQueue(DialectController* ctrl);
 void dialectControllerReportContext(DialectController* ctrl);
-void dialectControllerSet(DialectController* ctrl, const DialectFieldName fieldName, DialectValue value);
+void dialectControllerSet(
+    DialectController* ctrl,
+    const DialectFieldName fieldName,
+    DialectValue value
+);
 
 void growQueue(DialectController* ctrl);
 
@@ -122,7 +136,10 @@ void dialectControllerProcessQueue(DialectController* ctrl) {
     ctrl->isProcessingQueue = false;
 }
 
-void dialectControllerRegisterCallback(DialectController* ctrl, DialectCallback cb) {
+void dialectControllerRegisterCallback(
+    DialectController* ctrl,
+    DialectCallback cb
+) {
     dialectControllerRegisterFieldCallback(ctrl, NULL, cb);
 }
 
@@ -136,7 +153,10 @@ void dialectControllerRegisterFieldCallback(
     dialectRegisterOneliners(ctrl, &item, 1);
 }
 
-void dialectControllerRegisterFunction(DialectController* ctrl, DialectFunction f) {
+void dialectControllerRegisterFunction(
+    DialectController* ctrl,
+    DialectFunction f
+) {
     if (ctrl->functionsCount == SIZE_MAX / sizeof(DialectFunction)) {
         return;
     }
@@ -164,7 +184,11 @@ void dialectControllerReportContext(DialectController* ctrl) {
     }
 }
 
-void dialectControllerSet(DialectController* ctrl, const DialectFieldName fieldName, DialectValue value) {
+void dialectControllerSet(
+    DialectController* ctrl,
+    const DialectFieldName fieldName,
+    DialectValue value
+) {
     DialectFieldName name;
     dialectFieldNameCopy(name, fieldName);
     DialectContext* c = ctrl->context->copy(ctrl->context);

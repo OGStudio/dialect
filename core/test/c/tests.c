@@ -16,7 +16,10 @@ typedef struct {
     DialectFieldName recentField;
 } ExampleContext;
 
-DialectValue exampleContextField(const DialectContext* ctx, const DialectFieldName name) {
+DialectValue exampleContextField(
+    const DialectContext* ctx,
+    const DialectFieldName name
+) {
     const ExampleContext* c = (const ExampleContext*)ctx;
     if (strcmp(name, "didLaunch") == 0) {
         return dialectValueBool(c->didLaunch);
@@ -29,7 +32,11 @@ DialectValue exampleContextField(const DialectContext* ctx, const DialectFieldNa
     return dialectValueString("unknown-field-name");
 }
 
-void exampleContextSetField(DialectContext* ctx, const DialectFieldName name, DialectValue value) {
+void exampleContextSetField(
+    DialectContext* ctx,
+    const DialectFieldName name,
+    DialectValue value
+) {
     ExampleContext* c = (ExampleContext*)ctx;
     if (strcmp(name, "didLaunch") == 0) {
         if (value.kind == D_VALUE_BOOL) {
@@ -48,7 +55,10 @@ const char* exampleContextRecentField(const DialectContext* ctx) {
     return ((const ExampleContext*)ctx)->recentField;
 }
 
-void exampleContextSetRecentField(DialectContext* ctx, const DialectFieldName name) {
+void exampleContextSetRecentField(
+    DialectContext* ctx,
+    const DialectFieldName name
+) {
     dialectFieldNameCopy(((ExampleContext*)ctx)->recentField, name);
 }
 
