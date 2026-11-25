@@ -135,7 +135,7 @@ DialectContext* shouldChangeDidLaunch(DialectContext* ctx) {
 int t01_ExampleContext_field(void) {
     ExampleContext* c = exampleContextCreate();
     c->host = strdup("abc");
-    DialectValue v = exampleContextField(&c->base, "host");
+    DialectValue v = c->base.field(&c->base, "host");
     bool ok = c->host != NULL && v.kind == D_VALUE_STRING && strcmp(c->host, v.as.str) == 0;
     dialectValueFree(&v);
     exampleContextDestroy(c);
