@@ -45,7 +45,7 @@ DialectContext* exampleContextCopy(const DialectContext* ctx) {
 }
 
 ExampleContext* exampleContextCreate(void) {
-    ExampleContext* inst = malloc(sizeof(*inst));
+    ExampleContext* inst = malloc(sizeof(ExampleContext));
     if (inst == NULL) {
         abort();
     }
