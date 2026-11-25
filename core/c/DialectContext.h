@@ -57,23 +57,23 @@ typedef struct {
 typedef struct DialectContext DialectContext;
 
 struct DialectContext {
+    DialectContext* (*copy)(const DialectContext* ctx);
+    void (*destroy)(DialectContext* ctx);
     DialectValue (*field)(
         const DialectContext* ctx,
         const DialectFieldName name
     );
+    // Borrowed view of the concrete context's DialectFieldName storage.
+    const char* (*recentField)(const DialectContext* ctx);
     void (*setField)(
         DialectContext* ctx,
         const DialectFieldName name,
         DialectValue value
     );
-    // Borrowed view of the concrete context's DialectFieldName storage.
-    const char* (*recentField)(const DialectContext* ctx);
     void (*setRecentField)(
         DialectContext* ctx,
         const DialectFieldName name
     );
-    DialectContext* (*copy)(const DialectContext* ctx);
-    void (*destroy)(DialectContext* ctx);
 };
 
 typedef void (*DialectCallback)(DialectContext* ctx);
@@ -86,10 +86,10 @@ void dialectFieldNameCopy(
 );
 
 // DialectValue helpers
-DialectValue dialectValueNone(void);
 DialectValue dialectValueBool(bool b);
-DialectValue dialectValueString(const char* s);
 void dialectValueFree(DialectValue* v);
+DialectValue dialectValueNone(void);
+DialectValue dialectValueString(const char* s);
 
 #endif // DIALECT_CONTEXT_H
 
