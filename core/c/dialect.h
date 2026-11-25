@@ -10,6 +10,9 @@
 
 // Includes the terminating null byte.
 #define DIALECT_FIELD_NAME_CAPACITY 16
+typedef char DialectFieldName[DIALECT_FIELD_NAME_CAPACITY];
+// Array parameters decay to pointers in C. Copy incoming names into this type
+// with dialectFieldNameCopy before storing them.
 
 // A value of a context field (mirrors Swift `Any`)
 typedef enum {
@@ -57,11 +60,12 @@ struct DialectContext {
 };
 
 struct DialectContextVtable {
-    DialectValue (*field)(const DialectContext* ctx, const char* name);
-    DialectValue (*fieldAny)(const DialectContext* ctx, const char* name);
-    void (*setField)(DialectContext* ctx, const char* name, DialectValue value);
+    DialectValue (*field)(const DialectContext* ctx, const DialectFieldName name);
+    DialectValue (*fieldAny)(const DialectContext* ctx, const DialectFieldName name);
+    void (*setField)(DialectContext* ctx, const DialectFieldName name, DialectValue value);
+    // Borrowed view of the concrete context's DialectFieldName storage.
     const char* (*recentField)(const DialectContext* ctx);
-    void (*setRecentField)(DialectContext* ctx, const char* name);
+    void (*setRecentField)(DialectContext* ctx, const DialectFieldName name);
     DialectContext* (*copy)(const DialectContext* ctx);
     void (*dealloc)(DialectContext* ctx);
 };
@@ -70,12 +74,12 @@ typedef void (*DialectCallback)(DialectContext* ctx);
 typedef DialectContext* (*DialectFunction)(DialectContext* ctx);
 
 typedef struct {
-    char fieldName[DIALECT_FIELD_NAME_CAPACITY];
+    DialectFieldName fieldName;
     DialectCallback cb;
 } DialectCallbackEntry;
 
 typedef struct {
-    const char* field;
+    DialectFieldName field;
     DialectCallback cb;
 } DialectOneliner;
 
@@ -84,14 +88,16 @@ typedef struct {
     DialectContext* context;
     DialectCallbackEntry* callbacks;
     size_t callbacksCount;
-    size_t callbacksCapacity;
     DialectFunction* functions;
     size_t functionsCount;
-    size_t functionsCapacity;
     DialectContext** queue;
     size_t queueCount;
     size_t queueCapacity;
 } DialectController;
+
+// Copies a field name, truncating to capacity - 1 bytes and null-terminating it.
+// NULL becomes an empty name. Source and destination may overlap.
+void dialectFieldNameCopy(DialectFieldName destination, const char* source);
 
 // DialectValue helpers
 DialectValue dialectValueNone(void);
@@ -100,7 +106,7 @@ DialectValue dialectValueString(const char* s);
 void dialectValueFree(DialectValue* v);
 
 // Default `fieldAny`, mirroring the Swift DialectContext extension
-DialectValue dialectContextDefaultFieldAny(const DialectContext* ctx, const char* name);
+DialectValue dialectContextDefaultFieldAny(const DialectContext* ctx, const DialectFieldName name);
 
 // DialectController API
 DialectController* dialectControllerCreate(DialectContext* ctx);
@@ -108,12 +114,12 @@ void dialectControllerDestroy(DialectController* ctrl);
 void dialectControllerRegisterCallback(DialectController* ctrl, DialectCallback cb);
 // Copies up to 15 bytes of fieldName and null-terminates it.
 // NULL or an empty name registers a plain callback.
-void dialectControllerRegisterFieldCallback(DialectController* ctrl, const char* fieldName, DialectCallback cb);
+void dialectControllerRegisterFieldCallback(DialectController* ctrl, const DialectFieldName fieldName, DialectCallback cb);
 void dialectControllerRegisterFunction(DialectController* ctrl, DialectFunction f);
 void dialectControllerExecuteFunctions(DialectController* ctrl);
 void dialectControllerProcessQueue(DialectController* ctrl);
 void dialectControllerReportContext(DialectController* ctrl);
-void dialectControllerSet(DialectController* ctrl, const char* fieldName, DialectValue value);
+void dialectControllerSet(DialectController* ctrl, const DialectFieldName fieldName, DialectValue value);
 
 // registerOneliners (items = [field, cb, ...])
 void dialectRegisterOneliners(DialectController* ctrl, const DialectOneliner* items, size_t count);

@@ -12,10 +12,10 @@ typedef struct {
     bool didLaunch;
     char* host;
     char* sometimes; // NULL = .none
-    const char* recentField;
+    DialectFieldName recentField;
 } ExampleContext;
 
-static DialectValue exField(const DialectContext* ctx, const char* name) {
+static DialectValue exField(const DialectContext* ctx, const DialectFieldName name) {
     const ExampleContext* c = (const ExampleContext*)ctx;
     if (strcmp(name, "didLaunch") == 0) {
         return dialectValueBool(c->didLaunch);
@@ -28,7 +28,7 @@ static DialectValue exField(const DialectContext* ctx, const char* name) {
     return dialectValueString("unknown-field-name");
 }
 
-static void exSetField(DialectContext* ctx, const char* name, DialectValue value) {
+static void exSetField(DialectContext* ctx, const DialectFieldName name, DialectValue value) {
     ExampleContext* c = (ExampleContext*)ctx;
     if (strcmp(name, "didLaunch") == 0) {
         if (value.kind == D_VALUE_BOOL) {
@@ -47,8 +47,8 @@ static const char* exRecentField(const DialectContext* ctx) {
     return ((const ExampleContext*)ctx)->recentField;
 }
 
-static void exSetRecentField(DialectContext* ctx, const char* name) {
-    ((ExampleContext*)ctx)->recentField = name;
+static void exSetRecentField(DialectContext* ctx, const DialectFieldName name) {
+    dialectFieldNameCopy(((ExampleContext*)ctx)->recentField, name);
 }
 
 static DialectContext* exCopy(const DialectContext* ctx) {
@@ -58,7 +58,7 @@ static DialectContext* exCopy(const DialectContext* ctx) {
     n->didLaunch = c->didLaunch;
     n->host = c->host != NULL ? strdup(c->host) : NULL;
     n->sometimes = c->sometimes != NULL ? strdup(c->sometimes) : NULL;
-    n->recentField = c->recentField;
+    dialectFieldNameCopy(n->recentField, c->recentField);
     return (DialectContext*)n;
 }
 
@@ -84,11 +84,11 @@ static DialectContext* hostToDidLaunch(DialectContext* ctx) {
     ExampleContext* c = (ExampleContext*)ctx;
     if (strcmp(c->recentField, "host") == 0) {
         c->didLaunch = true;
-        c->recentField = "didLaunch";
+        dialectFieldNameCopy(c->recentField, "didLaunch");
         return ctx;
     }
 
-    c->recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE;
+    dialectFieldNameCopy(c->recentField, DIALECT_CONTEXT_RECENT_FIELD_NONE);
     return ctx;
 }
 
@@ -97,7 +97,7 @@ int t01_ExampleContext_field(void) {
     ExampleContext c;
     memset(&c, 0, sizeof(c));
     c.base.vtable = &exVtable;
-    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE;
+    dialectFieldNameCopy(c.recentField, DIALECT_CONTEXT_RECENT_FIELD_NONE);
     c.host = strdup("abc");
     DialectValue v = exField(&c.base, "host");
     bool ok = c.host != NULL && v.kind == D_VALUE_STRING && strcmp(c.host, v.as.str) == 0;
@@ -111,7 +111,7 @@ int t02_ExampleContext_field_optional(void) {
     ExampleContext c;
     memset(&c, 0, sizeof(c));
     c.base.vtable = &exVtable;
-    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE;
+    dialectFieldNameCopy(c.recentField, DIALECT_CONTEXT_RECENT_FIELD_NONE);
 
     DialectValue v1 = exField(&c.base, "sometimes");
     bool ok1 = v1.kind == D_VALUE_NONE;
@@ -131,7 +131,7 @@ int t03_ExampleContext_setField(void) {
     ExampleContext c;
     memset(&c, 0, sizeof(c));
     c.base.vtable = &exVtable;
-    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE;
+    dialectFieldNameCopy(c.recentField, DIALECT_CONTEXT_RECENT_FIELD_NONE);
     c.didLaunch = true;
     exSetField(&c.base, "didLaunch", dialectValueBool(false));
     return c.didLaunch == false;
@@ -142,7 +142,7 @@ int t04_ExampleContext_setField_optional(void) {
     ExampleContext c;
     memset(&c, 0, sizeof(c));
     c.base.vtable = &exVtable;
-    c.recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE;
+    dialectFieldNameCopy(c.recentField, DIALECT_CONTEXT_RECENT_FIELD_NONE);
     c.sometimes = strdup("anything");
     exSetField(&c.base, "sometimes", dialectValueNone());
     DialectValue v1 = exField(&c.base, "sometimes");
@@ -162,7 +162,7 @@ int t04_ExampleContext_setField_optional(void) {
 int t05_DialectController_executeFunctions_set(void) {
     ExampleContext* initial = (ExampleContext*)calloc(1, sizeof(ExampleContext));
     initial->base.vtable = &exVtable;
-    initial->recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE;
+    dialectFieldNameCopy(initial->recentField, DIALECT_CONTEXT_RECENT_FIELD_NONE);
     DialectController* ctrl = dialectControllerCreate((DialectContext*)initial);
 
     // Disable the execution of executeFunctions() for testing purpose
@@ -190,7 +190,7 @@ int t05_DialectController_executeFunctions_set(void) {
 int t06_DialectController_processQueue(void) {
     ExampleContext* initial = (ExampleContext*)calloc(1, sizeof(ExampleContext));
     initial->base.vtable = &exVtable;
-    initial->recentField = DIALECT_CONTEXT_RECENT_FIELD_NONE;
+    dialectFieldNameCopy(initial->recentField, DIALECT_CONTEXT_RECENT_FIELD_NONE);
     DialectController* ctrl = dialectControllerCreate((DialectContext*)initial);
 
     dialectControllerRegisterFunction(ctrl, hostToDidLaunch);
@@ -228,7 +228,7 @@ int t07_DialectController_registerFieldCallback_match(void) {
     ExampleContext* initial = (ExampleContext*)calloc(1, sizeof(ExampleContext));
     initial->base.vtable = &exVtable;
     initial->host = strdup("123");
-    initial->recentField = "host";
+    dialectFieldNameCopy(initial->recentField, "host");
     DialectController* ctrl = dialectControllerCreate((DialectContext*)initial);
 
     g_callbackHost = NULL;
@@ -249,7 +249,7 @@ int t08_DialectController_registerFieldCallback_mismatch(void) {
     ExampleContext* initial = (ExampleContext*)calloc(1, sizeof(ExampleContext));
     initial->base.vtable = &exVtable;
     initial->host = strdup("123");
-    initial->recentField = "host";
+    dialectFieldNameCopy(initial->recentField, "host");
     DialectController* ctrl = dialectControllerCreate((DialectContext*)initial);
 
     g_callbackFlag = false;
@@ -266,7 +266,7 @@ int t08_DialectController_registerFieldCallback_mismatch(void) {
 int t09_DialectController_fieldName_capacity(void) {
     ExampleContext initial = {0};
     initial.base.vtable = &exVtable;
-    initial.recentField = "123456789012345";
+    dialectFieldNameCopy(initial.recentField, "123456789012345");
     DialectController* ctrl = dialectControllerCreate(&initial.base);
 
     char* name = strdup(initial.recentField);
@@ -294,36 +294,106 @@ int t09_DialectController_fieldName_capacity(void) {
 int t10_DialectController_fieldName_registration(void) {
     ExampleContext initial = {0};
     initial.base.vtable = &exVtable;
-    initial.recentField = "host";
+    dialectFieldNameCopy(initial.recentField, "host");
     DialectController* ctrl = dialectControllerCreate(&initial.base);
 
     dialectControllerRegisterFieldCallback(ctrl, "", cbFlag);
     g_callbackFlag = false;
     dialectControllerReportContext(ctrl);
     bool emptyUnconditional = g_callbackFlag;
-    initial.recentField = "";
+    dialectFieldNameCopy(initial.recentField, "");
     g_callbackFlag = false;
     dialectControllerReportContext(ctrl);
     bool emptyMatched = g_callbackFlag;
 
     dialectControllerDestroy(ctrl);
     ctrl = dialectControllerCreate(&initial.base);
-    initial.recentField = "host";
+    dialectFieldNameCopy(initial.recentField, "host");
     dialectControllerRegisterFieldCallback(ctrl, NULL, cbFlag);
     g_callbackFlag = false;
     dialectControllerReportContext(ctrl);
     bool plainMatched = g_callbackFlag;
 
-    char field[] = "host";
     DialectOneliner items[] = {
-        {field, cbFlag},
-        {"1234567890123456", cbFlag},
+        {"host", cbFlag},
+        {"", cbFlag},
     };
+    dialectFieldNameCopy(items[1].field, "1234567890123456");
     dialectRegisterOneliners(ctrl, items, 2);
-    field[0] = 'x';
+    items[0].field[0] = 'x';
     bool copied = strcmp(ctrl->callbacks[1].fieldName, "host") == 0;
     bool truncated = strcmp(ctrl->callbacks[2].fieldName, "123456789012345") == 0;
 
     dialectControllerDestroy(ctrl);
     return emptyUnconditional && emptyMatched && plainMatched && copied && truncated;
+}
+
+// Oneliner filters and queued recent fields use the same truncated name.
+int t11_DialectController_fieldName_consistency(void) {
+    ExampleContext initial = {0};
+    initial.base.vtable = &exVtable;
+    DialectController* ctrl = dialectControllerCreate(&initial.base);
+    DialectOneliner item = {.cb = cbFlag};
+    char name[] = "12345678901234567890";
+    dialectFieldNameCopy(item.field, name);
+    dialectRegisterOneliners(ctrl, &item, 1);
+
+    g_callbackFlag = false;
+    dialectControllerSet(ctrl, name, dialectValueBool(true));
+    memset(name, 'x', sizeof(name) - 1);
+    bool matched = g_callbackFlag &&
+        strcmp(initial.recentField, item.field) == 0 &&
+        strcmp(initial.recentField, "123456789012345") == 0;
+    bool sameCapacity = sizeof(initial.recentField) == sizeof(item.field) &&
+        sizeof(item.field) == sizeof(ctrl->callbacks[0].fieldName);
+
+    DialectContext* copy = exCopy(&initial.base);
+    dialectFieldNameCopy(initial.recentField, NULL);
+    bool independent = initial.recentField[0] == '\0' &&
+        strcmp(exRecentField(copy), item.field) == 0;
+    dialectFieldNameCopy(item.field, item.field + 1);
+    bool overlap = strcmp(item.field, "23456789012345") == 0;
+
+    exDealloc(copy);
+    dialectControllerDestroy(ctrl);
+    return matched && sameCapacity && independent && overlap;
+}
+
+static size_t g_callbackCount = 0;
+
+static void cbCount(DialectContext* ctx) {
+    (void)ctx;
+    g_callbackCount++;
+}
+
+// Separate registration batches preserve earlier callbacks and functions.
+int t12_DialectController_registration_batches(void) {
+    ExampleContext initial = {0};
+    initial.base.vtable = &exVtable;
+    DialectController* ctrl = dialectControllerCreate(&initial.base);
+    DialectOneliner items[12] = {0};
+    for (size_t i = 0; i < 12; i++) {
+        items[i].cb = cbCount;
+        dialectControllerRegisterFunction(ctrl, hostToDidLaunch);
+    }
+
+    dialectRegisterOneliners(ctrl, items, 10);
+    bool firstBatch = ctrl->callbacksCount == 10;
+    dialectRegisterOneliners(ctrl, items + 10, 2);
+    bool secondBatch = ctrl->callbacksCount == 12;
+    DialectCallbackEntry* callbacks = ctrl->callbacks;
+    dialectRegisterOneliners(ctrl, NULL, 0);
+    bool emptyBatch = ctrl->callbacks == callbacks && ctrl->callbacksCount == 12;
+    bool functions = ctrl->functionsCount == 12;
+    for (size_t i = 0; i < ctrl->functionsCount; i++) {
+        functions = functions && ctrl->functions[i] == hostToDidLaunch;
+    }
+
+    memset(items, 0, sizeof(items));
+    g_callbackCount = 0;
+    dialectControllerSet(ctrl, "didLaunch", dialectValueBool(true));
+    bool reported = initial.didLaunch && g_callbackCount == 12;
+
+    dialectControllerDestroy(ctrl);
+    return firstBatch && secondBatch && emptyBatch && functions && reported;
 }

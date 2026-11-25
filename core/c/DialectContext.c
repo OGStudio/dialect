@@ -4,6 +4,14 @@
 #include <stdlib.h>
 #include <string.h>
 
+void dialectFieldNameCopy(DialectFieldName destination, const char* source) {
+    size_t length = source == NULL ? 0 : strnlen(source, DIALECT_FIELD_NAME_CAPACITY - 1);
+    if (length > 0) {
+        memmove(destination, source, length);
+    }
+    destination[length] = '\0';
+}
+
 // DialectValue helpers
 DialectValue dialectValueNone(void) {
     DialectValue v;
@@ -35,6 +43,6 @@ void dialectValueFree(DialectValue* v) {
 
 // Default implementation of `fieldAny`, mirroring the Swift extension:
 // it just delegates to `field(name)`.
-DialectValue dialectContextDefaultFieldAny(const DialectContext* ctx, const char* name) {
+DialectValue dialectContextDefaultFieldAny(const DialectContext* ctx, const DialectFieldName name) {
     return ctx->vtable->field(ctx, name);
 }

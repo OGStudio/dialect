@@ -1,39 +1,11 @@
 // C port of core/swift/DialectController.swift
 #include "dialect.h"
 
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 
-static bool growCallbacks(DialectController* ctrl) {
-    if (ctrl->callbacksCount < ctrl->callbacksCapacity) {
-        return true;
-    }
-    size_t newCapacity = ctrl->callbacksCapacity == 0 ? 4 : ctrl->callbacksCapacity * 2;
-    DialectCallbackEntry* newCallbacks =
-        (DialectCallbackEntry*)realloc(ctrl->callbacks, newCapacity * sizeof(DialectCallbackEntry));
-    if (newCallbacks == NULL) {
-        return false;
-    }
-    ctrl->callbacks = newCallbacks;
-    ctrl->callbacksCapacity = newCapacity;
-    return true;
-}
-
-static void growFunctions(DialectController* ctrl) {
-    if (ctrl->functionsCount < ctrl->functionsCapacity) {
-        return;
-    }
-    size_t newCapacity = ctrl->functionsCapacity == 0 ? 4 : ctrl->functionsCapacity * 2;
-    DialectFunction* newFunctions =
-        (DialectFunction*)realloc(ctrl->functions, newCapacity * sizeof(DialectFunction));
-    if (newFunctions == NULL) {
-        return;
-    }
-    ctrl->functions = newFunctions;
-    ctrl->functionsCapacity = newCapacity;
-}
-
-static void growQueue(DialectController* ctrl) {
+void growQueue(DialectController* ctrl) {
     if (ctrl->queueCount < ctrl->queueCapacity) {
         return;
     }
@@ -72,26 +44,30 @@ void dialectControllerRegisterCallback(DialectController* ctrl, DialectCallback 
 
 void dialectControllerRegisterFieldCallback(
     DialectController* ctrl,
-    const char* fieldName,
+    const DialectFieldName fieldName,
     DialectCallback cb
 ) {
-    size_t length = fieldName == NULL ? 0 : strnlen(fieldName, DIALECT_FIELD_NAME_CAPACITY - 1);
-    DialectCallbackEntry entry = {0};
-    if (fieldName != NULL) {
-        memcpy(entry.fieldName, fieldName, length);
-    }
-    entry.cb = cb;
-    if (!growCallbacks(ctrl)) {
-        return;
-    }
-    ctrl->callbacks[ctrl->callbacksCount] = entry;
-    ctrl->callbacksCount++;
+    DialectOneliner item = {.cb = cb};
+    dialectFieldNameCopy(item.field, fieldName);
+    dialectRegisterOneliners(ctrl, &item, 1);
 }
 
 void dialectControllerRegisterFunction(DialectController* ctrl, DialectFunction f) {
-    growFunctions(ctrl);
-    ctrl->functions[ctrl->functionsCount] = f;
-    ctrl->functionsCount++;
+    if (ctrl->functionsCount == SIZE_MAX / sizeof(DialectFunction)) {
+        return;
+    }
+    size_t count = ctrl->functionsCount + 1;
+    DialectFunction* functions = malloc(count * sizeof(DialectFunction));
+    if (functions == NULL) {
+        return;
+    }
+    if (ctrl->functionsCount > 0) {
+        memcpy(functions, ctrl->functions, ctrl->functionsCount * sizeof(DialectFunction));
+    }
+    functions[ctrl->functionsCount] = f;
+    free(ctrl->functions);
+    ctrl->functions = functions;
+    ctrl->functionsCount = count;
 }
 
 void dialectControllerExecuteFunctions(DialectController* ctrl) {
@@ -106,7 +82,8 @@ void dialectControllerExecuteFunctions(DialectController* ctrl) {
     ctrl->queueCount--;
 
     // Keep SSOT: Only allow single field change per should-function
-    const char* cRecentField = c->vtable->recentField(c);
+    DialectFieldName cRecentField;
+    dialectFieldNameCopy(cRecentField, c->vtable->recentField(c));
     ctrl->context->vtable->setRecentField(ctrl->context, cRecentField);
     DialectValue cField = c->vtable->fieldAny(c, cRecentField);
     ctrl->context->vtable->setField(ctrl->context, cRecentField, cField);
@@ -155,10 +132,12 @@ void dialectControllerReportContext(DialectController* ctrl) {
     }
 }
 
-void dialectControllerSet(DialectController* ctrl, const char* fieldName, DialectValue value) {
+void dialectControllerSet(DialectController* ctrl, const DialectFieldName fieldName, DialectValue value) {
+    DialectFieldName name;
+    dialectFieldNameCopy(name, fieldName);
     DialectContext* c = ctrl->context->vtable->copy(ctrl->context);
-    c->vtable->setField(c, fieldName, value);
-    c->vtable->setRecentField(c, fieldName);
+    c->vtable->setField(c, name, value);
+    c->vtable->setRecentField(c, name);
 
     growQueue(ctrl);
     ctrl->queue[ctrl->queueCount] = c;
