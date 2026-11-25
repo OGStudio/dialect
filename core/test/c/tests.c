@@ -82,7 +82,6 @@ void exampleContextDestroy(DialectContext* ctx) {
 
 const DialectContext exampleContextBase = {
     exampleContextField,
-    dialectContextDefaultFieldAny,
     exampleContextSetField,
     exampleContextRecentField,
     exampleContextSetRecentField,

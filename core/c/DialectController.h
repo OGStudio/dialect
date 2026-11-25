@@ -99,7 +99,7 @@ void dialectControllerExecuteFunctions(DialectController* ctrl) {
     DialectFieldName cRecentField;
     dialectFieldNameCopy(cRecentField, c->recentField(c));
     ctrl->context->setRecentField(ctrl->context, cRecentField);
-    DialectValue cField = c->fieldAny(c, cRecentField);
+    DialectValue cField = c->field(c, cRecentField);
     ctrl->context->setField(ctrl->context, cRecentField, cField);
     dialectValueFree(&cField);
 

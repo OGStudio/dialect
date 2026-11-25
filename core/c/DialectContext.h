@@ -61,10 +61,6 @@ struct DialectContext {
         const DialectContext* ctx,
         const DialectFieldName name
     );
-    DialectValue (*fieldAny)(
-        const DialectContext* ctx,
-        const DialectFieldName name
-    );
     void (*setField)(
         DialectContext* ctx,
         const DialectFieldName name,
@@ -95,12 +91,6 @@ DialectValue dialectValueBool(bool b);
 DialectValue dialectValueString(const char* s);
 void dialectValueFree(DialectValue* v);
 
-// Default `fieldAny`, mirroring the Swift DialectContext extension
-DialectValue dialectContextDefaultFieldAny(
-    const DialectContext* ctx,
-    const DialectFieldName name
-);
-
 #endif // DIALECT_CONTEXT_H
 
 #if defined(DIALECT_CONTEXT_IMPLEMENTATION) && !defined(DIALECT_CONTEXT_IMPLEMENTATION_ONCE)
@@ -108,15 +98,6 @@ DialectValue dialectContextDefaultFieldAny(
 
 #include <stdlib.h>
 #include <string.h>
-
-// Default implementation of `fieldAny`, mirroring the Swift extension:
-// it just delegates to `field(name)`.
-DialectValue dialectContextDefaultFieldAny(
-    const DialectContext* ctx,
-    const DialectFieldName name
-) {
-    return ctx->field(ctx, name);
-}
 
 void dialectFieldNameCopy(
     DialectFieldName destination,
