@@ -17,7 +17,8 @@ typedef struct {
 } ExampleContext;
 
 ExampleContext* exampleContextCreate(void);
-void exampleContextDestroy(DialectContext* ctx);
+void exampleContextDestroy(ExampleContext* c);
+void exampleContextDestroyCallback(DialectContext* ctx);
 DialectValue exampleContextField(
     const DialectContext* ctx,
     const DialectFieldName name
@@ -52,7 +53,7 @@ ExampleContext* exampleContextCreate(void) {
     *inst = (ExampleContext){
         .base = {
             .copy = exampleContextCopy,
-            .destroy = exampleContextDestroy,
+            .destroy = exampleContextDestroyCallback,
             .field = exampleContextField,
             .recentField = exampleContextRecentField,
             .setField = exampleContextSetField,
@@ -63,11 +64,14 @@ ExampleContext* exampleContextCreate(void) {
     return inst;
 }
 
-void exampleContextDestroy(DialectContext* ctx) {
-    ExampleContext* c = (ExampleContext*)ctx;
+void exampleContextDestroy(ExampleContext* c) {
     free(c->host);
     free(c->sometimes);
     free(c);
+}
+
+void exampleContextDestroyCallback(DialectContext* ctx) {
+    exampleContextDestroy((ExampleContext*)ctx);
 }
 
 DialectValue exampleContextField(
@@ -134,7 +138,7 @@ int t01_ExampleContext_field(void) {
     DialectValue v = exampleContextField(&c->base, "host");
     bool ok = c->host != NULL && v.kind == D_VALUE_STRING && strcmp(c->host, v.as.str) == 0;
     dialectValueFree(&v);
-    exampleContextDestroy(&c->base);
+    exampleContextDestroy(c);
     return ok;
 }
 
@@ -151,7 +155,7 @@ int t02_ExampleContext_field_optional(void) {
     bool ok2 = v2.kind == D_VALUE_STRING && c->sometimes != NULL && strcmp(c->sometimes, v2.as.str) == 0;
     dialectValueFree(&v2);
 
-    exampleContextDestroy(&c->base);
+    exampleContextDestroy(c);
     return ok1 && ok2;
 }
 
@@ -161,7 +165,7 @@ int t03_ExampleContext_setField(void) {
     c->didLaunch = true;
     exampleContextSetField(&c->base, "didLaunch", dialectValueBool(false));
     bool ok = c->didLaunch == false;
-    exampleContextDestroy(&c->base);
+    exampleContextDestroy(c);
     return ok;
 }
 
@@ -181,7 +185,7 @@ int t04_ExampleContext_setField_optional(void) {
     bool ok2 = v2.kind == D_VALUE_STRING && c->sometimes != NULL && strcmp(c->sometimes, v2.as.str) == 0;
     dialectValueFree(&v2);
 
-    exampleContextDestroy(&c->base);
+    exampleContextDestroy(c);
     return ok1 && ok2;
 }
 
@@ -208,7 +212,7 @@ int t05_DialectController_executeFunctions_set(void) {
     bool ok = c->host != NULL && strcmp(c->host, "123") == 0 && c->didLaunch == true;
 
     dialectControllerDestroy(ctrl);
-    exampleContextDestroy(&initial->base);
+    exampleContextDestroy(initial);
     return ok;
 }
 
@@ -226,7 +230,7 @@ int t06_DialectController_processQueue(void) {
     bool ok = c->didLaunch == true;
 
     dialectControllerDestroy(ctrl);
-    exampleContextDestroy(&initial->base);
+    exampleContextDestroy(initial);
     return ok;
 }
 
@@ -264,7 +268,7 @@ int t07_DialectController_registerFieldCallback_match(void) {
     free(g_callbackHost);
     g_callbackHost = NULL;
     dialectControllerDestroy(ctrl);
-    exampleContextDestroy(&initial->base);
+    exampleContextDestroy(initial);
     return ok;
 }
 
@@ -283,7 +287,7 @@ int t08_DialectController_registerFieldCallback_mismatch(void) {
 
     bool ok = g_callbackFlag == false;
     dialectControllerDestroy(ctrl);
-    exampleContextDestroy(&initial->base);
+    exampleContextDestroy(initial);
     return ok;
 }
 
@@ -311,7 +315,7 @@ int t09_DialectController_fieldName_capacity(void) {
     bool bounded = strlen(ctrl->callbacks[2].fieldName) == DIALECT_FIELD_NAME_CAPACITY - 1;
 
     dialectControllerDestroy(ctrl);
-    exampleContextDestroy(&initial->base);
+    exampleContextDestroy(initial);
     return copied && truncated && bounded;
 }
 
@@ -349,7 +353,7 @@ int t10_DialectController_fieldName_registration(void) {
     bool truncated = strcmp(ctrl->callbacks[2].fieldName, "123456789012345") == 0;
 
     dialectControllerDestroy(ctrl);
-    exampleContextDestroy(&initial->base);
+    exampleContextDestroy(initial);
     return emptyUnconditional && emptyMatched && plainMatched && copied && truncated;
 }
 
@@ -378,9 +382,9 @@ int t11_DialectController_fieldName_consistency(void) {
     dialectFieldNameAssign(item.field, item.field + 1);
     bool overlap = strcmp(item.field, "23456789012345") == 0;
 
-    exampleContextDestroy(copy);
+    copy->destroy(copy);
     dialectControllerDestroy(ctrl);
-    exampleContextDestroy(&initial->base);
+    exampleContextDestroy(initial);
     return matched && sameCapacity && independent && overlap;
 }
 
@@ -419,6 +423,6 @@ int t12_DialectController_registration_batches(void) {
     bool reported = initial->didLaunch && g_callbackCount == 12;
 
     dialectControllerDestroy(ctrl);
-    exampleContextDestroy(&initial->base);
+    exampleContextDestroy(initial);
     return firstBatch && secondBatch && emptyBatch && functions && reported;
 }
