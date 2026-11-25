@@ -18,7 +18,7 @@ typedef struct {
 
 ExampleContext* exampleContextCreate(void);
 void exampleContextDestroy(ExampleContext* c);
-void exampleContextDestroyCallback(DialectContext* ctx);
+void exampleContextDestroyBase(DialectContext* ctx);
 DialectValue exampleContextField(
     const DialectContext* ctx,
     const DialectFieldName name
@@ -53,7 +53,7 @@ ExampleContext* exampleContextCreate(void) {
     *inst = (ExampleContext){
         .base = {
             .copy = exampleContextCopy,
-            .destroy = exampleContextDestroyCallback,
+            .destroy = exampleContextDestroyBase,
             .field = exampleContextField,
             .recentField = exampleContextRecentField,
             .setField = exampleContextSetField,
@@ -70,7 +70,7 @@ void exampleContextDestroy(ExampleContext* c) {
     free(c);
 }
 
-void exampleContextDestroyCallback(DialectContext* ctx) {
+void exampleContextDestroyBase(DialectContext* ctx) {
     exampleContextDestroy((ExampleContext*)ctx);
 }
 
