@@ -40,7 +40,7 @@ DialectContext* exampleContextCopy(const DialectContext* ctx) {
     inst->didLaunch = c->didLaunch;
     inst->host = c->host != NULL ? strdup(c->host) : NULL;
     inst->sometimes = c->sometimes != NULL ? strdup(c->sometimes) : NULL;
-    dialectFieldNameCopy(inst->recentField, c->recentField);
+    dialectFieldNameAssign(inst->recentField, c->recentField);
     return &inst->base;
 }
 
@@ -111,19 +111,19 @@ void exampleContextSetRecentField(
     DialectContext* ctx,
     const DialectFieldName name
 ) {
-    dialectFieldNameCopy(((ExampleContext*)ctx)->recentField, name);
+    dialectFieldNameAssign(((ExampleContext*)ctx)->recentField, name);
 }
 
-// Sample function for processing context change
+// Should function for altering context
 DialectContext* shouldChangeDidLaunch(DialectContext* ctx) {
     ExampleContext* c = (ExampleContext*)ctx;
     if (strcmp(c->recentField, "host") == 0) {
         c->didLaunch = true;
-        dialectFieldNameCopy(c->recentField, "didLaunch");
+        dialectFieldNameAssign(c->recentField, "didLaunch");
         return ctx;
     }
 
-    dialectFieldNameCopy(c->recentField, DIALECT_CONTEXT_RECENT_FIELD_NONE);
+    dialectFieldNameAssign(c->recentField, DIALECT_CONTEXT_RECENT_FIELD_NONE);
     return ctx;
 }
 
@@ -252,7 +252,7 @@ void cbFlag(DialectContext* ctx) {
 int t07_DialectController_registerFieldCallback_match(void) {
     ExampleContext* initial = exampleContextCreate();
     initial->host = strdup("123");
-    dialectFieldNameCopy(initial->recentField, "host");
+    dialectFieldNameAssign(initial->recentField, "host");
     DialectController* ctrl = dialectControllerCreate(&initial->base);
 
     g_callbackHost = NULL;
@@ -273,7 +273,7 @@ int t07_DialectController_registerFieldCallback_match(void) {
 int t08_DialectController_registerFieldCallback_mismatch(void) {
     ExampleContext* initial = exampleContextCreate();
     initial->host = strdup("123");
-    dialectFieldNameCopy(initial->recentField, "host");
+    dialectFieldNameAssign(initial->recentField, "host");
     DialectController* ctrl = dialectControllerCreate(&initial->base);
 
     g_callbackFlag = false;
@@ -290,7 +290,7 @@ int t08_DialectController_registerFieldCallback_mismatch(void) {
 // Field filters own their names and truncate to 15 bytes plus a terminator.
 int t09_DialectController_fieldName_capacity(void) {
     ExampleContext* initial = exampleContextCreate();
-    dialectFieldNameCopy(initial->recentField, "123456789012345");
+    dialectFieldNameAssign(initial->recentField, "123456789012345");
     DialectController* ctrl = dialectControllerCreate(&initial->base);
 
     char* name = strdup(initial->recentField);
@@ -318,21 +318,21 @@ int t09_DialectController_fieldName_capacity(void) {
 // Empty and NULL field names register plain callbacks; oneliners copy names.
 int t10_DialectController_fieldName_registration(void) {
     ExampleContext* initial = exampleContextCreate();
-    dialectFieldNameCopy(initial->recentField, "host");
+    dialectFieldNameAssign(initial->recentField, "host");
     DialectController* ctrl = dialectControllerCreate(&initial->base);
 
     dialectControllerRegisterFieldCallback(ctrl, "", cbFlag);
     g_callbackFlag = false;
     dialectControllerReportContext(ctrl);
     bool emptyUnconditional = g_callbackFlag;
-    dialectFieldNameCopy(initial->recentField, "");
+    dialectFieldNameAssign(initial->recentField, "");
     g_callbackFlag = false;
     dialectControllerReportContext(ctrl);
     bool emptyMatched = g_callbackFlag;
 
     dialectControllerDestroy(ctrl);
     ctrl = dialectControllerCreate(&initial->base);
-    dialectFieldNameCopy(initial->recentField, "host");
+    dialectFieldNameAssign(initial->recentField, "host");
     dialectControllerRegisterFieldCallback(ctrl, NULL, cbFlag);
     g_callbackFlag = false;
     dialectControllerReportContext(ctrl);
@@ -342,7 +342,7 @@ int t10_DialectController_fieldName_registration(void) {
         {"host", cbFlag},
         {"", cbFlag},
     };
-    dialectFieldNameCopy(items[1].field, "1234567890123456");
+    dialectFieldNameAssign(items[1].field, "1234567890123456");
     dialectRegisterOneliners(ctrl, items, 2);
     items[0].field[0] = 'x';
     bool copied = strcmp(ctrl->callbacks[1].fieldName, "host") == 0;
@@ -359,7 +359,7 @@ int t11_DialectController_fieldName_consistency(void) {
     DialectController* ctrl = dialectControllerCreate(&initial->base);
     DialectOneliner item = {.cb = cbFlag};
     char name[] = "12345678901234567890";
-    dialectFieldNameCopy(item.field, name);
+    dialectFieldNameAssign(item.field, name);
     dialectRegisterOneliners(ctrl, &item, 1);
 
     g_callbackFlag = false;
@@ -372,10 +372,10 @@ int t11_DialectController_fieldName_consistency(void) {
         sizeof(item.field) == sizeof(ctrl->callbacks[0].fieldName);
 
     DialectContext* copy = exampleContextCopy(&initial->base);
-    dialectFieldNameCopy(initial->recentField, NULL);
+    dialectFieldNameAssign(initial->recentField, NULL);
     bool independent = initial->recentField[0] == '\0' &&
         strcmp(exampleContextRecentField(copy), item.field) == 0;
-    dialectFieldNameCopy(item.field, item.field + 1);
+    dialectFieldNameAssign(item.field, item.field + 1);
     bool overlap = strcmp(item.field, "23456789012345") == 0;
 
     exampleContextDestroy(copy);

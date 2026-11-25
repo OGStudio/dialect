@@ -14,7 +14,7 @@
 #define DIALECT_FIELD_NAME_CAPACITY 16
 typedef char DialectFieldName[DIALECT_FIELD_NAME_CAPACITY];
 // Array parameters decay to pointers in C. Copy incoming names into this type
-// with dialectFieldNameCopy before storing them.
+// with dialectFieldNameAssign before storing them.
 
 // A value of a context field (mirrors Swift `Any`)
 typedef enum {
@@ -80,7 +80,7 @@ typedef void (*DialectCallback)(DialectContext* ctx);
 
 // Copies a field name, truncating to capacity - 1 bytes and null-terminating it.
 // NULL becomes an empty name. Source and destination may overlap.
-void dialectFieldNameCopy(
+void dialectFieldNameAssign(
     DialectFieldName destination,
     const char* source
 );
@@ -99,7 +99,7 @@ DialectValue dialectValueString(const char* s);
 #include <stdlib.h>
 #include <string.h>
 
-void dialectFieldNameCopy(
+void dialectFieldNameAssign(
     DialectFieldName destination,
     const char* source
 ) {

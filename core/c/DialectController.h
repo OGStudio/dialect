@@ -97,7 +97,7 @@ void dialectControllerExecuteFunctions(DialectController* ctrl) {
 
     // Keep SSOT: Only allow single field change per should-function
     DialectFieldName cRecentField;
-    dialectFieldNameCopy(cRecentField, c->recentField(c));
+    dialectFieldNameAssign(cRecentField, c->recentField(c));
     ctrl->context->setRecentField(ctrl->context, cRecentField);
     DialectValue cField = c->field(c, cRecentField);
     ctrl->context->setField(ctrl->context, cRecentField, cField);
@@ -149,7 +149,7 @@ void dialectControllerRegisterFieldCallback(
     DialectCallback cb
 ) {
     DialectOneliner item = {.cb = cb};
-    dialectFieldNameCopy(item.field, fieldName);
+    dialectFieldNameAssign(item.field, fieldName);
     dialectRegisterOneliners(ctrl, &item, 1);
 }
 
@@ -190,7 +190,7 @@ void dialectControllerSet(
     DialectValue value
 ) {
     DialectFieldName name;
-    dialectFieldNameCopy(name, fieldName);
+    dialectFieldNameAssign(name, fieldName);
     DialectContext* c = ctrl->context->copy(ctrl->context);
     c->setField(c, name, value);
     c->setRecentField(c, name);

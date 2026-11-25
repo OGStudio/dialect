@@ -52,7 +52,7 @@ void dialectRegisterOneliners(
     }
     for (size_t i = 0; i < count; i++) {
         DialectCallbackEntry* entry = &callbacks[ctrl->callbacksCount + i];
-        dialectFieldNameCopy(entry->fieldName, items[i].field);
+        dialectFieldNameAssign(entry->fieldName, items[i].field);
         entry->cb = items[i].cb;
     }
     free(ctrl->callbacks);
