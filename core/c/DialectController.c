@@ -30,7 +30,7 @@ void dialectControllerDestroy(DialectController* ctrl) {
         return;
     }
     for (size_t i = 0; i < ctrl->queueCount; i++) {
-        ctrl->queue[i]->vtable->dealloc(ctrl->queue[i]);
+        ctrl->queue[i]->dealloc(ctrl->queue[i]);
     }
     free(ctrl->queue);
     free(ctrl->functions);
@@ -83,28 +83,28 @@ void dialectControllerExecuteFunctions(DialectController* ctrl) {
 
     // Keep SSOT: Only allow single field change per should-function
     DialectFieldName cRecentField;
-    dialectFieldNameCopy(cRecentField, c->vtable->recentField(c));
-    ctrl->context->vtable->setRecentField(ctrl->context, cRecentField);
-    DialectValue cField = c->vtable->fieldAny(c, cRecentField);
-    ctrl->context->vtable->setField(ctrl->context, cRecentField, cField);
+    dialectFieldNameCopy(cRecentField, c->recentField(c));
+    ctrl->context->setRecentField(ctrl->context, cRecentField);
+    DialectValue cField = c->fieldAny(c, cRecentField);
+    ctrl->context->setField(ctrl->context, cRecentField, cField);
     dialectValueFree(&cField);
 
     for (size_t i = 0; i < ctrl->functionsCount; i++) {
         // Mirror Swift value semantics: each should-function receives its own copy
-        DialectContext* copy = ctrl->context->vtable->copy(ctrl->context);
+        DialectContext* copy = ctrl->context->copy(ctrl->context);
         DialectContext* ctx = ctrl->functions[i](copy);
-        if (strcmp(ctx->vtable->recentField(ctx), DIALECT_CONTEXT_RECENT_FIELD_NONE) != 0) {
+        if (strcmp(ctx->recentField(ctx), DIALECT_CONTEXT_RECENT_FIELD_NONE) != 0) {
             growQueue(ctrl);
             ctrl->queue[ctrl->queueCount] = ctx;
             ctrl->queueCount++;
         } else {
-            ctx->vtable->dealloc(ctx);
+            ctx->dealloc(ctx);
         }
     }
 
     dialectControllerReportContext(ctrl);
 
-    c->vtable->dealloc(c);
+    c->dealloc(c);
 }
 
 void dialectControllerProcessQueue(DialectController* ctrl) {
@@ -126,7 +126,7 @@ void dialectControllerReportContext(DialectController* ctrl) {
     for (size_t i = 0; i < ctrl->callbacksCount; i++) {
         DialectCallbackEntry* entry = &ctrl->callbacks[i];
         if (entry->fieldName[0] == '\0' ||
-            strcmp(ctrl->context->vtable->recentField(ctrl->context), entry->fieldName) == 0) {
+            strcmp(ctrl->context->recentField(ctrl->context), entry->fieldName) == 0) {
             entry->cb(ctrl->context);
         }
     }
@@ -135,9 +135,9 @@ void dialectControllerReportContext(DialectController* ctrl) {
 void dialectControllerSet(DialectController* ctrl, const DialectFieldName fieldName, DialectValue value) {
     DialectFieldName name;
     dialectFieldNameCopy(name, fieldName);
-    DialectContext* c = ctrl->context->vtable->copy(ctrl->context);
-    c->vtable->setField(c, name, value);
-    c->vtable->setRecentField(c, name);
+    DialectContext* c = ctrl->context->copy(ctrl->context);
+    c->setField(c, name, value);
+    c->setRecentField(c, name);
 
     growQueue(ctrl);
     ctrl->queue[ctrl->queueCount] = c;

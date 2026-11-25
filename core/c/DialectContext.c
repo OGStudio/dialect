@@ -44,5 +44,5 @@ void dialectValueFree(DialectValue* v) {
 // Default implementation of `fieldAny`, mirroring the Swift extension:
 // it just delegates to `field(name)`.
 DialectValue dialectContextDefaultFieldAny(const DialectContext* ctx, const DialectFieldName name) {
-    return ctx->vtable->field(ctx, name);
+    return ctx->field(ctx, name);
 }

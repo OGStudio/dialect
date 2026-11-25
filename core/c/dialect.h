@@ -53,13 +53,8 @@ typedef struct {
 } DialectValue;
 
 typedef struct DialectContext DialectContext;
-typedef struct DialectContextVtable DialectContextVtable;
 
 struct DialectContext {
-    const DialectContextVtable* vtable;
-};
-
-struct DialectContextVtable {
     DialectValue (*field)(const DialectContext* ctx, const DialectFieldName name);
     DialectValue (*fieldAny)(const DialectContext* ctx, const DialectFieldName name);
     void (*setField)(DialectContext* ctx, const DialectFieldName name, DialectValue value);
