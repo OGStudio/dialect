@@ -39,15 +39,13 @@ void exampleContextSetField(
 ) {
     ExampleContext* c = (ExampleContext*)ctx;
     if (strcmp(name, "didLaunch") == 0) {
-        if (value.kind == D_VALUE_BOOL) {
-            c->didLaunch = value.as.boolean;
-        }
+        c->didLaunch = value.as.boolean;
     } else if (strcmp(name, "host") == 0) {
         free(c->host);
-        c->host = value.kind == D_VALUE_STRING ? strdup(value.as.str) : NULL;
+        c->host = strdup(value.as.str);
     } else if (strcmp(name, "sometimes") == 0) {
         free(c->sometimes);
-        c->sometimes = value.kind == D_VALUE_STRING ? strdup(value.as.str) : NULL;
+        c->sometimes = value.kind == D_VALUE_NONE ? NULL : strdup(value.as.str);
     }
 }
 
