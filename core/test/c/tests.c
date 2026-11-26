@@ -3,7 +3,6 @@
 #include "registerOneliners.h"
 
 #include <stdbool.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -39,13 +38,10 @@ void exampleContextSetRecentField(
 DialectContext* exampleContextCopy(const DialectContext* ctx) {
     var c = (const ExampleContext*)ctx;
     var inst = exampleContextCreate();
-    var dc = (DialectContext *)inst;
-    *dc = *ctx;
-    inst->didLaunch = c->didLaunch;
+    *inst = *c;
     inst->host = c->host != NULL ? strdup(c->host) : NULL;
     inst->sometimes = c->sometimes != NULL ? strdup(c->sometimes) : NULL;
-    dialectFieldNameAssign(inst->recentField, c->recentField);
-    return dc;
+    return (DialectContext *)inst;
 }
 
 ExampleContext* exampleContextCreate(void) {
@@ -296,16 +292,16 @@ void cbCount(DialectContext* ctx) {
 
 // Validate that both oneliners run when their field changes.
 bool t09_ExampleContext_registerOneliners(void) {
+    g_callbackCount = 0;
     var c = exampleContextCreate();
     var dc = (DialectContext *)c;
     var ctrl = dialectControllerCreate(dc);
-    const DialectOneliner items[] = {
+    const DialectOneliner oneliners[] = {
         {"host", cbCount},
         {"host", cbCount},
     };
-    dialectRegisterOneliners(ctrl, items, sizeof(items) / sizeof(items[0]));
+    dialectRegisterOneliners(ctrl, oneliners, sizeof(oneliners) / sizeof(oneliners[0]));
 
-    g_callbackCount = 0;
     var host = dialectValueString("abc");
     dialectControllerSet(ctrl, "host", host);
     dialectValueFree(&host);
