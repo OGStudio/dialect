@@ -181,12 +181,17 @@ bool t04_ExampleContext_setField_optional(void) {
     c->sometimes = strdup("anything");
     var dc = (DialectContext *)c;
     dc->setField(dc, "sometimes", dialectValueNone());
-    bool cleared = c->sometimes == NULL;
+    var sometimes = dc->field(dc, "sometimes");
+    bool cleared = sometimes.kind == D_VALUE_NONE;
+    dialectValueFree(&sometimes);
 
-    var sometimes = dialectValueString("make it quick");
+    sometimes = dialectValueString("make it quick");
     dc->setField(dc, "sometimes", sometimes);
     dialectValueFree(&sometimes);
-    bool matches = strcmp(c->sometimes, "make it quick") == 0;
+    sometimes = dc->field(dc, "sometimes");
+    bool matches = sometimes.kind == D_VALUE_STRING &&
+        strcmp(sometimes.as.str, "make it quick") == 0;
+    dialectValueFree(&sometimes);
 
     exampleContextDestroy(c);
     return cleared && matches;
@@ -243,12 +248,6 @@ void cbHost(DialectContext* ctx) {
     g_callbackHost = c->host;
 }
 
-bool g_callbackDidLaunch;
-void cbDidLaunch(DialectContext* ctx) {
-    (void)ctx;
-    g_callbackDidLaunch = true;
-}
-
 // Validate registerFieldCallback() if an expected field was changed
 bool t07_DialectController_registerFieldCallback_match(void) {
     var c = exampleContextCreate();
@@ -273,16 +272,16 @@ bool t07_DialectController_registerFieldCallback_match(void) {
 bool t08_DialectController_registerFieldCallback_mismatch(void) {
     var c = exampleContextCreate();
     var dc = (DialectContext *)c;
-    g_callbackDidLaunch = false;
+    g_callbackHost = NULL;
+    c->host = strdup("123");
     dialectFieldNameAssign(c->recentField, "host");
     var ctrl = dialectControllerCreate(dc);
 
-    g_callbackDidLaunch = false;
-    dialectControllerRegisterFieldCallback(ctrl, "didLaunch", &cbDidLaunch);
-
+    dialectControllerRegisterFieldCallback(ctrl, "didLaunch", &cbHost);
     dialectControllerReportContext(ctrl);
 
-    bool ok = !g_callbackDidLaunch;
+    bool ok = g_callbackHost == NULL;
+    g_callbackHost = NULL;
     dialectControllerDestroy(ctrl);
     exampleContextDestroy(c);
     return ok;
