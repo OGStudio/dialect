@@ -237,16 +237,13 @@ int t06_DialectController_processQueue(void) {
     return ok;
 }
 
-const char* g_callbackHost = NULL;
-bool g_callbackFlag = false;
-
-// Capture the host field from the current context
-void cbHostCapture(DialectContext* ctx) {
+const char* g_callbackHost;
+void cbHost(DialectContext* ctx) {
     var c = (const ExampleContext*)ctx;
     g_callbackHost = c->host;
 }
 
-// Set a flag when the callback is invoked
+bool g_callbackFlag = false;
 void cbFlag(DialectContext* ctx) {
     (void)ctx;
     g_callbackFlag = true;
@@ -255,12 +252,13 @@ void cbFlag(DialectContext* ctx) {
 // Validate registerFieldCallback() if an expected field was changed
 int t07_DialectController_registerFieldCallback_match(void) {
     var c = exampleContextCreate();
+    var dc = (DialectContext *)c;
+    g_callbackHost = NULL;
     c->host = strdup("123");
     dialectFieldNameAssign(c->recentField, "host");
-    var ctrl = dialectControllerCreate((DialectContext *)c);
+    var ctrl = dialectControllerCreate(dc);
 
-    dialectControllerRegisterFieldCallback(ctrl, "host", &cbHostCapture);
-
+    dialectControllerRegisterFieldCallback(ctrl, "host", &cbHost);
     dialectControllerReportContext(ctrl);
 
     bool ok = g_callbackHost != NULL && strcmp(c->host, g_callbackHost) == 0;
