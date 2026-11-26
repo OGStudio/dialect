@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define var __auto_type
+
 // Sample Context used for testing
 typedef struct {
     DialectContext base; // first member -> cast between DialectContext* and ExampleContext*
@@ -134,10 +136,10 @@ DialectContext* shouldChangeDidLaunch(DialectContext* ctx) {
 
 // Validate field access by name
 int t01_ExampleContext_field(void) {
-    ExampleContext* c = exampleContextCreate();
+    var c = exampleContextCreate();
     c->host = strdup("abc");
-    DialectContext *dc = (DialectContext *)c;
-    DialectValue host = dc->field(dc, "host");
+    var dc = (DialectContext *)c;
+    var host = dc->field(dc, "host");
     bool ok = strcmp(c->host, host.as.str) == 0;
     dialectValueFree(&host);
     exampleContextDestroy(c);
