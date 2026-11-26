@@ -5,7 +5,7 @@ BUILD=$SDIR/../.build
 mkdir -p $BUILD
 
 cc \
-    -std=c11 \
+    -std=c99 \
     -I $SDIR/../core/c \
     -o $BUILD/test-c \
     $SDIR/../core/test/c/tests.c \
