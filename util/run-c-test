@@ -5,11 +5,9 @@ BUILD=$SDIR/../.build
 mkdir -p $BUILD
 
 cc \
+    -std=c99 \
     -I $SDIR/../core/c \
     -o $BUILD/test-c \
-    $SDIR/../core/c/DialectContext.c \
-    $SDIR/../core/c/DialectController.c \
-    $SDIR/../core/c/registerOneliners.c \
     $SDIR/../core/test/c/tests.c \
     $SDIR/../core/test/c/main.c
 
