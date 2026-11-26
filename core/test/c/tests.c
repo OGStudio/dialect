@@ -243,10 +243,10 @@ void cbHost(DialectContext* ctx) {
     g_callbackHost = c->host;
 }
 
-bool g_callbackFlag = false;
-void cbFlag(DialectContext* ctx) {
+bool g_callbackDidLaunch = false;
+void cbDidLaunch(DialectContext* ctx) {
     (void)ctx;
-    g_callbackFlag = true;
+    g_callbackDidLaunch = true;
 }
 
 // Validate registerFieldCallback() if an expected field was changed
@@ -272,15 +272,16 @@ int t07_DialectController_registerFieldCallback_match(void) {
 // callback should not be called
 int t08_DialectController_registerFieldCallback_mismatch(void) {
     var c = exampleContextCreate();
+    var dc = (DialectContext *)c;
     dialectFieldNameAssign(c->recentField, "host");
-    var ctrl = dialectControllerCreate((DialectContext *)c);
+    var ctrl = dialectControllerCreate(dc);
 
     g_callbackFlag = false;
-    dialectControllerRegisterFieldCallback(ctrl, "didLaunch", &cbFlag);
+    dialectControllerRegisterFieldCallback(ctrl, "didLaunch", &cbDidLaunch);
 
     dialectControllerReportContext(ctrl);
 
-    bool ok = !g_callbackFlag;
+    bool ok = !g_callbackDidLaunch;
     dialectControllerDestroy(ctrl);
     exampleContextDestroy(c);
     return ok;
