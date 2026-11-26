@@ -243,7 +243,7 @@ void cbHost(DialectContext* ctx) {
     g_callbackHost = c->host;
 }
 
-bool g_callbackDidLaunch = false;
+bool g_callbackDidLaunch;
 void cbDidLaunch(DialectContext* ctx) {
     (void)ctx;
     g_callbackDidLaunch = true;
@@ -273,6 +273,7 @@ bool t07_DialectController_registerFieldCallback_match(void) {
 bool t08_DialectController_registerFieldCallback_mismatch(void) {
     var c = exampleContextCreate();
     var dc = (DialectContext *)c;
+    g_callbackDidLaunch = false;
     dialectFieldNameAssign(c->recentField, "host");
     var ctrl = dialectControllerCreate(dc);
 
@@ -287,7 +288,7 @@ bool t08_DialectController_registerFieldCallback_mismatch(void) {
     return ok;
 }
 
-size_t g_callbackCount = 0;
+size_t g_callbackCount;
 
 void cbCount(DialectContext* ctx) {
     (void)ctx;
@@ -297,7 +298,8 @@ void cbCount(DialectContext* ctx) {
 // Validate that both oneliners run when their field changes.
 bool t09_ExampleContext_registerOneliners(void) {
     var c = exampleContextCreate();
-    var ctrl = dialectControllerCreate((DialectContext *)c);
+    var dc = (DialectContext *)c;
+    var ctrl = dialectControllerCreate(dc);
     const DialectOneliner items[] = {
         {"host", cbCount},
         {"host", cbCount},
