@@ -199,9 +199,9 @@ int t05_DialectController_executeFunctions_set(void) {
     // Disable the execution of executeFunctions() for testing purpose
     ctrl->isProcessingQueue = true;
 
-    DialectValue hostValue = dialectValueString("123");
-    dialectControllerSet(ctrl, "host", hostValue);
-    dialectValueFree(&hostValue);
+    DialectValue host = dialectValueString("123");
+    dialectControllerSet(ctrl, "host", host);
+    dialectValueFree(&host);
 
     dialectControllerRegisterFunction(ctrl, shouldChangeDidLaunch);
 
