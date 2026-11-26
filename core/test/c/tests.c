@@ -181,9 +181,9 @@ int t04_ExampleContext_setField_optional(void) {
     dc->setField(dc, "sometimes", dialectValueNone());
     bool cleared = c->sometimes == NULL;
 
-    DialectValue value = dialectValueString("make it quick");
-    dc->setField(dc, "sometimes", value);
-    dialectValueFree(&value);
+    DialectValue sometimes = dialectValueString("make it quick");
+    dc->setField(dc, "sometimes", sometimes);
+    dialectValueFree(&sometimes);
     bool matches = strcmp(c->sometimes, "make it quick") == 0;
 
     exampleContextDestroy(c);
@@ -223,9 +223,9 @@ int t06_DialectController_processQueue(void) {
     DialectController* ctrl = dialectControllerCreate((DialectContext *)c);
 
     dialectControllerRegisterFunction(ctrl, shouldChangeDidLaunch);
-    DialectValue hostValue = dialectValueString("123");
-    dialectControllerSet(ctrl, "host", hostValue);
-    dialectValueFree(&hostValue);
+    DialectValue host = dialectValueString("123");
+    dialectControllerSet(ctrl, "host", host);
+    dialectValueFree(&host);
 
     bool ok = c->didLaunch;
 
