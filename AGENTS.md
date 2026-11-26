@@ -10,7 +10,7 @@ core/              Core runtime library
   c/               C port of the Swift engine (DialectContext.h, DialectController.h, registerOneliners.h), each with its matching *_IMPLEMENTATION macro
   kotlin/          Kotlin port of the Swift engine (DialectContext.kt, DialectController.kt, registerOneliners.kt, `DIALECT_CONTEXT_RECENT_FIELD_NONE` const mirrors core/swift)
   test/swift/      9 unit tests (custom runner, no XCTest); `registerOneliners` covered by t09
-  test/c/          12 C unit tests; main.c enables the three single-header implementations
+  test/c/          9 C unit tests; main.c enables the three single-header implementations
   test/kotlin/     10 unit tests (mirror test/swift t01-t09 + `t10_ExampleContext_selfCopy` — data class copy semantics; KD had selfCopy + registerOneliners, Swift needs no selfCopy test since structs copy by value)
 util/              Root util dir: run-swift-test, run-c-test, run-kotlin-test (core test runners) + generator build/run scripts + agent build/run scripts
   run-swift-test     Compile & run core Swift tests (raw swiftc, artifacts into root .build/)

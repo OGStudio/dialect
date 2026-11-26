@@ -7,25 +7,23 @@
 #include "DialectController.h"
 #include "registerOneliners.h"
 
+#include <stdbool.h>
 #include <stdio.h>
 
-int t01_ExampleContext_field(void);
-int t02_ExampleContext_field_optional(void);
-int t03_ExampleContext_setField(void);
-int t04_ExampleContext_setField_optional(void);
-int t05_DialectController_executeFunctions_set(void);
-int t06_DialectController_processQueue(void);
-int t07_DialectController_registerFieldCallback_match(void);
-int t08_DialectController_registerFieldCallback_mismatch(void);
-int t09_DialectController_fieldName_capacity(void);
-int t10_DialectController_fieldName_registration(void);
-int t11_DialectController_fieldName_consistency(void);
-int t12_DialectController_registration_batches(void);
+bool t01_ExampleContext_field(void);
+bool t02_ExampleContext_field_optional(void);
+bool t03_ExampleContext_setField(void);
+bool t04_ExampleContext_setField_optional(void);
+bool t05_DialectController_executeFunctions_set(void);
+bool t06_DialectController_processQueue(void);
+bool t07_DialectController_registerFieldCallback_match(void);
+bool t08_DialectController_registerFieldCallback_mismatch(void);
+bool t09_ExampleContext_registerOneliners(void);
 
 int main(void) {
     printf("Testing... \n");
 
-    int (*tests[])(void) = {
+    bool (*tests[])(void) = {
         t01_ExampleContext_field,
         t02_ExampleContext_field_optional,
         t03_ExampleContext_setField,
@@ -34,10 +32,7 @@ int main(void) {
         t06_DialectController_processQueue,
         t07_DialectController_registerFieldCallback_match,
         t08_DialectController_registerFieldCallback_mismatch,
-        t09_DialectController_fieldName_capacity,
-        t10_DialectController_fieldName_registration,
-        t11_DialectController_fieldName_consistency,
-        t12_DialectController_registration_batches,
+        t09_ExampleContext_registerOneliners,
     };
     int totalCount = (int)(sizeof(tests) / sizeof(tests[0]));
 

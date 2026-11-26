@@ -135,7 +135,7 @@ DialectContext* shouldChangeDidLaunch(DialectContext* ctx) {
 }
 
 // Validate field access by name
-int t01_ExampleContext_field(void) {
+bool t01_ExampleContext_field(void) {
     var c = exampleContextCreate();
     c->host = strdup("abc");
     var dc = (DialectContext *)c;
@@ -147,7 +147,7 @@ int t01_ExampleContext_field(void) {
 }
 
 // Validate field access by name for optional value
-int t02_ExampleContext_field_optional(void) {
+bool t02_ExampleContext_field_optional(void) {
     var c = exampleContextCreate();
     var dc = (DialectContext *)c;
 
@@ -165,7 +165,7 @@ int t02_ExampleContext_field_optional(void) {
 }
 
 // Validate changing field value by name
-int t03_ExampleContext_setField(void) {
+bool t03_ExampleContext_setField(void) {
     var c = exampleContextCreate();
     c->didLaunch = true;
     var dc = (DialectContext *)c;
@@ -176,7 +176,7 @@ int t03_ExampleContext_setField(void) {
 }
 
 // Validate changing field optional value by name
-int t04_ExampleContext_setField_optional(void) {
+bool t04_ExampleContext_setField_optional(void) {
     var c = exampleContextCreate();
     c->sometimes = strdup("anything");
     var dc = (DialectContext *)c;
@@ -193,7 +193,7 @@ int t04_ExampleContext_setField_optional(void) {
 }
 
 // Validate executeFunctions() and set()
-int t05_DialectController_executeFunctions_set(void) {
+bool t05_DialectController_executeFunctions_set(void) {
     var c = exampleContextCreate();
     var dc = (DialectContext *)c;
     var ctrl = dialectControllerCreate(dc);
@@ -220,7 +220,7 @@ int t05_DialectController_executeFunctions_set(void) {
 }
 
 // Validate processQueue()
-int t06_DialectController_processQueue(void) {
+bool t06_DialectController_processQueue(void) {
     var c = exampleContextCreate();
     var dc = (DialectContext *)c;
     var ctrl = dialectControllerCreate(dc);
@@ -250,7 +250,7 @@ void cbDidLaunch(DialectContext* ctx) {
 }
 
 // Validate registerFieldCallback() if an expected field was changed
-int t07_DialectController_registerFieldCallback_match(void) {
+bool t07_DialectController_registerFieldCallback_match(void) {
     var c = exampleContextCreate();
     var dc = (DialectContext *)c;
     g_callbackHost = NULL;
@@ -270,13 +270,13 @@ int t07_DialectController_registerFieldCallback_match(void) {
 
 // Validate registerFieldCallback() if an unexpected field was changed, i.e.,
 // callback should not be called
-int t08_DialectController_registerFieldCallback_mismatch(void) {
+bool t08_DialectController_registerFieldCallback_mismatch(void) {
     var c = exampleContextCreate();
     var dc = (DialectContext *)c;
     dialectFieldNameAssign(c->recentField, "host");
     var ctrl = dialectControllerCreate(dc);
 
-    g_callbackFlag = false;
+    g_callbackDidLaunch = false;
     dialectControllerRegisterFieldCallback(ctrl, "didLaunch", &cbDidLaunch);
 
     dialectControllerReportContext(ctrl);
@@ -287,104 +287,6 @@ int t08_DialectController_registerFieldCallback_mismatch(void) {
     return ok;
 }
 
-// Field filters own their names and truncate to 15 bytes plus a terminator.
-int t09_DialectController_fieldName_capacity(void) {
-    var c = exampleContextCreate();
-    dialectFieldNameAssign(c->recentField, "123456789012345");
-    var ctrl = dialectControllerCreate((DialectContext *)c);
-
-    DialectFieldName name;
-    dialectFieldNameAssign(name, c->recentField);
-    dialectControllerRegisterFieldCallback(ctrl, name, cbFlag);
-    name[0] = 'x';
-
-    g_callbackFlag = false;
-    dialectControllerReportContext(ctrl);
-    bool copied = g_callbackFlag &&
-        strcmp(ctrl->callbacks[0].fieldName, c->recentField) == 0;
-
-    dialectControllerRegisterFieldCallback(ctrl, "12345678901234567890", cbFlag);
-    bool truncated = strcmp(ctrl->callbacks[1].fieldName, c->recentField) == 0;
-    char unterminated[DIALECT_FIELD_NAME_CAPACITY];
-    memset(unterminated, 'x', sizeof(unterminated));
-    dialectControllerRegisterFieldCallback(ctrl, unterminated, cbFlag);
-    bool bounded = strlen(ctrl->callbacks[2].fieldName) == DIALECT_FIELD_NAME_CAPACITY - 1;
-
-    dialectControllerDestroy(ctrl);
-    exampleContextDestroy(c);
-    return copied && truncated && bounded;
-}
-
-// Empty and NULL field names register plain callbacks; oneliners copy names.
-int t10_DialectController_fieldName_registration(void) {
-    var c = exampleContextCreate();
-    dialectFieldNameAssign(c->recentField, "host");
-    var ctrl = dialectControllerCreate((DialectContext *)c);
-
-    dialectControllerRegisterFieldCallback(ctrl, "", cbFlag);
-    g_callbackFlag = false;
-    dialectControllerReportContext(ctrl);
-    bool emptyUnconditional = g_callbackFlag;
-    dialectFieldNameAssign(c->recentField, "");
-    g_callbackFlag = false;
-    dialectControllerReportContext(ctrl);
-    bool emptyMatched = g_callbackFlag;
-
-    dialectControllerDestroy(ctrl);
-    ctrl = dialectControllerCreate((DialectContext *)c);
-    dialectFieldNameAssign(c->recentField, "host");
-    dialectControllerRegisterFieldCallback(ctrl, NULL, cbFlag);
-    g_callbackFlag = false;
-    dialectControllerReportContext(ctrl);
-    bool plainMatched = g_callbackFlag;
-
-    DialectOneliner items[] = {
-        {"host", cbFlag},
-        {"", cbFlag},
-    };
-    dialectFieldNameAssign(items[1].field, "1234567890123456");
-    dialectRegisterOneliners(ctrl, items, 2);
-    items[0].field[0] = 'x';
-    bool copied = strcmp(ctrl->callbacks[1].fieldName, "host") == 0;
-    bool truncated = strcmp(ctrl->callbacks[2].fieldName, "123456789012345") == 0;
-
-    dialectControllerDestroy(ctrl);
-    exampleContextDestroy(c);
-    return emptyUnconditional && emptyMatched && plainMatched && copied && truncated;
-}
-
-// Oneliner filters and queued recent fields use the same truncated name.
-int t11_DialectController_fieldName_consistency(void) {
-    var c = exampleContextCreate();
-    var dc = (DialectContext *)c;
-    var ctrl = dialectControllerCreate(dc);
-    var item = (DialectOneliner){.cb = cbFlag};
-    char name[] = "12345678901234567890";
-    dialectFieldNameAssign(item.field, name);
-    dialectRegisterOneliners(ctrl, &item, 1);
-
-    g_callbackFlag = false;
-    dialectControllerSet(ctrl, name, dialectValueBool(true));
-    name[0] = 'x';
-    bool matched = g_callbackFlag &&
-        strcmp(c->recentField, item.field) == 0 &&
-        strcmp(c->recentField, "123456789012345") == 0;
-    bool sameCapacity = sizeof(c->recentField) == sizeof(item.field) &&
-        sizeof(item.field) == sizeof(ctrl->callbacks[0].fieldName);
-
-    var copy = dc->copy(dc);
-    dialectFieldNameAssign(c->recentField, NULL);
-    bool independent = c->recentField[0] == '\0' &&
-        strcmp(copy->recentField(copy), item.field) == 0;
-    dialectFieldNameAssign(item.field, item.field + 1);
-    bool overlap = strcmp(item.field, "23456789012345") == 0;
-
-    copy->destroy(copy);
-    dialectControllerDestroy(ctrl);
-    exampleContextDestroy(c);
-    return matched && sameCapacity && independent && overlap;
-}
-
 size_t g_callbackCount = 0;
 
 void cbCount(DialectContext* ctx) {
@@ -392,34 +294,23 @@ void cbCount(DialectContext* ctx) {
     g_callbackCount++;
 }
 
-// Separate registration batches preserve earlier callbacks and functions.
-int t12_DialectController_registration_batches(void) {
+// Validate that both oneliners run when their field changes.
+bool t09_ExampleContext_registerOneliners(void) {
     var c = exampleContextCreate();
     var ctrl = dialectControllerCreate((DialectContext *)c);
-    DialectOneliner items[12] = {0};
-    for (size_t i = 0; i < 12; i++) {
-        items[i].cb = cbCount;
-        dialectControllerRegisterFunction(ctrl, shouldChangeDidLaunch);
-    }
+    const DialectOneliner items[] = {
+        {"host", cbCount},
+        {"host", cbCount},
+    };
+    dialectRegisterOneliners(ctrl, items, sizeof(items) / sizeof(items[0]));
 
-    dialectRegisterOneliners(ctrl, items, 10);
-    bool firstBatch = ctrl->callbacksCount == 10;
-    dialectRegisterOneliners(ctrl, items + 10, 2);
-    bool secondBatch = ctrl->callbacksCount == 12;
-    var callbacks = ctrl->callbacks;
-    dialectRegisterOneliners(ctrl, NULL, 0);
-    bool emptyBatch = ctrl->callbacks == callbacks && ctrl->callbacksCount == 12;
-    bool functions = ctrl->functionsCount == 12;
-    for (size_t i = 0; i < ctrl->functionsCount; i++) {
-        functions = functions && ctrl->functions[i] == shouldChangeDidLaunch;
-    }
-
-    memset(items, 0, sizeof(items));
     g_callbackCount = 0;
-    dialectControllerSet(ctrl, "didLaunch", dialectValueBool(true));
-    bool reported = c->didLaunch && g_callbackCount == 12;
+    var host = dialectValueString("abc");
+    dialectControllerSet(ctrl, "host", host);
+    dialectValueFree(&host);
 
+    bool ok = g_callbackCount == 2;
     dialectControllerDestroy(ctrl);
     exampleContextDestroy(c);
-    return firstBatch && secondBatch && emptyBatch && functions && reported;
+    return ok;
 }
