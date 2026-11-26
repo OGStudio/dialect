@@ -167,7 +167,7 @@ int t03_ExampleContext_setField(void) {
     c->didLaunch = true;
     DialectContext *dc = (DialectContext *)c;
     dc->setField(dc, "didLaunch", dialectValueBool(false));
-    bool ok = !c->didLaunch;
+    bool ok = (c->didLaunch == false);
     exampleContextDestroy(c);
     return ok;
 }
