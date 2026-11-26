@@ -220,7 +220,8 @@ int t05_DialectController_executeFunctions_set(void) {
 // Validate processQueue()
 int t06_DialectController_processQueue(void) {
     ExampleContext* c = exampleContextCreate();
-    DialectController* ctrl = dialectControllerCreate((DialectContext *)c);
+    DialectContext *dc = (DialectContext *)c;
+    DialectController* ctrl = dialectControllerCreate(dc);
 
     dialectControllerRegisterFunction(ctrl, shouldChangeDidLaunch);
     DialectValue host = dialectValueString("123");
